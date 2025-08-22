@@ -19,6 +19,7 @@ use App\Http\Controllers\Associacao\MessageController;
 use App\Http\Controllers\Associacao\NewsController;
 use App\Http\Controllers\Associacao\PlanController as AssociacaoPlanController;
 use App\Http\Controllers\associacao\ProductController as AssociacaoProductController;
+use App\Http\Controllers\Associacao\ProductController;
 use App\Http\Controllers\Associacao\RelatoriosController;
 use App\Http\Controllers\Associacao\SaleController;
 use App\Http\Controllers\Associacao\UserController as AssociacaoUserController;
@@ -149,12 +150,12 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('associacao')->gro
     Route::patch('/noticias/{news}/toggle-publish', [NewsController::class, 'togglePublish'])->name('associacao.news.toggle-publish');
     Route::patch('/noticias/{news}/toggle-featured', [NewsController::class, 'toggleFeatured'])->name('associacao.news.toggle-featured');
 
-    Route::get('/products', [AssociacaoProductController::class, 'index'])->name('associacao.products.index');
-    Route::get('/products/create', [AssociacaoProductController::class, 'create'])->name('associacao.products.create');
-    Route::post('/products', [AssociacaoProductController::class, 'store'])->name('associacao.products.store');
-    Route::get('/products/{product}/edit', [AssociacaoProductController::class, 'edit'])->name('associacao.products.edit');
-    Route::put('/products/{product}', [AssociacaoProductController::class, 'update'])->name('associacao.products.update');
-    Route::delete('/products/{product}', [AssociacaoProductController::class, 'destroy'])->name('associacao.products.destroy');
+    Route::get('/products', [ProductController::class, 'index'])->name('associacao.products.index');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('associacao.products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('associacao.products.store');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('associacao.products.edit');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('associacao.products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('associacao.products.destroy');
 
     Route::get('/plans', [AssociacaoPlanController::class, 'index'])->name('associacao.plans.index');
     Route::get('/plans/create', [AssociacaoPlanController::class, 'create'])->name('associacao.plans.create');
