@@ -15,26 +15,17 @@ class ProductController extends Controller
     // Exibir a lista de produtos
     public function index(Request $request)
     {
-        $products = Product::query()
-        ->when($request->category, function($query) use ($request) {
-            return $query->where('category', $request->category);
-        })
-        ->when($request->search, function($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
-        })
-        ->when($request->store, function ($query) use ($request) {
-            return $query->where('id_store', $request->store);
-        })
+        $products = Product::where('association_id', auth()->user()->association_id)
         ->paginate(12); // Paginação com 12 produtos por página
         
-        return view('associacao.products.index', compact('products', 'categories', 'stores')); // Redireciona para a view Blade 'index'
+        return view('associacao.products.index', compact('products')); // Redireciona para a view Blade 'index'
     }
 
     // Exibir o formulário de criação de produto
     public function create()
     {
 
-        return view('associacao.products.create_edit', compact('categories', 'stores')); // Retorna para a view de criação de produto
+        return view('associacao.products.create_edit'); // Retorna para a view de criação de produto
     }
 
     // Armazenar novo produto no banco de dados
@@ -63,6 +54,7 @@ class ProductController extends Controller
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'price' => $price,
+            'association_id' => auth()->user()->association_id,
             'sales_count' => $request->input('sales_count'),
             'is_trending' => $request->input('is_trending', 0),  // Caso o campo não seja informado, 0 será o valor padrão
             'rating' => $request->input('rating'),
