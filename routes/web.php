@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Cliente\DashboardController as ClienteDashboardController;
-use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProductController as ProductLibraryController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
