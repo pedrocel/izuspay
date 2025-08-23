@@ -16,12 +16,22 @@ class Product extends Model
         'description',
         'price',
         'is_active',
-        'association_id'
+        'association_id',
+        'tipo_produto',
+        'entrega_produto',
+        'categoria_produto',
+        'url_venda',
+        'nome_sac',
+        'email_sac',
+        'image'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'is_active' => 'boolean',
+        'tipo_produto' => 'integer',
+        'entrega_produto' => 'integer',
+        'categoria_produto' => 'integer',
     ];
 
     public function plans(): BelongsToMany

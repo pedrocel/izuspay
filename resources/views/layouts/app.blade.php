@@ -69,6 +69,48 @@
                 opacity: 0;
             }
         }
+
+        .form-step {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.form-step.active {
+    display: block;
+    opacity: 1;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrollbar customizada com cores roxas */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(243 244 246);
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: rgb(31 41 55);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(147 51 234);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(126 34 206);
+}
     </style>
     @stack('styles')
 </head>
