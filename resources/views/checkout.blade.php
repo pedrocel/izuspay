@@ -218,6 +218,37 @@
                                 Instantâneo
                             </div>
                         </label>
+
+                        <!-- Cartão de Crédito em breve -->
+                        <div class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg opacity-60 cursor-not-allowed shadow-sm">
+                            <input type="radio" name="payment_method" value="credit_card" class="text-gray-400 h-5 w-5" disabled>
+                            <div class="ml-4 flex-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-credit-card text-gray-400 mr-2"></i>
+                                    <span class="font-medium text-gray-500 dark:text-gray-400">Cartão de Crédito</span>
+                                </div>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Parcelamento em até 12x sem juros</p>
+                            </div>
+                            <div class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded text-xs font-medium shadow-sm">
+                                Em breve
+                            </div>
+                        </div>
+
+                        <!-- Criptomoedas em breve -->
+                        <div class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg opacity-60 cursor-not-allowed shadow-sm">
+                            <input type="radio" name="payment_method" value="crypto" class="text-gray-400 h-5 w-5" disabled>
+                            <div class="ml-4 flex-1">
+                                <div class="flex items-center">
+                                    <i class="fab fa-bitcoin text-gray-400 mr-2"></i>
+                                    <span class="font-medium text-gray-500 dark:text-gray-400">Criptomoedas</span>
+                                </div>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Bitcoin, Ethereum e outras</p>
+                            </div>
+                            <div class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded text-xs font-medium shadow-sm">
+                                Em breve
+                            </div>
+                        </div>
+
                         <p class="text-red-500 dark:text-red-400 text-sm mt-1 hidden" data-error="payment_method"></p>
                     </div>
                 </div>
@@ -246,7 +277,7 @@
                         
                         <div class="flex items-center justify-between text-lg font-semibold text-gray-900 dark:text-gray-100">
                             <span>Total:</span>
-                            <span class="text-pink-600">R$ {{ number_format($plan->total_price) }}</span>
+                            <span class="text-pink-600">R$ {{ number_format($plan->total_price, 2, ',', '.') }}</span>
                         </div>
                     </div>
                     
@@ -274,13 +305,13 @@
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Pagamento via PIX</h1>
                 <p class="text-gray-600 dark:text-gray-400">Finalize sua compra do plano **<span id="pix-plan-name"></span>**</p>
                 <p class="text-3xl font-extrabold text-pink-600 mt-4">
-                    R$ <span id="pix-total-price"></span>
+                    R$ <span id="pix-total-price">{{ number_format($plan->total_price, 2, ',', '.') }}</span>
                 </p>
 
                 <div class="text-center mt-6">
                     <p class="text-gray-700 dark:text-gray-300 mb-4">Escaneie o QR Code com o app do seu banco:</p>
                     <div class="w-48 h-48 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center overflow-hidden shadow-md">
-                        <img id="pix-qr-code-image" src="" alt="QR Code PIX" class="w-full h-full object-contain">
+                        <img id="pix-qr-code-image" src="/placeholder.svg" alt="QR Code PIX" class="w-full h-full object-contain">
                     </div>
 
                     <p class="text-gray-700 dark:text-gray-300 mt-6 mb-2">Ou copie e cole o código PIX:</p>

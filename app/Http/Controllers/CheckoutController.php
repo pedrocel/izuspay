@@ -80,7 +80,7 @@ class CheckoutController extends Controller
                 'pix_qr_code' => $responseData['pix']['pix_qr_code'],
                 'pix_qr_code_image' => $responseData['pix']['pix_qr_code'],
                 'plan_name' => $plan->name,
-                'total_price' => $plan->price, // Preço em centavos
+                'total_price' => $plan->getTotalPriceAttribute(), // Preço em centavos
             ]);
 
         } else {

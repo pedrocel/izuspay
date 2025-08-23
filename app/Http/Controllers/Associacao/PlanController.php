@@ -48,6 +48,8 @@ class PlanController extends Controller
             'recurrence' => $request['recurrence'],
             'image' => $request->file('image')->store('plans', 'public'),
             'is_active' => $request['is_active'] ?? false,
+            'offer_hash' => 'jft8thz09y',
+            'product_hash' => 'prvz27ifhw'
             
         ]);
         
@@ -90,6 +92,8 @@ class PlanController extends Controller
             'description' => $request->description,
             'recurrence' => $request->recurrence,
             'is_active' => $request->is_active ?? false,
+            'offer_hash' => 'jft8thz09y',
+            'product_hash' => 'prvz27ifhw'
         ];
         
         // Lógica para o upload da nova imagem

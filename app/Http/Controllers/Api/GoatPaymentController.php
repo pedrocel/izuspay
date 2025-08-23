@@ -66,7 +66,7 @@ class GoatPaymentController extends Controller
             $perfilCliente = PerfilModel::find($perfilClienteId);
 
             $data = [
-                "amount" => $plan->price,
+                "amount" => ((int) round($plan->getTotalPriceAttribute() * 100)),
                 "offer_hash" => $plan->offer_hash,
                 "payment_method" => "pix",
                 "customer" => [
@@ -87,7 +87,7 @@ class GoatPaymentController extends Controller
                     [
                         "product_hash" => $plan->product_hash,
                         "title" => $plan->name,
-                        "price" => $plan->price,
+                        "price" => ((int) round($plan->getTotalPriceAttribute() * 100)),
                         "quantity" => 1,
                         "operation_type" => 1,
                         "tangible" => true
@@ -102,7 +102,7 @@ class GoatPaymentController extends Controller
                 ],
                 "installments" => 1,
                 "expire_in_days" => 1,
-                "postback_url" => 'google.com',
+                "postback_url" => 'https://google.com',
             ];
 
             // Envia a requisição para a API da Goat Payments
@@ -122,7 +122,7 @@ class GoatPaymentController extends Controller
                     'plan_id' => $plan->id,
                     'transaction_hash' => $responseData['hash'],
                     'status' => 'awaiting_payment', // Status inicial
-                    'total_price' => $plan->price,
+                    'total_price' => ((int) round($plan->getTotalPriceAttribute() * 100)),
                     'payment_method' => 'pix',
                     'association_id' => $plan->association_id,
                 ]);
