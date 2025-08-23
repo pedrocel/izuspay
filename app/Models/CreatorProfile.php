@@ -50,7 +50,7 @@ class CreatorProfile extends Model
         return $this->hasMany(News::class, 'creator_profile_id');
     }
 
-     public function association()
+    public function association()
     {
         return $this->hasOneThrough(Association::class, User::class, 'id', 'id', 'user_id', 'association_id');
     }
@@ -61,8 +61,10 @@ class CreatorProfile extends Model
     public function followers()
     {
         return $this->belongsToMany(User::class, 'creator_followers', 'creator_profile_id', 'user_id')
+                    ->using(CreatorFollower::class) // usa a model pivot customizada
                     ->withTimestamps();
-    }
+}
+
 
     /**
      * Relacionamento com quem o criador segue
@@ -81,29 +83,74 @@ class CreatorProfile extends Model
         return $this->followers()->where('user_id', $userId)->exists();
     }
 
-    public function posts()
-{
-    return $this->hasMany(News::class, 'creator_profile_id');
-}
-
     /**
-     * Scope para buscar criadores ativos
+     * Verifica se um usuário tem assinatura ativa deste criador
      */
-    public function scopeActive($query)
+    public function hasActiveSubscriber($userId)
     {
-        return $query->where('is_active', true);
+        return \App\Models\Subscription::query()
+            ->whereHas('sale.plan.association.creatorProfile', function($query) {
+                $query->where('id', $this->id);
+            })
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('renews_at', '>', now())
+            ->exists();
     }
 
     /**
-     * Scope para buscar por nome ou username
+     * Relacionamento com assinaturas ativas através das vendas da associação
      */
-    public function scopeSearch($query, $term)
+    public function activeSubscriptions()
     {
-        return $query->where(function($q) use ($term) {
-            $q->where('display_name', 'LIKE', "%{$term}%")
-              ->orWhere('username', 'LIKE', "%{$term}%")
-              ->orWhere('bio', 'LIKE', "%{$term}%");
-        });
+        return \App\Models\Subscription::query()
+            ->whereHas('sale.plan.association.creatorProfile', function($query) {
+                $query->where('id', $this->id);
+            })
+            ->where('status', 'active')
+            ->where('renews_at', '>', now());
+    }
+
+    /**
+     * Relacionamento com todas as vendas do criador através da associação
+     */
+    public function sales()
+    {
+        return \App\Models\Sale::query()
+            ->whereHas('plan.association.creatorProfile', function($query) {
+                $query->where('id', $this->id);
+            })
+            ->orWhereHas('product.association.creatorProfile', function($query) {
+                $query->where('id', $this->id);
+            });
+    }
+
+    /**
+     * Verifica se usuário pode ver conteúdo privado (seguidor OU assinante ativo)
+     */
+    public function canUserViewPrivateContent($userId)
+    {
+        return $this->isFollowedBy($userId) || $this->hasActiveSubscriber($userId);
+    }
+
+    /**
+     * Verifica se usuário pode ver conteúdo premium (apenas assinantes ativos)
+     */
+    public function canUserViewPremiumContent($userId)
+    {
+        return $this->hasActiveSubscriber($userId);
+    }
+
+    /**
+     * Retorna todos os assinantes ativos do criador
+     */
+    public function getActiveSubscribersAttribute()
+    {
+        return $this->activeSubscriptions()
+                    ->with('user')
+                    ->get()
+                    ->pluck('user')
+                    ->unique('id');
     }
 
     /**
@@ -129,5 +176,25 @@ class CreatorProfile extends Model
         }
         
         return null;
+    }
+
+    /**
+     * Scope para buscar criadores ativos
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope para buscar por nome ou username
+     */
+    public function scopeSearch($query, $term)
+    {
+        return $query->where(function($q) use ($term) {
+            $q->where('display_name', 'LIKE', "%{$term}%")
+              ->orWhere('username', 'LIKE', "%{$term}%")
+              ->orWhere('bio', 'LIKE', "%{$term}%");
+        });
     }
 }

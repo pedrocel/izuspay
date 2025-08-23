@@ -36,6 +36,7 @@ class NewsController extends Controller
         }
 
         $news = $query->paginate(10);
+
         $totalNews = News::byAssociation($association->id)->count();
         $publishedNews = News::byAssociation($association->id)->published()->count();
         $draftNews = News::byAssociation($association->id)->draft()->count();
@@ -67,6 +68,7 @@ class NewsController extends Controller
         $data['association_id'] = $association->id;
         $data['user_id'] = $user->id;
         $data['is_featured'] = $request->has('is_featured');
+        $data['is_private'] = $request->has('is_private');
 
         // Processar tags
         if ($request->filled('tags')) {
@@ -115,6 +117,7 @@ class NewsController extends Controller
 
         $data = $request->all();
         $data['is_featured'] = $request->has('is_featured');
+        $data['is_private'] = $request->has('is_private');
 
         // Processar tags
         if ($request->filled('tags')) {
@@ -150,7 +153,6 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
-
         // Deletar imagem se existir
         if ($news->featured_image) {
             Storage::disk('public')->delete($news->featured_image);

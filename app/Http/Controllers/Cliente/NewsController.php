@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\News;
 use App\Models\CreatorProfile;
+use App\Models\Sale;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class NewsController extends Controller
 {
@@ -22,20 +25,54 @@ class NewsController extends Controller
         ->limit(10)
         ->get();
 
-        // Buscar notícias dos criadores seguidos ou todas se não segue ninguém
-        if ($followingCreators->count() > 0) {
+        // Buscar criadores com assinaturas ativas através das vendas
+        $subscribedCreatorIds = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('renews_at', '>', Carbon::now())
+            ->whereHas('sale', function($query) {
+                $query->where('status', 'paid')
+                      ->whereNotNull('plan_id');
+            })
+            ->with('sale.plan.association.creatorProfile')
+            ->get()
+            ->pluck('sale.plan.association.creatorProfile.id')
+            ->filter()
+            ->unique();
+
+        $subscribedCreators = CreatorProfile::whereIn('id', $subscribedCreatorIds)
+            ->active()
+            ->get();
+
+        $accessibleCreatorIds = $followingCreators->pluck('id')
+            ->merge($subscribedCreators->pluck('id'))
+            ->unique();
+
+
+        // Buscar notícias dos criadores acessíveis
+        if ($accessibleCreatorIds->count() > 0) {
             $news = News::with(['author', 'creatorProfile'])
-                       ->whereHas('creatorProfile.followers', function($query) use ($user) {
-                           $query->where('user_id', $user->id);
-                       })
-                       ->where('status', 'published')
-                       ->latest()
-                       ->take(6)
-                       ->get();
+    ->where('status', 'published')
+    ->where(function($query) use ($accessibleCreatorIds) {
+        $query->whereIn('creator_profile_id', $accessibleCreatorIds)
+              ->orWhereNull('creator_profile_id')
+              ->orWhere('creator_profile_id', 0);
+    })
+    ->where(function($q) {
+        $q->where('is_private', 0)
+          ->orWhereNull('is_private');
+    })
+    ->latest()
+    ->take(20)
+    ->get();
+
         } else {
-            // Se não segue ninguém, mostrar notícias populares ou recentes
+            // Se não segue ninguém e não tem assinaturas, mostrar apenas conteúdo público
             $news = News::with(['author', 'creatorProfile'])
                        ->where('status', 'published')
+                       ->where(function($query) {
+                           $query->where('is_private', false)
+                                 ->orWhereNull('is_private');
+                       })
                        ->latest()
                        ->take(6)
                        ->get();
@@ -53,25 +90,69 @@ class NewsController extends Controller
         return view('cliente.dashboard-mobile', compact('news', 'followingCreators', 'suggestedCreators'));
     }
 
-    public function profile()
-{
-    $user = auth()->user();
+    private function userHasAccessToCreator($userId, $creatorId)
+    {
+        // Verifica se segue o criador
+        $isFollowing = CreatorProfile::where('id', $creatorId)
+            ->whereHas('followers', function($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->exists();
 
-    $creator = CreatorProfile::withCount(['posts', 'followers', 'following'])
-        ->where('username', $username)
-        ->firstOrFail();
+        $hasActiveSubscription = Subscription::where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('renews_at', '>', Carbon::now())
+            ->whereHas('sale', function($query) use ($creatorId) {
+                $query->where('status', 'paid')
+                      ->whereNotNull('plan_id')
+                      ->whereHas('plan.association.creatorProfile', function($q) use ($creatorId) {
+                          $q->where('id', $creatorId);
+                      });
+            })
+            ->exists();
 
-    // Verifica se o usuário logado segue esse criador
-    $isFollowing = $creator->followers()->where('user_id', $user->id)->exists();
+        return $isFollowing || $hasActiveSubscription;
+    }
 
-    // Carregar publicações do criador
-    $creator->load(['news' => function($q) {
-        $q->where('status', 'published')->latest();
-    }]);
+    public function profile($username)
+    {
+        $user = auth()->user();
 
-    return view('cliente.profile.mobile', compact('creator', 'isFollowing'));
-}
+        $creator = CreatorProfile::withCount(['posts', 'followers', 'following'])
+            ->where('username', $username)
+            ->firstOrFail();
 
+        // Verifica se o usuário logado segue esse criador
+        $isFollowing = $creator->followers()->where('user_id', $user->id)->exists();
+
+        $hasActiveSubscription = Subscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where('renews_at', '>', Carbon::now())
+            ->whereHas('sale', function($query) use ($creator) {
+                $query->where('status', 'paid')
+                      ->whereNotNull('plan_id')
+                      ->whereHas('plan.association.creatorProfile', function($q) use ($creator) {
+                          $q->where('id', $creator->id);
+                      });
+            })
+            ->exists();
+
+        $creator->load(['news' => function($q) use ($hasActiveSubscription) {
+            $q->where('status', 'published');
+            
+            if (!$hasActiveSubscription) {
+                // Se não tem assinatura, mostrar apenas conteúdo público
+                $q->where(function($query) {
+                    $query->where('is_private', false)
+                          ->orWhereNull('is_private');
+                });
+            }
+            
+            $q->latest();
+        }]);
+
+        return view('cliente.profile.mobile', compact('creator', 'isFollowing', 'hasActiveSubscription'));
+    }
 
     /**
      * Exibe todas as notícias
@@ -111,11 +192,21 @@ class NewsController extends Controller
      */
     public function show($id)
     {
+        $user = auth()->user();
+        
         $news = News::with(['author', 'creatorProfile'])
                    ->where('status', 'published')
                    ->findOrFail($id);
 
-        // Incrementar visualizaçõesprofile
+        if ($news->is_private && $news->creatorProfile) {
+            $hasAccess = $this->userHasAccessToCreator($user->id, $news->creator_profile_id);
+            
+            if (!$hasAccess) {
+                abort(403, 'Você precisa de uma assinatura ativa para acessar este conteúdo.');
+            }
+        }
+
+        // Incrementar visualizações
         $news->increment('views_count');
 
         // Buscar notícias relacionadas
@@ -130,6 +221,17 @@ class NewsController extends Controller
                                   $query->orWhere('creator_profile_id', $news->creator_profile_id);
                               }
                           })
+                          ->where(function($query) use ($user, $news) {
+                              $query->where('is_private', false)
+                                    ->orWhereNull('is_private');
+                              
+                              if ($news->creatorProfile) {
+                                  $hasAccess = $this->userHasAccessToCreator($user->id, $news->creator_profile_id);
+                                  if ($hasAccess) {
+                                      $query->orWhere('creator_profile_id', $news->creator_profile_id);
+                                  }
+                              }
+                          })
                           ->latest()
                           ->limit(4)
                           ->get();
@@ -137,4 +239,3 @@ class NewsController extends Controller
         return view('cliente.news.show', compact('news', 'relatedNews'));
     }
 }
-

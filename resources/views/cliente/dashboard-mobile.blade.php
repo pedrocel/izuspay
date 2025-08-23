@@ -128,9 +128,18 @@
                             <i data-lucide="send" class="w-6 h-6"></i>
                         </button>
                     </div>
-                    <button class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 transition-colors">
-                        <i data-lucide="bookmark" class="w-6 h-6"></i>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <!-- Indicador de conteúdo privado -->
+                        @if($article->is_private)
+                        <div class="flex items-center space-x-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/20 rounded-full">
+                            <i data-lucide="lock" class="w-3 h-3 text-yellow-600 dark:text-yellow-400"></i>
+                            <span class="text-xs text-yellow-600 dark:text-yellow-400 font-medium">Premium</span>
+                        </div>
+                        @endif
+                        <button class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 transition-colors">
+                            <i data-lucide="bookmark" class="w-6 h-6"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Curtidas -->
@@ -229,4 +238,3 @@
     }
 </script>
 @endpush
-

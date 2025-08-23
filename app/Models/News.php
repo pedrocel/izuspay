@@ -26,16 +26,68 @@ class News extends Model
         'tags',
         'views_count',
         'published_at',
+        'is_private', // Added is_private field
         'category', // NOVO CAMPO ADICIONADO
     ];
 
     protected $casts = [
         'tags' => 'array',
         'is_featured' => 'boolean',
+        'is_private' => 'boolean', // Added is_private cast
         'published_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    // ==================== SCOPES ====================
+
+    /**
+     * Notícias publicadas
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published')
+                    ->where('published_at', '<=', now());
+    }
+
+    /**
+     * Notícias públicas (não privadas)
+     */
+    public function scopePublic($query)
+    {
+        return $query->where(function($q) {
+            $q->where('is_private', false)
+              ->orWhereNull('is_private');
+        });
+    }
+
+    /**
+     * Notícias privadas
+     */
+    public function scopePrivate($query)
+    {
+        return $query->where('is_private', true);
+    }
+
+
+    // ==================== MÉTODOS ====================
+
+
+    /**
+     * Verificar se é conteúdo privado
+     */
+    public function isPrivate(): bool
+    {
+        return $this->is_private === true;
+    }
+
+    /**
+     * Verificar se é conteúdo público
+     */
+    public function isPublic(): bool
+    {
+        return !$this->isPrivate();
+    }
 
     // ==================== RELACIONAMENTOS ====================
 
@@ -150,15 +202,6 @@ class News extends Model
     }
 
     // ==================== SCOPES ====================
-
-    /**
-     * Notícias publicadas
-     */
-    public function scopePublished($query)
-    {
-        return $query->where('status', 'published')
-                    ->where('published_at', '<=', now());
-    }
 
     /**
      * Notícias em rascunho
@@ -398,19 +441,26 @@ class News extends Model
     {
         return !is_null($this->creator_profile_id);
     }
-
+    
     /**
      * Obter badge do status
      */
     public function getStatusBadge(): string
     {
-        return match($this->status) {
+        $statusBadge = match($this->status) {
             'published' => '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Publicada</span>',
             'draft' => '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Rascunho</span>',
             'archived' => '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">Arquivada</span>',
             default => '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">Indefinido</span>'
         };
+
+        if ($this->isPrivate()) {
+            $statusBadge .= ' <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 ml-1">Privado</span>';
+        }
+
+        return $statusBadge;
     }
+
 
     /**
      * Obter cor do status
