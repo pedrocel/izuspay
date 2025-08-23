@@ -118,6 +118,8 @@
                 </ul>
             </div>
 
+            {{-- Added conditional display for plan or product information --}}
+            @if($sale->plan)
             <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center space-x-3 mb-4">
                     <i data-lucide="award" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
@@ -138,6 +140,24 @@
                     </div>
                 </div>
             </div>
+            @elseif($sale->product)
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center space-x-3 mb-4">
+                    <i data-lucide="package" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Produto Adquirido</h3>
+                </div>
+                <div class="space-y-2 text-gray-600 dark:text-gray-400">
+                    <p class="flex justify-between items-center"><span class="font-medium">Nome:</span> <span>{{ $sale->product->name }}</span></p>
+                    <p class="flex justify-between items-center"><span class="font-medium">Preço:</span> <span>R$ {{ number_format($sale->product->price, 2, ',', '.') }}</span></p>
+                    @if($sale->product->description)
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                            <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Descrição:</h4>
+                            <p class="text-sm">{{ $sale->product->description }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            @endif
             
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ações da Venda</h3>
@@ -153,18 +173,29 @@
                         <span>Excluir Venda</span>
                     </button>
                     <div class="flex space-x-4">
-             @if($sale->status === 'awaiting_payment')
-                    <form action="{{ route('associacao.vendas.update-status', $sale) }}" method="POST" class="inline-block w-full mt-2">
-                        @csrf
-                        @method('PATCH') {{-- CORRIGIDO AQUI --}}
-                        <input type="hidden" name="status" value="paid">
-                        <button type="submit" class="inline-flex items-center w-full justify-center space-x-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors">
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                            <span>Marcar como Pago e Ativar Assinatura</span>
-                        </button>
-                    </form>
-                @endif
-            </div>
+                        {{-- Only show subscription activation for plan-based sales --}}
+                        @if($sale->status === 'awaiting_payment' && $sale->plan_id)
+                            <form action="{{ route('associacao.vendas.update-status', $sale) }}" method="POST" class="inline-block w-full mt-2">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="paid">
+                                <button type="submit" class="inline-flex items-center w-full justify-center space-x-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span>Marcar como Pago e Ativar Assinatura</span>
+                                </button>
+                            </form>
+                        @elseif($sale->status === 'awaiting_payment' && $sale->product_id)
+                            <form action="{{ route('associacao.vendas.update-status', $sale) }}" method="POST" class="inline-block w-full mt-2">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="paid">
+                                <button type="submit" class="inline-flex items-center w-full justify-center space-x-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span>Marcar como Pago</span>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

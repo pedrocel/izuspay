@@ -59,8 +59,15 @@
                             <i data-lucide="credit-card" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
                         </div>
                         <div>
+                            {{-- Fixed to handle both plan and product sales --}}
                             <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                Venda do Plano: {{ $sale->plan->name }}
+                                @if($sale->plan_id && $sale->plan)
+                                    Venda do Plano: {{ $sale->plan->name }}
+                                @elseif($sale->product_id && $sale->product)
+                                    Venda do Produto: {{ $sale->product->name }}
+                                @else
+                                    Venda #{{ $sale->id }}
+                                @endif
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
                                 Cliente: {{ $sale->user->name }}

@@ -138,49 +138,52 @@ class SaleController extends Controller
     /**
      * Atualiza o status de uma venda e cria a assinatura se for pago.
      */
-    public function updateStatus(Request $request, Sale $sale)
-    {
-        if ($sale->association_id !== auth()->user()->association_id) {
-            abort(403, 'Acesso negado.');
-        }
-
-        $request->validate(['status' => 'required|string|in:paid,cancelled,refunded,awaiting_payment']);
-        
-        $sale->update(['status' => $request->status]);
-
-        // Se o status for 'paid' (pago), ativamos a assinatura
-        if ($sale->status === 'paid') {
-            $this->activateSubscription($sale);
-        }
-
-        return redirect()->back()->with('success', 'Status da venda atualizado com sucesso!');
+   public function updateStatus(Request $request, Sale $sale)
+{
+    if ($sale->association_id !== auth()->user()->association_id) {
+        abort(403, 'Acesso negado.');
     }
 
-    /**
-     * Lógica para ativar uma assinatura a partir de uma venda.
-     */
-    private function activateSubscription(Sale $sale): void
-    {
-        // Verifica se já existe uma assinatura para esta venda
-        if (Subscription::where('sale_id', $sale->id)->exists()) {
-            return; // A assinatura já foi criada
-        }
+    $request->validate(['status' => 'required|string|in:paid,cancelled,refunded,awaiting_payment']);
+    
+    $sale->update(['status' => $request->status]);
 
-        // 1. Cria a nova assinatura
-        Subscription::create([
-            'user_id' => $sale->user_id,
-            'plan_id' => $sale->plan_id,
-            'association_id' => $sale->association_id,
-            'sale_id' => $sale->id,
-            'status' => 'active',
-            'starts_at' => now(),
-            // A data de renovação depende da recorrência do plano
-            'renews_at' => ($sale->plan->recurrence === 'monthly') ? now()->addMonth() : now()->addYear(),
-        ]);
-        
-        // 2. Atualiza o status do usuário para 'ativo'
-        $sale->user->update(['status' => 'ativo']);
+    if ($sale->status === 'paid' && $sale->plan_id) {
+        $this->activateSubscription($sale);
     }
+
+    return redirect()->back()->with('success', 'Status da venda atualizado com sucesso!');
+}
+
+/**
+ * Lógica para ativar uma assinatura a partir de uma venda.
+ */
+private function activateSubscription(Sale $sale): void
+{
+    if (!$sale->plan_id || !$sale->plan) {
+        return; // Cannot create subscription without a plan
+    }
+
+    // Verifica se já existe uma assinatura para esta venda
+    if (Subscription::where('sale_id', $sale->id)->exists()) {
+        return; // A assinatura já foi criada
+    }
+
+    // 1. Cria a nova assinatura
+    Subscription::create([
+        'user_id' => $sale->user_id,
+        'plan_id' => $sale->plan_id,
+        'association_id' => $sale->association_id,
+        'sale_id' => $sale->id,
+        'status' => 'active',
+        'starts_at' => now(),
+        // A data de renovação depende da recorrência do plano
+        'renews_at' => ($sale->plan->recurrence === 'monthly') ? now()->addMonth() : now()->addYear(),
+    ]);
+    
+    // 2. Atualiza o status do usuário para 'ativo'
+    $sale->user->update(['status' => 'ativo']);
+}
 
     
 }
