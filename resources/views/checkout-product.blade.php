@@ -36,6 +36,8 @@
     </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Adding QRCode library -->
+    <script src="{{ asset('js/qrcode.min.js') }}"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .pix-code-container {
@@ -116,7 +118,9 @@
         <!-- Header -->
         {{-- Mudado de $plan para $product --}}
         @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover rounded-lg mb-4 shadow-md">
+<img src="{{ asset('storage/' . $product->image) }}"
+     alt="{{ $product->name }}"
+     class="w-full h-auto max-w-screen-lg max-h-screen mx-auto rounded-lg mb-4 shadow-md object-contain">
         @else
             <div class="w-full h-32 bg-gradient-to-br from-pink-500 to-pink-700 rounded-lg mb-4 flex items-center justify-center shadow-md">
                 <i class="fas fa-box text-white text-3xl"></i>
@@ -257,27 +261,8 @@
 
             <!-- Resumo do Pedido -->
             <div class="lg:col-span-1">
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Resumo do Pedido</h3>
-                    
-                    <!-- Produto Selecionado -->
-                    {{-- Mudado de plano para produto --}}
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6 shadow-sm">
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-32 object-cover rounded-lg mb-4 shadow-md">
-                        @else
-                            <div class="w-full h-32 bg-gradient-to-br from-pink-500 to-pink-700 rounded-lg mb-4 flex items-center justify-center shadow-md">
-                                <i class="fas fa-box text-white text-3xl"></i>
-                            </div>
-                        @endif
-                        
-                        <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ $product->name }}</h4>
-                        @if($product->description)
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ Str::limit($product->description, 100) }}</p>
-                        @endif
-                    </div>
-                    
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div id="order-summary" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6  top-8">
+                    <div class=" pt-4">
                         <div class="flex items-center justify-between text-lg font-semibold text-gray-900 dark:text-gray-100">
                             <span>Total:</span>
                             {{-- Mudado para usar price do produto com formatação correta --}}
@@ -308,15 +293,14 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Pagamento via PIX</h1>
                 {{-- Mudado para produto --}}
-                <p class="text-gray-600 dark:text-gray-400">Finalize sua compra do produto **<span id="pix-product-name"></span>**</p>
                 <p class="text-3xl font-extrabold text-pink-600 mt-4">
                     R$ <span id="pix-total-price">{{ number_format($product->price, 2, ',', '.') }}</span>
                 </p>
 
                 <div class="text-center mt-6">
                     <p class="text-gray-700 dark:text-gray-300 mb-4">Escaneie o QR Code com o app do seu banco:</p>
-                    <div class="w-48 h-48 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center overflow-hidden shadow-md">
-                        <img id="pix-qr-code-image" src="/placeholder.svg" alt="QR Code PIX" class="w-full h-full object-contain">
+                    <div id="pix-qr-code-container" class="w-48 h-48 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center overflow-hidden shadow-md">
+                        <!-- QR Code will be generated here -->
                     </div>
 
                     <p class="text-gray-700 dark:text-gray-300 mt-6 mb-2">Ou copie e cole o código PIX:</p>
@@ -349,6 +333,7 @@
         const loadingSpinner = document.getElementById('loading-spinner');
         const formSection = document.getElementById('form-section');
         const pixPaymentSection = document.getElementById('pix-payment-section');
+        const orderSummary = document.getElementById('order-summary');
         let verificarInterval;
         let currentTransactionHash;
 
@@ -444,13 +429,38 @@
                 if (response.ok) {
                     showNotification(result.message || 'Compra finalizada com sucesso!', 'success');
                     
-                    document.getElementById('pix-product-name').textContent = result.product_name;
-                    document.getElementById('pix-total-price').textContent = (result.total_price / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    document.getElementById('pix-qr-code-image').src = result.pix_qr_code_image;
-                    document.getElementById('pix-code').textContent = result.pix_qr_code;
+                    const pixProductNameElement = document.getElementById('pix-product-name');
+                    const pixTotalPriceElement = document.getElementById('pix-total-price');
+                    const pixCodeElement = document.getElementById('pix-code');
+                    
+                    if (pixProductNameElement) {
+                        pixProductNameElement.textContent = result.product_name;
+                    }
+                    if (pixTotalPriceElement) {
+                        pixTotalPriceElement.textContent = (result.total_price / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                    
+                    const qrContainer = document.getElementById('pix-qr-code-container');
+                    if (qrContainer) {
+                        qrContainer.innerHTML = ''; // Clear previous QR code
+                        
+                        new QRCode(qrContainer, {
+                            text: result.pix_qr_code,
+                            width: 192,
+                            height: 192,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }
+                    
+                    if (pixCodeElement) {
+                        pixCodeElement.textContent = result.pix_qr_code;
+                    }
                     currentTransactionHash = result.transaction_hash;
 
                     formSection.classList.add('hidden');
+                    orderSummary.classList.add('hidden');
                     pixPaymentSection.classList.remove('hidden');
 
                     verificarInterval = setInterval(() => {
