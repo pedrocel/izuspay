@@ -14,6 +14,7 @@ use App\Models\Subscription;
 use App\Models\UserPerfilModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash; // Importar Hash
+use App\Models\Product; // Importando modelo Product
 
 class GoatPaymentController extends Controller
 {
@@ -148,6 +149,116 @@ class GoatPaymentController extends Controller
     }
 
     /**
+     * Novo método para criar transação PIX para produtos individuais
+     */
+    public function createProductPixTransaction(Request $request)
+    {
+        $product = Product::where('hash_id', $request->hash_id)->first();
+
+        if (!$product) {
+            return response()->json(['error' => 'Produto não encontrado.'], 404);
+        }
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->telefone,
+                'tipo' => 'cliente',
+                'password' => Hash::make($request->password),
+                'association_id' => $product->association_id,
+                'documento' => $request->cpf,
+                'status' => 'active',
+            ]);
+
+            UserPerfilModel::create([
+                'user_id' => $user->id,
+                'perfil_id' => 3,
+                'is_atual' => 1,
+                'status' => 1,
+            ]);
+
+            $data = [
+                "amount" => ((int) round($product->price * 100)),
+                "offer_hash" => $product->offer_hash_goat,
+                "payment_method" => "pix",
+                "customer" => [
+                    "name" => $request->nome,
+                    "email" => $request->email,
+                    "phone_number" => $request->telefone,
+                    "document" => $request->cpf,
+                    "street_name" => "Rua Exemplo",
+                    "number" => "123",
+                    "complement" => "",
+                    "neighborhood" => "Bairro Teste",
+                    "city" => "Cidade Exemplo",
+                    "state" => "SP",
+                    "zip_code" => "00000000"
+                ],
+                "cart" => [
+                    [
+                        "product_hash" => $product->product_hash_goat,
+                        "title" => $product->name,
+                        "price" => ((int) round($product->price * 100)),
+                        "quantity" => 1,
+                        "operation_type" => 1,
+                        "tangible" => true
+                    ]
+                ],
+                "tracking" => [
+                    "utm_source" => $request->query('utm_source', ''),
+                    "utm_medium" => $request->query('utm_medium', ''),
+                    "utm_campaign" => $request->query('utm_campaign', ''),
+                    "utm_term" => $request->query('utm_term', ''),
+                    "utm_content" => $request->query('utm_content', '')
+                ],
+                "installments" => 1,
+                "expire_in_days" => 1,
+                "postback_url" => 'https://google.com',
+            ];
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->post($this->apiUrl . '?api_token=' . $this->apiToken, $data);
+
+            $responseData = $response->json();
+
+
+            if ($response->successful()) {
+
+                $sale = Sale::create([
+                    'user_id' => $user->id,
+                    'product_id' => $product->id,
+                    'transaction_hash' => $responseData['hash'],
+                    'status' => 'awaiting_payment',
+                    'total_price' => $product->price,
+                    'payment_method' => 'pix',
+                    'association_id' => $product->association_id,
+                ]);
+
+                DB::commit();
+                return response()->json($responseData);
+            } else {
+                DB::rollBack();
+                Log::error('Erro ao criar transação Pix para produto:', [
+                    'status' => $response->status(),
+                    'response' => $responseData
+                ]);
+                return response()->json([
+                    'error' => 'Falha ao se comunicar com a API de pagamento.',
+                    'details' => $responseData
+                ], $response->status());
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Exceção ao processar produto:', ['message' => $e->getMessage()]);
+            return response()->json(['error' => 'Erro interno ao processar a requisição.'], 500);
+        }
+    }
+
+    /**
      * Verifica o status de uma transação Pix na Goat Payments.
      *
      * @param Request $request Espera 'transaction_hash' na URL
@@ -218,23 +329,22 @@ class GoatPaymentController extends Controller
                 $sale->save();
                 Log::info("Status da venda {$transactionHash} atualizado para {$paymentStatus}.");
 
-                if ($paymentStatus === 'paid') {
-                    $this->createOrUpdateSubscription($sale); // Passa a venda completa
+                if ($paymentStatus === 'paid' && $sale->plan_id) {
+                    $this->createOrUpdateSubscription($sale);
                 }
+                
                 DB::commit();
                 return response('OK', 200);
             } else {
                 DB::rollBack();
-                Log::warning("Venda com hash {$transactionHash} não encontrada para atualização de status via postback.");
+                Log::warning("Venda com hash {$transactionHash} não encontrada.");
                 return response('Not Found', 404);
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Erro ao processar postback da Goat Payments:', [
+            Log::error('Erro ao processar postback:', [
                 'transaction_hash' => $transactionHash,
-                'status' => $paymentStatus,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
             return response('Internal Server Error', 500);
         }

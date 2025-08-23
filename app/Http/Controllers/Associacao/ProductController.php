@@ -47,6 +47,8 @@ class ProductController extends Controller
             'url_venda' => $request->input('url_venda'),
             'nome_sac' => $request->input('nome_sac'),
             'email_sac' => $request->input('email_sac'),
+            'offer_hash_goat' => 'jft8thz09y',
+            'product_hash_goat'=> 'prvz27ifhw',
         ];
 
         // Upload da imagem, se houver
@@ -86,6 +88,8 @@ class ProductController extends Controller
         'url_venda' => $request->input('url_venda'),
         'nome_sac' => $request->input('nome_sac'),
         'email_sac' => $request->input('email_sac'),
+        'offer_hash_goat' => 'jft8thz09y',
+        'product_hash_goat'=> 'prvz27ifhw',
     ];
 
     // Upload da imagem, se houver

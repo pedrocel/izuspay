@@ -92,7 +92,7 @@
                             Cliente
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Plano
+                            Origem
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Valor
@@ -121,8 +121,24 @@
                             <div class="text-sm text-gray-900 dark:text-white">{{ $sale->user->name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900 dark:text-white">{{ $sale->plan->name }}</div>
+                            {{-- Verificar se é venda de plano ou produto --}}
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                @if($sale->plan_id)
+                                    <div class="flex items-center space-x-2">
+                                        <i data-lucide="layers" class="w-4 h-4 text-blue-500"></i>
+                                        <span>{{ $sale->plan->name }}</span>
+                                    </div>
+                                @elseif($sale->product_id)
+                                    <div class="flex items-center space-x-2">
+                                        <i data-lucide="package" class="w-4 h-4 text-green-500"></i>
+                                        <span>{{ $sale->product->name }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-gray-500">Item não encontrado</span>
+                                @endif
+                            </div>
                         </td>
+
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-green-600">R$ {{ number_format($sale->total_price, 2, ',', '.') }}</div>
                         </td>

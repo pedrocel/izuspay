@@ -238,42 +238,56 @@
     </div>
 
     {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
-    <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
-        <div class="bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                <i data-lucide="activity" class="w-5 h-5"></i>
-                Atividade Recente
-            </h3>
-        </div>
-        <div class="p-6">
-            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse($recentSales as $sale)
-                <li class="py-4 hover:bg-purple-50 dark:hover:bg-purple-900/10 rounded-lg px-2 transition-colors">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+   {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
+<div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
+    <div class="bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-4">
+        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+            Atividade Recente
+        </h3>
+    </div>
+    <div class="p-6">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            @forelse($recentSales as $sale)
+            <li class="py-4 hover:bg-purple-50 dark:hover:bg-purple-900/10 rounded-lg px-2 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                            {{-- Ícone diferente para planos vs produtos --}}
+                            @if($sale->plan_id)
                                 <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda do Plano: {{ $sale->plan->name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Cliente: {{ $sale->user->name }}</p>
-                            </div>
+                            @else
+                                <i data-lucide="package" class="w-6 h-6 text-white"></i>
+                            @endif
                         </div>
-                        <div class="text-right">
-                            <p class="text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">+ R$ {{ number_format($sale->total_price, 2, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $sale->created_at->diffForHumans() }}</p>
+                        <div>
+                            {{-- Verificar se é plano ou produto --}}
+                            @if($sale->plan_id && $sale->plan)
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda do Plano: {{ $sale->plan->name }}</p>
+                            @elseif($sale->product_id && $sale->product)
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda do Produto: {{ $sale->product->name }}</p>
+                            @else
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda realizada</p>
+                            @endif
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Cliente: {{ $sale->user->name }}</p>
                         </div>
                     </div>
-                </li>
-                @empty
-                <li class="py-8 text-center text-gray-500 dark:text-gray-400">
-                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
-                    <p>Nenhuma venda recente.</p>
-                </li>
-                @endforelse
-            </ul>
-        </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">+ R$ {{ number_format($sale->total_price, 2, ',', '.') }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $sale->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+            </li>
+            @empty
+            <li class="py-8 text-center text-gray-500 dark:text-gray-400">
+                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                <p>Nenhuma venda recente.</p>
+            </li>
+            @endforelse
+        </ul>
     </div>
+</div>
+
 </div>
 
 <script>

@@ -15,6 +15,7 @@ class Sale extends Model
     protected $fillable = [
         'association_id',
         'plan_id',
+        'product_id', // Adicionando product_id para suportar vendas de produtos individuais
         'user_id',
         'total_price',
         'payment_method',
@@ -58,6 +59,11 @@ class Sale extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     public function transactions(): HasMany

@@ -79,6 +79,9 @@ Route::get('/checkout/{hash_id}', [CheckoutController::class, 'showCheckout'])->
     Route::get('/checkout/success/{sale}', [CheckoutController::class, 'showSuccess'])->name('checkout.success');
 
 
+    Route::get('/checkout/product/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.product.show');
+Route::post('/checkout/product/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.product.store');
+
 // Rotas de cadastro de associação (públicas)
 Route::get('/cadastro-associacao', [AssociationController::class, 'showRegistrationForm'])->name('association.register.form');
 Route::post('/cadastro-associacao', [AssociationController::class, 'register'])->name('association.register');

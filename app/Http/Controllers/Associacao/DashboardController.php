@@ -9,6 +9,7 @@ use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; // Importar a facade DB
 
 class DashboardController extends Controller
@@ -175,6 +176,11 @@ class DashboardController extends Controller
             $membersChartData['data'][] = $newMembersByMonth[$month] ?? 0;
         }
 
+        $user = Auth::user();
+
+        $association = $user->association;
+        $creatorProfile = $user->creatorProfile;
+
         return view('associacao.dashboard.index', compact(
             'totalUsers', 'totalMembers', 'totalClients',
             'docsPendingUploadCount', 'docsUnderReviewCount', 'paymentPendingCount',
@@ -189,7 +195,9 @@ class DashboardController extends Controller
             'membersChartData',
             'gamificationData',
             'layout',
-            'userLayoutConfig'
+            'userLayoutConfig',
+            'association',
+            'creatorProfile'
         ));
     }
 }
