@@ -116,7 +116,7 @@
         <!-- Header -->
         {{-- Mudado de $plan para $product --}}
         @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-32 object-cover rounded-lg mb-4 shadow-md">
+            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover rounded-lg mb-4 shadow-md">
         @else
             <div class="w-full h-32 bg-gradient-to-br from-pink-500 to-pink-700 rounded-lg mb-4 flex items-center justify-center shadow-md">
                 <i class="fas fa-box text-white text-3xl"></i>

@@ -64,62 +64,91 @@
                     </div>
                     
                     <!-- Product Info -->
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 line-clamp-2">
-                                {{ $product->name }}
-                            </h3>
-                        </div>
-                        
-                        @if($product->description)
-                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
-                                {{ $product->description }}
-                            </p>
-                        @endif
+                   <div class="p-6">
+    <div class="flex items-start justify-between mb-3">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 line-clamp-2">
+            {{ $product->name }}
+        </h3>
+    </div>
+    
+    @if($product->description)
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+            {{ $product->description }}
+        </p>
+    @endif
 
-                          <div class="text-center mb-4">
-                            @if($product->categoria_produto)
-                                <span class="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-medium">
-                                    {{ \App\Enums\CategoriaProduto::all()[$product->categoria_produto] ?? 'N/A' }}
-                                </span>
-                            @endif
-                        </div>
-                        
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
-                                R$ {{ number_format($product->price, 2, ',', '.') }}
-                            </div>
-                        </div>
-                        
-                        <!-- Product Meta -->
-                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
-                            <div class="flex items-center space-x-2">
-                                @if($product->tipo_produto !== null)
-                                    <span class="flex items-center bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
-                                        <i data-lucide="{{ $product->tipo_produto == 1 ? 'monitor' : 'package' }}" class="w-3 h-3 mr-1"></i>
-                                        {{ $product->tipo_produto == 1 ? 'Digital' : 'Físico' }}
-                                    </span>
-                                @endif
-                            </div>
-                            
-                            <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">{{ $product->created_at->format('d/m/Y') }}</span>
-                        </div>
-                        
-                        
-                        <!-- Actions -->
-                        <div class="flex space-x-2">
-                            {{-- Substituindo link de edição por botão que abre modal --}}
-                            <button onclick="editProduct({{ $product->id }}, '{{ $product->name }}', '{{ $product->description }}', {{ $product->price }}, {{ $product->is_active ? 'true' : 'false' }}, {{ $product->tipo_produto ?? 'null' }}, {{ $product->categoria_produto ?? 'null' }}, '{{ $product->url_venda ?? '' }}', '{{ $product->nome_sac ?? '' }}', '{{ $product->email_sac ?? '' }}', '{{ $product->image ? Storage::url($product->image) : '' }}')" 
-                               class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
-                                <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
-                                Editar
-                            </button>
-                            <button onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')" 
-                                    class="px-4 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
+    <div class="text-center mb-4">
+        @if($product->categoria_produto)
+            <span class="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-medium">
+                {{ \App\Enums\CategoriaProduto::all()[$product->categoria_produto] ?? 'N/A' }}
+            </span>
+        @endif
+    </div>
+    
+    <div class="flex items-center justify-between mb-4">
+        <div class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+            R$ {{ number_format($product->price, 2, ',', '.') }}
+        </div>
+    </div>
+    
+    <!-- Product Meta -->
+    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
+        <div class="flex items-center space-x-2">
+            @if($product->tipo_produto !== null)
+                <span class="flex items-center bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
+                    <i data-lucide="{{ $product->tipo_produto == 1 ? 'monitor' : 'package' }}" class="w-3 h-3 mr-1"></i>
+                    {{ $product->tipo_produto == 1 ? 'Digital' : 'Físico' }}
+                </span>
+            @endif
+        </div>
+        
+        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">{{ $product->created_at->format('d/m/Y') }}</span>
+    </div>
+    
+    
+    <!-- Actions -->
+    <div class="flex space-x-2">
+        {{-- Checkout Button --}}
+        <a href="{{ route('checkout.show', $product->hash_id) }}" onclick="checkout({{ $product->id }})" 
+               class="flex-1 inline-flex items-center justify-center px-3 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+            <i data-lucide="shopping-cart" class="w-4 h-4 mr-1"></i>
+            <span class="hidden sm:inline">Checkout</span>
+        </a>
+        
+        {{-- Fixed dropdown z-index and positioning to prevent being covered --}}
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" 
+                    class="px-3 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+                <i data-lucide="more-vertical" class="w-4 h-4"></i>
+            </button>
+            
+            <div x-show="open" 
+                 @click.away="open = false"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[9999]"
+                 style="z-index: 9999;">
+                
+                <button onclick="editProduct({{ $product->id }}, '{{ $product->name }}', '{{ $product->description }}', {{ $product->price }}, {{ $product->is_active ? 'true' : 'false' }}, {{ $product->tipo_produto ?? 'null' }}, {{ $product->categoria_produto ?? 'null' }}, '{{ $product->url_venda ?? '' }}', '{{ $product->nome_sac ?? '' }}', '{{ $product->email_sac ?? '' }}', '{{ $product->image ? Storage::url($product->image) : '' }}')" 
+                        class="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200 rounded-t-lg">
+                    <i data-lucide="edit" class="w-4 h-4 mr-3 text-blue-500"></i>
+                    Editar Produto
+                </button>
+                
+                <button onclick="confirmDelete('{{ $product->id }}', '{{ $product->name }}')" 
+                        class="w-full flex items-center px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                    <i data-lucide="trash-2" class="w-4 h-4 mr-3"></i>
+                    Excluir Produto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
                 </div>
             @endforeach
         </div>

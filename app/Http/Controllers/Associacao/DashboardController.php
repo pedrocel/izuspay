@@ -10,7 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // Importar a facade DB
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DashboardController extends Controller
 {
@@ -20,73 +21,107 @@ class DashboardController extends Controller
 
         $userLayout = auth()->user()->dashboardSetting->layout ?? null;
 
-    // Layout Padrão (se o usuário nunca salvou um)
-    $defaultLayout = [
-        'totalUsers' => ['visible' => true, 'size' => 'col-span-1'],
-        'totalMembers' => ['visible' => true, 'size' => 'col-span-1'],
-        'totalRevenue' => ['visible' => true, 'size' => 'col-span-1'],
-        'pendingRevenue' => ['visible' => true, 'size' => 'col-span-1'],
-        'revenueChart' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
-        'newMembersChart' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
-        'averageTicket' => ['visible' => true, 'size' => 'col-span-1'],
-        'onboardingConversionRate' => ['visible' => true, 'size' => 'col-span-1'],
-        'activeMembers' => ['visible' => true, 'size' => 'col-span-1'],
-        'inactiveMembers' => ['visible' => true, 'size' => 'col-span-1'],
-        'recentActivity' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
-        'gamificationLevel' => ['visible' => true, 'size' => 'col-span-1'],
-    ];
-
-    // Mescla o layout do usuário com o padrão para garantir que novos cards apareçam
-    $layout = $userLayout ? array_merge($defaultLayout, $userLayout) : $defaultLayout;
-
-    $userLayoutConfig = auth()->user()->dashboardSetting->layout ?? [];
-    // Reordena os cards com base na ordem salva pelo usuário, se existir
-    if ($userLayout) {
-        $layout = array_replace(array_flip(array_keys($userLayout)), $layout);
-    }
-
-        $totalRevenue = Sale::where('association_id', $associationId)->where('status', 'paid')->sum('total_price');
-
-        // ==================================================
-        // === NOVA LÓGICA DE GAMIFICAÇÃO ===
-        // ==================================================
-        $revenueForLevel = $totalRevenue; // Usando a receita total da associação
-
-        $levels = [
-            1 => ['min' => 0,       'max' => 10000,    'name' => 'Semente', 'badge' => 'seedling'],
-            2 => ['min' => 10000,   'max' => 100000,   'name' => 'Bronze',  'badge' => 'bronze-medal'],
-            3 => ['min' => 100000,  'max' => 500000,   'name' => 'Prata',   'badge' => 'silver-medal'],
-            4 => ['min' => 500000,  'max' => 1000000,  'name' => 'Ouro',    'badge' => 'gold-medal'],
-            5 => ['min' => 1000000, 'max' => 5000000,  'name' => 'Platina', 'badge' => 'platinum-trophy'],
-            6 => ['min' => 5000000, 'max' => PHP_INT_MAX, 'name' => 'Diamante', 'badge' => 'diamond-gem'],
+        // Layout Padrão (se o usuário nunca salvou um)
+        $defaultLayout = [
+            'totalUsers' => ['visible' => true, 'size' => 'col-span-1'],
+            'totalMembers' => ['visible' => true, 'size' => 'col-span-1'],
+            'totalRevenue' => ['visible' => true, 'size' => 'col-span-1'],
+            'pendingRevenue' => ['visible' => true, 'size' => 'col-span-1'],
+            'revenueChart' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
+            'newMembersChart' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
+            'averageTicket' => ['visible' => true, 'size' => 'col-span-1'],
+            'onboardingConversionRate' => ['visible' => true, 'size' => 'col-span-1'],
+            'activeMembers' => ['visible' => true, 'size' => 'col-span-1'],
+            'inactiveMembers' => ['visible' => true, 'size' => 'col-span-1'],
+            'recentActivity' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'],
+            'gamificationLevel' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'], // Increased size for better rewards display
+            'rewardsHistory' => ['visible' => true, 'size' => 'col-span-1 lg:col-span-2'], // Added rewards history card
         ];
 
+        // Mescla o layout do usuário com o padrão para garantir que novos cards apareçam
+        $layout = $userLayout ? array_merge($defaultLayout, $userLayout) : $defaultLayout;
+
+        $userLayoutConfig = auth()->user()->dashboardSetting->layout ?? [];
+        // Reordena os cards com base na ordem salva pelo usuário, se existir
+        if ($userLayout) {
+            $layout = array_replace(array_flip(array_keys($userLayout)), $layout);
+        }
+
+        $totalRevenue = Sale::where('association_id', $associationId)->where('status', 'paid')->sum('total_price');
+        $totalSales = Sale::where('association_id', $associationId)->where('status', 'paid')->count();
+        $totalMembers = User::comPerfil('Membro')->where('association_id', $associationId)->count();
+
+        // Enhanced levels with more rewards and achievements
+        $userGender = $this->detectGender(auth()->user());
+
+        // Definindo níveis de sedutor baseado no gênero
+        if ($userGender === 'male') {
+            $levels = [
+                1 => ['min' => 0, 'max' => 10000, 'name' => 'Aprendiz do Jogo', 'badge' => 'target', 'color' => 'green', 'rewards' => ['Dashboard básico'], 'description' => 'Primeiros passos na conquista.'],
+                2 => ['min' => 10000, 'max' => 100000, 'name' => 'Encantador', 'badge' => 'rose', 'color' => 'amber', 'rewards' => ['Relatórios mensais'], 'description' => 'Começando a ser notado.'],
+                3 => ['min' => 100000, 'max' => 500000, 'name' => 'Conquistador', 'badge' => 'heart', 'color' => 'gray', 'rewards' => ['Analytics avançado'], 'description' => 'Dominando a arte da atração.'],
+                4 => ['min' => 500000, 'max' => 1000000, 'name' => 'Sedutor Implacável', 'badge' => 'fire', 'color' => 'yellow', 'rewards' => ['API personalizada'], 'description' => 'Irresistível e influente.'],
+                5 => ['min' => 1000000, 'max' => 5000000, 'name' => 'Mestre da Paixão', 'badge' => 'crown', 'color' => 'blue', 'rewards' => ['Consultoria exclusiva'], 'description' => 'Elite da sedução.'],
+                6 => ['min' => 5000000, 'max' => PHP_INT_MAX, 'name' => 'Lenda da Sedução', 'badge' => 'diamond', 'color' => 'purple', 'rewards' => ['Parceria estratégica'], 'description' => 'Top do topo.'],
+            ];
+        } elseif ($userGender === 'female') {
+            $levels = [
+                1 => ['min' => 0, 'max' => 10000, 'name' => 'Aprendiz do Charme', 'badge' => 'sparkles', 'color' => 'green', 'rewards' => ['Dashboard básico'], 'description' => 'Primeiros passos no charme.'],
+                2 => ['min' => 10000, 'max' => 100000, 'name' => 'Encantadora', 'badge' => 'flower', 'color' => 'amber', 'rewards' => ['Relatórios mensais'], 'description' => 'Começando a brilhar.'],
+                3 => ['min' => 100000, 'max' => 500000, 'name' => 'Diva Irresistível', 'badge' => 'dancer', 'color' => 'gray', 'rewards' => ['Analytics avançado'], 'description' => 'Atração máxima.'],
+                4 => ['min' => 500000, 'max' => 1000000, 'name' => 'Deusa da Sedução', 'badge' => 'fire', 'color' => 'yellow', 'rewards' => ['API personalizada'], 'description' => 'Intensidade e poder.'],
+                5 => ['min' => 1000000, 'max' => 5000000, 'name' => 'Rainha da Paixão', 'badge' => 'crown', 'color' => 'blue', 'rewards' => ['Consultoria exclusiva'], 'description' => 'Status lendário.'],
+                6 => ['min' => 5000000, 'max' => PHP_INT_MAX, 'name' => 'Lenda do Desejo', 'badge' => 'diamond', 'color' => 'purple', 'rewards' => ['Parceria estratégica'], 'description' => 'Top do topo.'],
+            ];
+        } else {
+            // Fallback unissex
+            $levels = [
+                1 => ['min' => 0, 'max' => 10000, 'name' => 'Iniciante', 'badge' => 'seedling', 'color' => 'green', 'rewards' => ['Dashboard básico'], 'description' => 'Começando a jornada.'],
+                2 => ['min' => 10000, 'max' => 100000, 'name' => 'Intermediário', 'badge' => 'medal', 'color' => 'amber', 'rewards' => ['Relatórios mensais'], 'description' => 'Subindo de nível.'],
+                3 => ['min' => 100000, 'max' => 500000, 'name' => 'Avançado', 'badge' => 'star', 'color' => 'gray', 'rewards' => ['Analytics avançado'], 'description' => 'Crescimento consistente.'],
+                4 => ['min' => 500000, 'max' => 1000000, 'name' => 'Expert', 'badge' => 'trophy', 'color' => 'yellow', 'rewards' => ['API personalizada'], 'description' => 'Excelência reconhecida.'],
+                5 => ['min' => 1000000, 'max' => 5000000, 'name' => 'Master', 'badge' => 'platinum-trophy', 'color' => 'blue', 'rewards' => ['Consultoria exclusiva'], 'description' => 'Elite do mercado.'],
+                6 => ['min' => 5000000, 'max' => PHP_INT_MAX, 'name' => 'Lendário', 'badge' => 'diamond', 'color' => 'purple', 'rewards' => ['Parceria estratégica'], 'description' => 'Top do topo.'],
+            ];
+        }
+
         $currentLevelInfo = null;
+        $currentLevel = 1;
         foreach ($levels as $level => $info) {
-            if ($revenueForLevel >= $info['min']) {
+            if ($totalRevenue >= $info['min']) {
                 $currentLevelInfo = $info;
                 $currentLevelInfo['level'] = $level;
+                $currentLevel = $level;
             } else {
-                break; // Para no nível correto
+                break;
             }
         }
 
-        // Calcular o progresso para o próximo nível
-        $nextLevelMin = $levels[$currentLevelInfo['level'] + 1]['min'] ?? $currentLevelInfo['max'];
+        // Calculate progress to next level
+        $nextLevel = $currentLevel + 1;
+        $nextLevelMin = $levels[$nextLevel]['min'] ?? $currentLevelInfo['max'];
         $currentLevelMin = $currentLevelInfo['min'];
 
         $range = $nextLevelMin - $currentLevelMin;
-        $progress = $revenueForLevel - $currentLevelMin;
-        
-        // Evita divisão por zero e progresso acima de 100%
+        $progress = $totalRevenue - $currentLevelMin;
         $progressPercentage = ($range > 0) ? min(100, ($progress / $range) * 100) : 100;
 
         $gamificationData = [
             'levelName' => $currentLevelInfo['name'],
-            'levelBadge' => $currentLevelInfo['badge'], // Ícone para o selo
-            'currentRevenue' => $revenueForLevel,
+            'levelBadge' => $currentLevelInfo['badge'],
+            'levelColor' => $currentLevelInfo['color'],
+            'levelDescription' => $currentLevelInfo['description'],
+            'currentLevel' => $currentLevel,
+            'currentRevenue' => $totalRevenue,
             'nextLevelTarget' => $nextLevelMin,
             'progressPercentage' => $progressPercentage,
+            'remainingToNext' => max(0, $nextLevelMin - $totalRevenue),
+            'rewards' => $currentLevelInfo['rewards'],
+            'nextLevelRewards' => $levels[$nextLevel]['rewards'] ?? [],
+            'nextLevelName' => $levels[$nextLevel]['name'] ?? 'Máximo',
+            'allLevels' => $levels,
+            'achievements' => $this->calculateAchievements($totalRevenue, $totalSales, $totalMembers),
+            'milestones' => $this->calculateMilestones($totalRevenue, $totalSales, $totalMembers),
         ];
 
         // === MÉTRICAS DE USUÁRIOS E PERFIS (EXISTENTES) ===
@@ -100,7 +135,6 @@ class DashboardController extends Controller
         $paymentPendingCount = User::where('association_id', $associationId)->where('status', 'payment_pending')->count();
         
         // === MÉTRICAS DE VENDAS (EXISTENTES) ===
-        $totalRevenue = Sale::where('association_id', $associationId)->where('status', 'paid')->sum('total_price');
         $pendingRevenue = Sale::where('association_id', $associationId)->where('status', 'awaiting_payment')->sum('total_price');
         $activePlans = Plan::where('association_id', $associationId)->where('is_active', true)->count();
         $totalPlans = Plan::where('association_id', $associationId)->count();
@@ -111,22 +145,17 @@ class DashboardController extends Controller
 
         // === ATIVIDADE RECENTE (EXISTENTE) ===
         $recentSales = Sale::where('association_id', $associationId)
-                           ->with(['user', 'plan'])
+                           ->with(['user', 'plan', 'product'])
                            ->latest()
                            ->take(5)
                            ->get();
         
-        // ==================================================
-        // === NOVOS INDICADORES SUGERIDOS ===
-        // ==================================================
-
         // 1. TICKET MÉDIO POR VENDA
         $averageTicket = Sale::where('association_id', $associationId)
                                ->where('status', 'paid')
                                ->avg('total_price') ?? 0;
 
         // 2. TAXA DE CONVERSÃO DE ONBOARDING
-        // (Membros Ativos / (Membros Ativos + Todos os status de pendência))
         $activeMembersCount = User::comPerfil('Membro')->where('association_id', $associationId)->where('status', 'active')->count();
         $totalOnboardingUsers = $activeMembersCount + $docsPendingUploadCount + $docsUnderReviewCount + $paymentPendingCount;
         $onboardingConversionRate = ($totalOnboardingUsers > 0) ? ($activeMembersCount / $totalOnboardingUsers) * 100 : 0;
@@ -177,7 +206,6 @@ class DashboardController extends Controller
         }
 
         $user = Auth::user();
-
         $association = $user->association;
         $creatorProfile = $user->creatorProfile;
 
@@ -186,7 +214,6 @@ class DashboardController extends Controller
             'docsPendingUploadCount', 'docsUnderReviewCount', 'paymentPendingCount',
             'totalRevenue', 'pendingRevenue', 'activePlans', 'totalPlans',
             'publishedNews', 'draftNews', 'recentSales',
-            // Novos dados para a view
             'averageTicket',
             'onboardingConversionRate',
             'activeMembersCount',
@@ -200,4 +227,92 @@ class DashboardController extends Controller
             'creatorProfile'
         ));
     }
+
+    private function calculateAchievements($revenue, $sales, $members)
+    {
+        $achievements = [];
+
+        // Revenue-based achievements
+        if ($revenue >= 10000) $achievements[] = ['name' => 'Primeira Receita', 'icon' => 'dollar-sign', 'unlocked' => true];
+        if ($revenue >= 100000) $achievements[] = ['name' => 'Seis Dígitos', 'icon' => 'trending-up', 'unlocked' => true];
+        if ($revenue >= 1000000) $achievements[] = ['name' => 'Milionário', 'icon' => 'crown', 'unlocked' => true];
+
+        // Sales-based achievements
+        if ($sales >= 10) $achievements[] = ['name' => 'Vendedor Iniciante', 'icon' => 'shopping-cart', 'unlocked' => true];
+        if ($sales >= 100) $achievements[] = ['name' => 'Vendedor Expert', 'icon' => 'award', 'unlocked' => true];
+        if ($sales >= 1000) $achievements[] = ['name' => 'Máquina de Vendas', 'icon' => 'zap', 'unlocked' => true];
+
+        // Member-based achievements
+        if ($members >= 50) $achievements[] = ['name' => 'Comunidade Ativa', 'icon' => 'users', 'unlocked' => true];
+        if ($members >= 500) $achievements[] = ['name' => 'Grande Comunidade', 'icon' => 'globe', 'unlocked' => true];
+
+        return $achievements;
+    }
+
+    private function calculateMilestones($revenue, $sales, $members)
+    {
+        $milestones = [];
+
+        // Next revenue milestones
+        $revenueMilestones = [25000, 50000, 250000, 750000, 2500000, 10000000];
+        foreach ($revenueMilestones as $milestone) {
+            if ($revenue < $milestone) {
+                $milestones[] = [
+                    'type' => 'revenue',
+                    'target' => $milestone,
+                    'current' => $revenue,
+                    'progress' => ($revenue / $milestone) * 100,
+                    'description' => 'Receita de R$ ' . number_format($milestone, 0, ',', '.')
+                ];
+                break; // Only show next milestone
+            }
+        }
+
+        // Next sales milestones
+        $salesMilestones = [25, 50, 250, 500, 1500];
+        foreach ($salesMilestones as $milestone) {
+            if ($sales < $milestone) {
+                $milestones[] = [
+                    'type' => 'sales',
+                    'target' => $milestone,
+                    'current' => $sales,
+                    'progress' => ($sales / $milestone) * 100,
+                    'description' => $milestone . ' vendas realizadas'
+                ];
+                break;
+            }
+        }
+
+        // Next member milestones
+        $memberMilestones = [25, 100, 250, 750, 1500];
+        foreach ($memberMilestones as $milestone) {
+            if ($members < $milestone) {
+                $milestones[] = [
+                    'type' => 'members',
+                    'target' => $milestone,
+                    'current' => $members,
+                    'progress' => ($members / $milestone) * 100,
+                    'description' => $milestone . ' membros ativos'
+                ];
+                break;
+            }
+        }
+
+        return $milestones;
+    }
+
+    function detectGender($fullName) {
+        $firstName = explode(' ', trim($fullName))[0];
+
+        // Chamada para a API Genderize.io
+        $response = Http::get('https://api.genderize.io', [
+            'name' => $firstName
+        ]);
+
+        if ($response->ok()) {
+            return $response->json()['gender'] ?? 'unknown'; // male, female ou unknown
+        }
+
+    return 'unknown';
+}
 }

@@ -5,9 +5,18 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use App\Services\GamificationService;
 
 class RedirectByProfile
 {
+    protected $gamificationService;
+
+    public function __construct(GamificationService $gamificationService)
+    {
+        $this->gamificationService = $gamificationService;
+    }
+
     /**
      * Lida com uma requisição de entrada.
      *
@@ -23,6 +32,10 @@ class RedirectByProfile
         if (!$user) {
             return $next($request);
         }
+
+        $gamificationData = $this->gamificationService->getGamificationData($user);
+        
+        View::share('globalGamificationData', $gamificationData);
 
         // Rotas que não devem ser redirecionadas (para evitar loops ou rotas públicas essenciais)
         $exemptRoutes = [
@@ -128,4 +141,3 @@ class RedirectByProfile
         return $pattern ? $request->is($pattern) : false;
     }
 }
-

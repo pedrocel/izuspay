@@ -117,125 +117,186 @@
 
     {{-- JORNADA DO SUCESSO - CARD MAIOR --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
-            {{-- Novo layout linear com barra de progresso no topo --}}
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Jornada do Sucesso</h3>
-                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="seedling" class="w-8 h-8 text-white"></i>
-                </div>
-            </div>
-
-            {{-- Layout horizontal com informações --}}
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-                <div class="text-center md:text-left">
-                    <p class="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">Semente</p>
-                    <p class="text-lg text-gray-300">Faturamento: R$ 6.000,00</p>
-                </div>
-                
-                <div class="text-center md:text-right">
-                    <p class="text-sm text-gray-400 mb-2">Progresso para próximo nível</p>
-                    <div class="w-full max-w-md bg-gray-600 rounded-full h-3 mb-2 overflow-hidden">
-                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: 60%"></div>
-                    </div>
-                    <p class="text-3xl font-bold text-white mb-2">60.0%</p>
-                    <p class="text-sm text-gray-400">Meta: R$ 10.000</p>
-                </div>
-            </div>
-            
-            {{-- Sistema de elos com 5 níveis inspirado no LoL --}}
-            <div class="border-t border-gray-700 pt-6">
-                <h4 class="text-lg font-semibold text-gray-300 mb-6 text-center">Elos de Faturamento</h4>
-                <div class="flex justify-center items-end gap-8 mb-6">
-                    {{-- Nível 1: Semente (R$ 10k) - 60% preenchido --}}
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            {{-- Fundo cinza (40%) --}}
-                            <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            {{-- Preenchimento 60% --}}
-                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 opacity-60" style="clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%)"></div>
-                            {{-- SVG do elo --}}
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
-                                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="text-xs font-semibold text-amber-400">SEMENTE</span>
-                        <span class="text-xs text-gray-400">R$ 10k</span>
-                    </div>
-
-                    {{-- Nível 2: Bronze (R$ 100k) - Bloqueado --}}
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                    <path d="M12 6L13.5 10.5L18 12L13.5 13.5L12 18L10.5 13.5L6 12L10.5 10.5L12 6Z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">BRONZE</span>
-                        <span class="text-xs text-gray-400">R$ 100k</span>
-                    </div>
-
-                    {{-- Nível 3: Prata (R$ 500k) - Bloqueado --}}
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                    <path d="M12 4L14 9L19 10L14 11L12 15L9.5 11L5 10L9.5 9L12 4Z"/>
-                                    <circle cx="12" cy="10" r="2"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">PRATA</span>
-                        <span class="text-xs text-gray-400">R$ 500k</span>
-                    </div>
-
-                    {{-- Nível 4: Ouro (R$ 1M) - Bloqueado --}}
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                    <path d="M12 3L14.5 8.5L20 9L14.5 9.5L12 15L9.5 9.5L4 9L9.5 8.5L12 3Z"/>
-                                    <path d="M12 5L13.5 9.5L18 10L13.5 10.5L12 15L10.5 10.5L6 10L10.5 9.5L12 5Z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">OURO</span>
-                        <span class="text-xs text-gray-400">R$ 1M</span>
-                    </div>
-
-                    {{-- Nível 5: Diamante (R$ 5M) - Bloqueado --}}
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
-                                    <path d="M6 3l4 6h4l4-6"/>
-                                    <path d="M6 9l6 12 6-12"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">DIAMANTE</span>
-                        <span class="text-xs text-gray-400">R$ 5M</span>
-                    </div>
-                </div>
-                
-                <p class="text-sm text-gray-400 text-center">
-                    Alcance metas de faturamento para desbloquear novos elos e recompensas exclusivas
-                </p>
+    <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
+        {{-- Novo layout linear com barra de progresso no topo --}}
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Jornada do Sucesso</h3>
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                {{-- Using dynamic level badge instead of hardcoded seedling icon --}}
+                <i data-lucide="{{ $gamificationData['levelBadge'] }}" class="w-8 h-8 text-white"></i>
             </div>
         </div>
+
+        {{-- Layout horizontal com informações --}}
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+            <div class="text-center md:text-left">
+                {{-- Using dynamic level name and current revenue --}}
+                <p class="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">{{ $gamificationData['levelName'] }}</p>
+                <p class="text-lg text-gray-300">Faturamento: R$ {{ number_format($gamificationData['currentRevenue'], 2, ',', '.') }}</p>
+            </div>
+            
+            <div class="text-center md:text-right">
+                <p class="text-sm text-gray-400 mb-2">Progresso para próximo nível</p>
+                <div class="w-full max-w-md bg-gray-600 rounded-full h-3 mb-2 overflow-hidden">
+                    {{-- Using dynamic progress percentage --}}
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: {{ $gamificationData['progressPercentage'] }}%"></div>
+                </div>
+                {{-- Using dynamic progress percentage --}}
+                <p class="text-3xl font-bold text-white mb-2">{{ number_format($gamificationData['progressPercentage'], 1) }}%</p>
+                {{-- Using dynamic next level target --}}
+                <p class="text-sm text-gray-400">Meta: R$ {{ number_format($gamificationData['nextLevelTarget'], 0, ',', '.') }}</p>
+            </div>
+        </div>
+        
+        {{-- Sistema de elos com 5 níveis inspirado no LoL --}}
+        <div class="border-t border-gray-700 pt-6">
+            <h4 class="text-lg font-semibold text-gray-300 mb-6 text-center">Elos de Faturamento</h4>
+            
+            {{-- Desktop: Layout horizontal --}}
+            <div class="hidden md:flex justify-center items-end gap-8 mb-6">
+                @foreach($gamificationData['allLevels'] as $index => $level)
+                    <div class="flex flex-col items-center group">
+                        <div class="relative w-20 h-20 mb-3">
+                            {{-- Dynamic level status and colors --}}
+                            @if($index < $gamificationData['currentLevel'])
+                                {{-- Nível completado --}}
+                                <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }}"></div>
+                            @elseif($index == $gamificationData['currentLevel'])
+                                {{-- Nível atual com progresso --}}
+                                <div class="absolute inset-0 rounded-full bg-gray-600"></div>
+                                <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-60" style="clip-path: polygon(0 {{ 100 - $gamificationData['progressPercentage'] }}%, 100% {{ 100 - $gamificationData['progressPercentage'] }}%, 100% 100%, 0 100%)"></div>
+                            @else
+                                {{-- Nível bloqueado --}}
+                                <div class="absolute inset-0 rounded-full bg-gray-600"></div>
+                            @endif
+                            
+                            {{-- SVG do elo mantido original --}}
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                @if($level['name'] == 'Semente')
+                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-amber-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+                                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                    </svg>
+                                @elseif($level['name'] == 'Bronze')
+                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-orange-600' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                        <path d="M12 6L13.5 10.5L18 12L13.5 13.5L12 18L10.5 13.5L6 12L10.5 10.5L12 6Z"/>
+                                    </svg>
+                                @elseif($level['name'] == 'Prata')
+                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-gray-300' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                        <path d="M12 4L14 9L19 10L14 11L12 15L9.5 11L5 10L9.5 9L12 4Z"/>
+                                        <circle cx="12" cy="10" r="2"/>
+                                    </svg>
+                                @elseif($level['name'] == 'Ouro')
+                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-yellow-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                        <path d="M12 3L14.5 8.5L20 9L14.5 9.5L12 15L9.5 9.5L4 9L9.5 8.5L12 3Z"/>
+                                        <path d="M12 5L13.5 9.5L18 10L13.5 10.5L12 15L10.5 10.5L6 10L10.5 9.5L12 5Z"/>
+                                    </svg>
+                                @else
+                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-blue-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
+                                        <path d="M6 3l4 6h4l4-6"/>
+                                        <path d="M6 9l6 12 6-12"/>
+                                    </svg>
+                                @endif
+                            </div>
+                        </div>
+                        {{-- Using dynamic level names and targets --}}
+                        <span class="text-xs font-semibold {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-500' }}">{{ strtoupper($level['name']) }}</span>
+                        <span class="text-xs text-gray-400">R$ {{ number_format($level['min'], 0, ',', '.') }}</span>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Mobile: Timeline vertical --}}
+            <div class="md:hidden space-y-4 mb-6">
+                @foreach($gamificationData['allLevels'] as $index => $level)
+                    <div class="flex items-center space-x-4">
+                        {{-- Timeline connector --}}
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-16 h-16">
+                                {{-- Dynamic level status and colors --}}
+                                @if($index < $gamificationData['currentLevel'])
+                                    {{-- Nível completado --}}
+                                    <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }}"></div>
+                                @elseif($index == $gamificationData['currentLevel'])
+                                    {{-- Nível atual com progresso --}}
+                                    <div class="absolute inset-0 rounded-full bg-gray-600"></div>
+                                    <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-60" style="clip-path: polygon(0 {{ 100 - $gamificationData['progressPercentage'] }}%, 100% {{ 100 - $gamificationData['progressPercentage'] }}%, 100% 100%, 0 100%)"></div>
+                                @else
+                                    {{-- Nível bloqueado --}}
+                                    <div class="absolute inset-0 rounded-full bg-gray-600"></div>
+                                @endif
+                                
+                                {{-- SVG do elo --}}
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    @if($level['name'] == 'Semente')
+                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-amber-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+                                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                        </svg>
+                                    @elseif($level['name'] == 'Bronze')
+                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-orange-600' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                            <path d="M12 6L13.5 10.5L18 12L13.5 13.5L12 18L10.5 13.5L6 12L10.5 10.5L12 6Z"/>
+                                        </svg>
+                                    @elseif($level['name'] == 'Prata')
+                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-gray-300' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                            <path d="M12 4L14 9L19 10L14 11L12 15L9.5 11L5 10L9.5 9L12 4Z"/>
+                                            <circle cx="12" cy="10" r="2"/>
+                                        </svg>
+                                    @elseif($level['name'] == 'Ouro')
+                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-yellow-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
+                                            <path d="M12 3L14.5 8.5L20 9L14.5 9.5L12 15L9.5 9.5L4 9L9.5 8.5L12 3Z"/>
+                                            <path d="M12 5L13.5 9.5L18 10L13.5 10.5L12 15L10.5 10.5L6 10L10.5 9.5L12 5Z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-blue-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
+                                            <path d="M6 3l4 6h4l4-6"/>
+                                            <path d="M6 9l6 12 6-12"/>
+                                        </svg>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            {{-- Connector line --}}
+                            @if($index < count($gamificationData['allLevels']) - 1)
+                                <div class="w-0.5 h-8 {{ $index < $gamificationData['currentLevel'] ? 'bg-gradient-to-b from-purple-500 to-pink-500' : 'bg-gray-600' }} mt-2"></div>
+                            @endif
+                        </div>
+                        
+                        {{-- Level info --}}
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-semibold {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-500' }}">{{ strtoupper($level['name']) }}</span>
+                                <span class="text-sm text-gray-400">R$ {{ number_format($level['min'], 0, ',', '.') }}</span>
+                            </div>
+                            @if($index == $gamificationData['currentLevel'])
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-600 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000" style="width: {{ $gamificationData['progressPercentage'] }}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">{{ number_format($gamificationData['progressPercentage'], 1) }}% completo</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <p class="text-sm text-gray-400 text-center">
+                Alcance metas de faturamento para desbloquear novos elos e recompensas exclusivas
+            </p>
+        </div>
     </div>
+</div>
+
+</div>
 
     {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
    {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
@@ -297,3 +358,4 @@
     });
 </script>
 @endsection
+

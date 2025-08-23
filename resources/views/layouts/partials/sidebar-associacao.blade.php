@@ -4,31 +4,56 @@
 <!-- Sidebar -->
 <div id="sidebar" class="fixed lg:relative w-72 bg-gray-900 text-gray-200 flex flex-col z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out h-full border-r border-gray-800 shadow-2xl">
     <!-- Progress Section -->
-    <div class="px-4 py-4 border-b border-gray-800">
-        <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-4">
-            <button id="close-sidebar" class="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-             <div class="justify-center">
-                        <img class="text-white text-xl" src="https://i.ibb.co/0pNpWH61/image-removebg-preview-1.png">
-                    </div>
-            <div class="flex items-center justify-between mb-2">
-                
-                <span class="text-xs font-medium text-gray-300">Jornada do Sucesso</span>
-                <span class="text-xs font-bold bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">60%</span>
-            </div>
-            <div class="w-full bg-gray-600 rounded-full h-2 mb-2">
-                <div class="bg-gradient-to-r from-[#621d62] to-[#ff00ff] h-2 rounded-full transition-all duration-500" style="width: 60%"></div>
-            </div>
-            <div class="flex items-center justify-between text-xs">
-                <span class="text-gray-400">R$ 6.000</span>
-                <span class="text-gray-400">R$ 10.000</span>
-            </div>
-            <div class="text-center mt-1">
-                <span class="text-xs font-medium bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">Nível: Semente</span>
-            </div>
+   <div class="px-4 py-4 border-b border-gray-800">
+    <div class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-4">
+        <button id="close-sidebar" class="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="justify-center">
+            <img class="text-white text-xl" src="https://i.ibb.co/0pNpWH61/image-removebg-preview-1.png">
         </div>
+        
+        @if(isset($globalGamificationData))
+        {{-- Using dynamic gamification data from middleware --}}
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-300">Jornada do Sucesso</span>
+            <span class="text-xs font-bold bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">
+                {{ number_format($globalGamificationData['progressPercentage'], 0) }}%
+            </span>
+        </div>
+        <div class="w-full bg-gray-600 rounded-full h-2 mb-2">
+            <div class="bg-gradient-to-r from-[#621d62] to-[#ff00ff] h-2 rounded-full transition-all duration-500" 
+                 style="width: {{ $globalGamificationData['progressPercentage'] }}%"></div>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+            <span class="text-gray-400">R$ {{ number_format($globalGamificationData['currentRevenue'], 0, ',', '.') }}</span>
+            <span class="text-gray-400">R$ {{ number_format($globalGamificationData['nextLevelTarget'], 0, ',', '.') }}</span>
+        </div>
+        <div class="text-center mt-1">
+            <span class="text-xs font-medium bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">
+                Nível: {{ $globalGamificationData['levelName'] }}
+            </span>
+        </div>
+        @else
+        {{-- Fallback for when gamification data is not available --}}
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-300">Jornada do Sucesso</span>
+            <span class="text-xs font-bold bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">0%</span>
+        </div>
+        <div class="w-full bg-gray-600 rounded-full h-2 mb-2">
+            <div class="bg-gradient-to-r from-[#621d62] to-[#ff00ff] h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+            <span class="text-gray-400">R$ 0</span>
+            <span class="text-gray-400">R$ 10.000</span>
+        </div>
+        <div class="text-center mt-1">
+            <span class="text-xs font-medium bg-gradient-to-r from-[#621d62] to-[#ff00ff] bg-clip-text text-transparent">Nível: Semente</span>
+        </div>
+        @endif
     </div>
+</div>
+
 
     <!-- Navigation Menu -->
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
