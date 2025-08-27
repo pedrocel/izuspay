@@ -172,6 +172,14 @@
                                 Notícia em destaque
                             </label>
                         </div>
+                        <div class="flex items-center mt-2">
+                            <input type="checkbox" id="is_private" name="is_private" value="1"
+                                {{ old('is_private') ? 'checked' : '' }}
+                                class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                            <label for="is_private" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                Notícia Privada (Premium)
+                            </label>
+                        </div>
                     </div>
                 </div>
 
