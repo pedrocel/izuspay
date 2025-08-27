@@ -8,7 +8,7 @@
     <div class="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-4xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
-                <h1 class="text-lg font-bold text-gray-900">luxSecrets.</h1>
+                <a href="https://luxsecrets.shop/" class="text-lg font-bold text-gray-900">luxSecrets.</a>
                 <!-- Adicionado seletor de idiomas -->
                 <div class="relative">
                     <button onclick="toggleLanguageMenu()" class="p-2 flex items-center space-x-1">
@@ -116,39 +116,40 @@
 
         <!-- Seção de Planos restaurada -->
         @if($plans->count() > 0)
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Planos de Assinatura</h2>
-                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    @foreach($plans as $plan)
-                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-shadow">
-                            <div class="text-center">
-                                <h3 class="font-bold text-lg text-gray-900 mb-2">{{ $plan->name }}</h3>
-                               <div class="text-3xl font-bold text-purple-600 mb-1">
-    R$ {{ $plan->formatted_priceT }}
-</div>
+    <div class="p-6 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Planos de Assinatura</h2>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            @foreach($plans as $plan)
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-shadow">
+                    <div class="text-center">
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">{{ $plan->name }}</h3>
 
-                                <p class="text-sm text-gray-600 mb-4">por {{ $plan->period }}</p>
-                                
-                                @if($plan->description)
-                                    <p class="text-sm text-gray-700 mb-4">{{ $plan->description }}</p>
-                                @endif
-
-                                @if($plan->discount_percentage > 0)
-                                    <div class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full mb-4 inline-block">
-                                        {{ $plan->discount_percentage }}% OFF
-                                    </div>
-                                @endif
-
-                                <button onclick="openSubscriptionModal({{ json_encode($plan) }})" 
-                                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors">
-                                    Assinar Agora
-                                </button>
-                            </div>
+                        <div class="text-3xl font-bold text-purple-600 mb-1">
+                            R$ {{ $plan->formatted_priceT }}
                         </div>
-                    @endforeach
+
+                        <p class="text-sm text-gray-600 mb-4">por {{ $plan->period }}</p>
+                        
+                        @if($plan->description)
+                            <p class="text-sm text-gray-700 mb-4">{{ $plan->description }}</p>
+                        @endif
+
+                        @if($plan->discount_percentage > 0)
+                            <div class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full mb-4 inline-block">
+                                {{ $plan->discount_percentage }}% OFF
+                            </div>
+                        @endif
+
+                        <button id="buyButton" data-hash="{{ $plan->hash_id }}" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors">
+                            Assinar
+                        </button>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endforeach
+        </div>
+    </div>
+@endif
+
 
         <!-- Feed de Posts Estilo Instagram -->
         <div class="pb-4">
@@ -486,5 +487,29 @@
 
     // Inicializar ícones Lucide
     lucide.createIcons();
+
+    document.getElementById('buyButton').addEventListener('click', function() {
+    const hashId = this.dataset.hash;
+
+    // Captura todos os UTM params da URL atual
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    let queryString = '';
+
+    utmParams.forEach(param => {
+        if (urlParams.has(param)) {
+            queryString += `${param}=${encodeURIComponent(urlParams.get(param))}&`;
+        }
+    });
+
+    // Remove o & final
+    if (queryString.endsWith('&')) {
+        queryString = queryString.slice(0, -1);
+    }
+
+    // Redireciona para a rota de checkout
+    const checkoutUrl = `/checkout/product/${hashId}${queryString ? '?' + queryString : ''}`;
+    window.location.href = checkoutUrl;
+});
 </script>
 @endpush

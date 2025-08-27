@@ -18,10 +18,14 @@
                 <p class="text-purple-200">Controle total da sua plataforma de conteúdo exclusivo</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="#" class="inline-flex items-center space-x-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
-                    <span>Novo Conteúdo</span>
-                </a>
+                @if(auth()->check() && auth()->user()->creatorProfile)
+    <a href="{{ route('public.creator.profile', ['username' => auth()->user()->creatorProfile->username]) }}" 
+       class="inline-flex items-center space-x-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+        <i data-lucide="user" class="w-5 h-5"></i>
+        <span>Meu Perfil</span>
+    </a>
+@endif
+
             </div>
         </div>
     </div>
