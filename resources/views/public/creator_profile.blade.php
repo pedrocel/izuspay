@@ -297,6 +297,7 @@
                     </div>
                 @endif
             @else
+                <!-- Estado vazio -->
                
             @endif
         </div>
@@ -314,9 +315,24 @@
                     @if($plans->count() > 0)
                         <button onclick="openSubscriptionModal({{ json_encode($plans->first()) }})" 
                                 class="bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors">
-                            Assinar por R$ {{ $plans->first()->formatted_price }}
+                            Assinar por @foreach($plans as $plan)
+                                                R$ {{ $plan->formatted_priceT }}
+                                @endforeach
                         </button>
                     @endif
+
+
+
+
+
+                                
+
+
+
+
+
+
+
                 </div>
             </div>
         @endif
