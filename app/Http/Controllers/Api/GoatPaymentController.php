@@ -144,7 +144,7 @@ class GoatPaymentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Exceção ao chamar API da Goat Payments ou salvar dados:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json(['error' => 'Erro interno ao processar a requisição.'], 500);
+            return response()->json(['error' => 'Erro interno ao processar a requisição.', $e], 500);
         }
     }
 
