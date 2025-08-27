@@ -297,14 +297,7 @@
                     </div>
                 @endif
             @else
-                <!-- Estado vazio -->
-                <div class="text-center py-12">
-                    <div class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
-                    </div>
-                    <h3 class="font-medium text-gray-900 mb-2">Nenhuma postagem ainda</h3>
-                    <p class="text-gray-500 text-sm">{{ $creator->display_name }} ainda não publicou nenhum conteúdo.</p>
-                </div>
+               
             @endif
         </div>
 
