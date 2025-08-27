@@ -286,6 +286,22 @@ class Association extends Model
         return $this->hasMany(Product::class);
     }
 
+    /**
+     * Perfil do criador da associação
+     */
+    public function creatorProfile()
+    {
+        return $this->hasOneThrough(CreatorProfile::class, User::class, 'association_id', 'user_id');
+    }
+
+    /**
+     * Todos os perfis de criadores da associação
+     */
+    public function creatorProfiles()
+    {
+        return $this->hasManyThrough(CreatorProfile::class, User::class, 'association_id', 'user_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -56,40 +56,43 @@ class NewsController extends Controller
      * Salvar nova notícia
      */
     public function store(Request $request)
-    {
-        $user = auth()->user();
-        $association = $user->association;
+{
+    $user = auth()->user();
+    $association = $user->association;
+    $creatorProfile = $user->creatorProfile;
 
-        if (!$association) {
-            return back()->with('error', 'Associação não encontrada.');
-        }
-
-        $data = $request->all();
-        $data['association_id'] = $association->id;
-        $data['user_id'] = $user->id;
-        $data['is_featured'] = $request->has('is_featured');
-        $data['is_private'] = $request->has('is_private');
-
-        // Processar tags
-        if ($request->filled('tags')) {
-            $data['tags'] = array_map('trim', explode(',', $request->tags));
-        }
-
-        // Upload da imagem
-        if ($request->hasFile('featured_image')) {
-            $data['featured_image'] = $request->file('featured_image')->store('news', 'public');
-        }
-
-        // Definir data de publicação
-        if ($data['status'] === 'published') {
-            $data['published_at'] = now();
-        }
-
-        News::create($data);
-
-        return redirect()->route('associacao.news.index')
-                        ->with('success', 'Notícia criada com sucesso!');
+    if (!$association || !$creatorProfile) {
+        return back()->with('error', 'Associação ou perfil do criador não encontrado.');
     }
+
+    $data = $request->all();
+    $data['association_id'] = $association->id;
+    $data['user_id'] = $user->id;
+    $data['creator_profile_id'] = $creatorProfile->id;
+    $data['is_featured'] = $request->has('is_featured');
+    $data['is_private'] = $request->has('is_private');
+
+    // Processar tags
+    if ($request->filled('tags')) {
+        $data['tags'] = array_map('trim', explode(',', $request->tags));
+    }
+
+    // Upload da imagem
+    if ($request->hasFile('featured_image')) {
+        $data['featured_image'] = $request->file('featured_image')->store('news', 'public');
+    }
+
+    // Definir data de publicação
+    if ($data['status'] === 'published') {
+        $data['published_at'] = now();
+    }
+
+    News::create($data);
+
+    return redirect()->route('associacao.news.index')
+                    ->with('success', 'Notícia criada com sucesso!');
+}
+
 
     /**
      * Visualizar notícia

@@ -80,11 +80,11 @@
                 <div class="flex items-center space-x-3">
                     @if($article->creatorProfile)
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center">
-                        <span class="text-sm font-semibold text-primary-600">{{ substr($article->creatorProfile->display_name, 0, 1) }}</span>
+                        <a href="{{ route('public.creator.profile', $article->creatorProfile->username) }}" class="text-sm font-semibold text-primary-600">{{ substr($article->creatorProfile->display_name, 0, 1) }}</a>
                     </div>
                     <div>
                         <div class="flex items-center space-x-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $article->creatorProfile->display_name }}</p>
+                            <a href="{{ route('public.creator.profile', $article->creatorProfile->username) }}" class="text-sm font-medium text-gray-900 dark:text-white">{{ $article->creatorProfile->display_name }}</a>
                             @if($article->creatorProfile->is_verified)
                             <i data-lucide="check-circle" class="w-4 h-4 text-blue-500"></i>
                             @endif

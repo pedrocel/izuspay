@@ -25,9 +25,11 @@ class News extends Model
         'is_featured',
         'tags',
         'views_count',
+        'likes_count', // Added likes_count to fillable
         'published_at',
         'is_private', // Added is_private field
         'category', // NOVO CAMPO ADICIONADO
+        'type', // Added type field for content type (text, video, image, etc.)
     ];
 
     protected $casts = [
@@ -37,6 +39,8 @@ class News extends Model
         'published_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'likes_count' => 'integer', // Added likes_count cast
+        'type' => 'string', // Added type cast
     ];
 
     // ==================== SCOPES ====================
@@ -69,6 +73,14 @@ class News extends Model
         return $query->where('is_private', true);
     }
 
+    /**
+     * Filtrar por tipo de conteúdo (NOVO SCOPE)
+     */
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
 
     // ==================== MÉTODOS ====================
 
@@ -87,6 +99,22 @@ class News extends Model
     public function isPublic(): bool
     {
         return !$this->isPrivate();
+    }
+
+    /**
+     * Incrementar likes
+     */
+    public function incrementLikes(): void
+    {
+        $this->increment('likes_count');
+    }
+
+    /**
+     * Decrementar likes
+     */
+    public function decrementLikes(): void
+    {
+        $this->decrement('likes_count');
     }
 
     // ==================== RELACIONAMENTOS ====================
@@ -475,4 +503,3 @@ class News extends Model
         };
     }
 }
-

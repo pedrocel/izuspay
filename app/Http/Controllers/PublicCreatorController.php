@@ -4,107 +4,101 @@ namespace App\Http\Controllers;
 
 use App\Models\CreatorProfile;
 use App\Models\User;
+use App\Models\News;
 use Illuminate\Http\Request;
 
 class PublicCreatorController extends Controller
 {
     public function show($username)
-    {
-        // Buscar o criador pelo username
-        $creator = CreatorProfile::where('username', $username)
-            ->with(['user', 'association'])
-            ->firstOrFail();
+{
+    $creator = CreatorProfile::where('username', $username)
+        ->with(['user.association.plans' => function($query) {
+            $query->where('is_active', true)->orderBy('price');
+        }])
+        ->firstOrFail();
 
-        // Dados mockados para os planos (você pode criar uma model Plans depois)
-        $plans = [
-            [
-                'id' => 1,
+    $plans = $creator->user->association->plans->map(function($plan) {
+        
+        // Buscar produtos associados ao plano
+        $products = \DB::table('plan_product')
+            ->join('products', 'plan_product.product_id', '=', 'products.id')
+            ->where('plan_product.plan_id', $plan->id)
+            ->select('products.name', 'products.price')
+            ->get();
+
+        $plan->productsT = $products;
+        $plan->total_priceT = $products->sum('price');
+        $plan->formatted_priceT = number_format($plan->total_priceT, 2, ',', '.');
+
+        return $plan;
+    });
+
+    // Se não houver planos cadastrados, usar um plano padrão
+    if ($plans->isEmpty()) {
+        $plans = collect([
+            (object)[
+                'id' => 0,
                 'name' => 'Mensal',
                 'price' => 29.90,
+                'formatted_price' => '29,90',
                 'period' => 'mês',
                 'description' => 'Acesso completo ao conteúdo exclusivo',
+                'discount_percentage' => 0,
+                'products' => collect([]),
                 'features' => [
                     'Conteúdo exclusivo diário',
                     'Chat direto com o criador',
                     'Lives privadas semanais',
                     'Fotos e vídeos em alta qualidade'
                 ]
-            ],
-            [
-                'id' => 2,
-                'name' => 'Trimestral',
-                'price' => 79.90,
-                'period' => '3 meses',
-                'description' => 'Economize 10% no plano trimestral',
-                'discount' => '10%',
-                'original_price' => 89.70,
-                'features' => [
-                    'Tudo do plano mensal',
-                    'Conteúdo bônus exclusivo',
-                    'Acesso antecipado a novos conteúdos',
-                    'Desconto em produtos personalizados'
-                ]
-            ],
-            [
-                'id' => 3,
-                'name' => 'Semestral',
-                'price' => 149.90,
-                'period' => '6 meses',
-                'description' => 'Economize 15% no plano semestral',
-                'discount' => '15%',
-                'original_price' => 179.40,
-                'features' => [
-                    'Tudo dos planos anteriores',
-                    'Videochamada mensal exclusiva',
-                    'Conteúdo personalizado',
-                    'Acesso vitalício a conteúdos especiais'
-                ]
-            ],
-            [
-                'id' => 4,
-                'name' => 'Anual',
-                'price' => 279.90,
-                'period' => '12 meses',
-                'description' => 'Economize 20% no plano anual',
-                'discount' => '20%',
-                'original_price' => 358.80,
-                'popular' => true,
-                'features' => [
-                    'Tudo dos planos anteriores',
-                    'Encontro presencial anual (se possível)',
-                    'Kit de produtos físicos exclusivos',
-                    'Acesso vitalício a todo conteúdo',
-                    'Participação em decisões de conteúdo'
-                ]
             ]
-        ];
-
-        // Estatísticas mockadas (você pode implementar depois)
-        $stats = [
-            'followers' => rand(1000, 50000),
-            'posts' => rand(100, 1000),
-            'likes' => rand(10000, 100000),
-            'subscribers' => rand(50, 500)
-        ];
-
-        return view('public.creator_profile', compact('creator', 'plans', 'stats'));
+        ]);
     }
+
+    $isSubscriber = auth()->check() ? $creator->hasActiveSubscriber(auth()->id()) : false;
+
+    $postsQuery = News::where('creator_profile_id', $creator->id)->orderBy('created_at', 'desc');
+    if (!$isSubscriber) {
+        $postsQuery->where('is_private', false);
+    }
+
+    $posts = $postsQuery->paginate(12);
+
+    $stats = [
+        'followers' => $creator->followers_count ?? 0,
+        'posts' => $creator->totalPosts(),
+        'likes' => $creator->totalLikes(),
+        'subscribers' => $creator->activeSubscriptions()->count()
+    ];
+
+    return view('public.creator_profile', compact('creator', 'plans', 'stats', 'posts', 'isSubscriber'));
+}
+
+
+
+
 
     public function subscribe(Request $request, $username, $planId)
     {
-        // Aqui você implementaria a lógica de assinatura
-        // Por enquanto, apenas redireciona com mensagem
-        
         $creator = CreatorProfile::where('username', $username)->firstOrFail();
         
-        // Validar dados
+        // Verificar se o plano existe e pertence à associação do criador
+        $plan = $creator->user->association->plans()
+            ->where('id', $planId)
+            ->where('is_active', true)
+            ->firstOrFail();
+        
+        // Validar dados do assinante
         $request->validate([
             'email' => 'required|email',
             'name' => 'required|string|max:255',
         ]);
 
-        // Aqui você integraria com gateway de pagamento (Stripe, PagSeguro, etc.)
-        
-        return redirect()->back()->with('success', 'Assinatura iniciada! Você receberá um email com as instruções de pagamento.');
+        // Aqui você poderia calcular novamente o valor baseado nos produtos
+        $totalPrice = $plan->products->sum(fn($product) => $product->price);
+
+        // Exemplo: usar $plan->offer_hash, $plan->product_hash para integração com gateway de pagamentos
+
+        return redirect()->back()->with('success', "Assinatura iniciada! Valor total: R$ " . number_format($totalPrice, 2, ',', '.'));
     }
 }

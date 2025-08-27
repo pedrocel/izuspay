@@ -67,4 +67,36 @@ class Plan extends Model
     {
         return $this->products->sum('price');
     }
+
+    /**
+     * Accessor para preço em reais (convertendo de centavos)
+     */
+    public function getPriceInReaisAttribute(): float
+    {
+        return $this->price / 100;
+    }
+
+    /**
+     * Accessor para preço formatado em reais
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        return 'R$ ' . number_format($this->price_in_reais, 2, ',', '.');
+    }
+
+    /**
+     * Scope para buscar apenas planos ativos
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope para ordenar por preço
+     */
+    public function scopeOrderByPrice($query, $direction = 'asc')
+    {
+        return $query->orderBy('price', $direction);
+    }
 }
