@@ -26,57 +26,89 @@
         </div>
     </div>
 
-    <!-- Adicionando Hero Section com imagem de fundo -->
-    <div class="relative h-80 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 overflow-hidden">
-        <!-- Imagem de fundo -->
+    <!-- Hero Section com imagem de fundo melhorada -->
+    <div class="relative h-64 md:h-80 lg:h-96 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 overflow-hidden">
+        <!-- Imagem de fundo com melhor tratamento -->
         @if($creator->cover_image)
-            <img src="{{ Storage::url($creator->cover_image) }}" alt="Cover" class="absolute inset-0 w-full h-full object-cover">
-            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+            <div class="absolute inset-0">
+                <img src="{{ Storage::url($creator->cover_image) }}" 
+                     alt="Capa de {{ $creator->display_name }}" 
+                     class="w-full h-full object-cover object-center">
+                <!-- Overlay gradiente para melhor legibilidade -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                <!-- Overlay adicional para garantir contraste -->
+                <div class="absolute inset-0 bg-black/20"></div>
+            </div>
         @else
-            <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600"></div>
+            <!-- Gradiente melhorado quando não há imagem -->
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600">
+                <!-- Padrão decorativo -->
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+                </div>
+            </div>
         @endif
         
         <!-- Conteúdo do Hero -->
         <div class="relative z-10 h-full flex items-end">
-            <div class="max-w-4xl mx-auto px-4 pb-8 w-full">
-                <div class="flex items-end space-x-6">
-                    <!-- Avatar grande -->
-                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        @if($creator->profile_image)
-                            <img src="{{ Storage::url($creator->profile_image) }}" alt="{{ $creator->display_name }}" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full bg-gray-300 flex items-center justify-center">
-                                <span class="text-4xl font-bold text-gray-600">{{ substr($creator->display_name, 0, 1) }}</span>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Info do Criador -->
-                    <div class="flex-1 text-white">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <h1 class="text-3xl font-bold">{{ $creator->display_name }}</h1>
-                            @if($creator->is_verified)
-                                <i data-lucide="check-circle" class="w-6 h-6 text-blue-400"></i>
+            <div class="max-w-4xl mx-auto px-4 pb-6 md:pb-8 w-full">
+                <div class="flex flex-col md:flex-row items-center md:items-end space-y-4 md:space-y-0 md:space-x-6">
+                    <!-- Avatar com borda melhorada -->
+                    {{-- <div class="relative">
+                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl -mt-12 md:mt-0 bg-white">
+                            @if($creator->profile_image)
+                                <img src="{{ Storage::url($creator->profile_image) }}" 
+                                     alt="{{ $creator->display_name }}" 
+                                     class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                    <span class="text-3xl md:text-4xl font-bold text-gray-600">{{ substr($creator->display_name, 0, 1) }}</span>
+                                </div>
                             @endif
                         </div>
-                        <p class="text-white/80 mb-3">{{ '@' . $creator->username }}</p>
+                        <!-- Indicador online (opcional) -->
+                        <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div> --}}
+
+                    <!-- Info do Criador com melhor tipografia -->
+                    <div class="flex-1 text-white text-center md:text-left">
+                        <div class="flex items-center justify-center md:justify-start space-x-3 mb-2">
+                            <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold drop-shadow-lg">{{ $creator->display_name }}</h1>
+                            @if($creator->is_verified)
+                                <div class="bg-blue-500 rounded-full p-1">
+                                    <i data-lucide="check" class="w-4 h-4 md:w-5 md:h-5 text-white"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <p class="text-white/90 mb-4 text-lg drop-shadow">{{ '@' . $creator->username }}</p>
                         
-                        <!-- Estatísticas -->
-                        <div class="flex items-center space-x-6 text-sm">
-                            <span><strong>{{ $creator->totalPosts() }}</strong> posts</span>
-                            <span><strong>{{ $creator->totalActiveSubscribers() }}</strong> assinantes</span>
-                            <span><strong>{{ $creator->totalLikes() }}</strong> curtidas</span>
+                        <!-- Estatísticas com melhor design -->
+                        <div class="flex items-center justify-center md:justify-start space-x-6 text-sm md:text-base">
+                            <div class="text-center md:text-left">
+                                <div class="font-bold text-lg">{{ $creator->totalPosts() }}</div>
+                                <div class="text-white/80 text-xs">posts</div>
+                            </div>
+                            <div class="text-center md:text-left">
+                                <div class="font-bold text-lg">{{ $creator->totalActiveSubscribers() }}</div>
+                                <div class="text-white/80 text-xs">assinantes</div>
+                            </div>
+                            <div class="text-center md:text-left">
+                                <div class="font-bold text-lg">{{ $creator->totalLikes() }}</div>
+                                <div class="text-white/80 text-xs">curtidas</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Botão de Assinatura -->
+                    <!-- Botão de Seguir (Desabilitado) com melhor design -->
                     @if(!$isSubscriber && $plans->count() > 0)
-                        <button onclick="openSubscriptionModal({{ json_encode($plans->first()) }})" 
-                                class="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors shadow-lg">
+                        <button  
+                                class="bg-white/70 backdrop-blur-sm text-white/60 px-6 py-2 md:px-8 md:py-3 rounded-xl font-semibold cursor-not-allowed border border-white/30 w-full md:w-auto mt-4 md:mt-0">
+                            <i data-lucide="user-plus" class="w-4 h-4 inline mr-2"></i>
                             Seguir
                         </button>
                     @elseif($isSubscriber)
-                        <button class="bg-white/20 text-white px-8 py-3 rounded-xl font-semibold border border-white/30">
+                        <button  class="bg-white/70 backdrop-blur-sm text-white px-6 py-2 md:px-8 md:py-3 rounded-xl font-semibold border border-white/30 w-full md:w-auto mt-4 md:mt-0 cursor-not-allowed">
+                            <i data-lucide="user-check" class="w-4 h-4 inline mr-2"></i>
                             Seguindo
                         </button>
                     @endif
@@ -118,14 +150,14 @@
         @if($plans->count() > 0)
     <div class="p-6 border-b border-gray-200">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Planos de Assinatura</h2>
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($plans as $plan)
                 <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-shadow">
                     <div class="text-center">
                         <h3 class="font-bold text-lg text-gray-900 mb-2">{{ $plan->name }}</h3>
 
                         <div class="text-3xl font-bold text-purple-600 mb-1">
-                            R$ {{ $plan->formatted_priceT }}
+                            R$ {{ $plan->formatted_price }}
                         </div>
 
                         <p class="text-sm text-gray-600 mb-4">por {{ $plan->period }}</p>
@@ -276,86 +308,56 @@
                         </div>
                     </div>
                 @endforeach
-
-                <!-- Paginação -->
-                @if($posts->hasPages())
-                    <div class="p-4">
-                        {{ $posts->links() }}
-                    </div>
-                @endif
             @else
-                <!-- Estado vazio -->
-                <div class="text-center py-12">
-                    <div class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
-                    </div>
-                    <h3 class="font-medium text-gray-900 mb-2">Nenhuma postagem ainda</h3>
-                    <p class="text-gray-500 text-sm">{{ $creator->display_name }} ainda não publicou nenhum conteúdo.</p>
+                <div class="p-6 text-center text-gray-500">
+                    <p>Nenhum post disponível no momento.</p>
                 </div>
             @endif
         </div>
-
-        <!-- CTA para Não-Assinantes -->
-        @if(!$isSubscriber && $creator->totalPrivatePosts() > 0)
-            <div class="p-4 border-t border-gray-200">
-                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 text-center">
-                    <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <i data-lucide="lock" class="w-8 h-8 text-white"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-900 mb-2">Desbloqueie Todo o Conteúdo</h3>
-                    <p class="text-gray-600 text-sm mb-4">{{ $creator->display_name }} tem {{ $creator->totalPrivatePosts() }} postagens exclusivas esperando por você</p>
-                    
-                    @if($plans->count() > 0)
-                        <button onclick="openSubscriptionModal({{ json_encode($plans->first()) }})" 
-                                class="bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors">
-                            Assinar por R$ {{ $plans->first()->formatted_price }}
-                        </button>
-                    @endif
-                </div>
-            </div>
-        @endif
     </div>
-</div>
 
-<!-- Modal de Assinatura -->
-<div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-900">Finalizar Assinatura</h3>
-                <button onclick="closeSubscriptionModal()" class="text-gray-400 hover:text-gray-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-
-            <div id="selectedPlan" class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                <!-- Plano selecionado será inserido aqui -->
-            </div>
-
-            <form id="subscriptionForm" action="" method="POST">
-                @csrf
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
-                        <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Telefone (opcional)</label>
-                        <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    </div>
+    <!-- Modal de Assinatura -->
+    <div id="subscriptionModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Finalizar Assinatura</h3>
+                    <button onclick="closeSubscriptionModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
                 </div>
 
-                <button type="submit" class="w-full mt-6 py-3 px-4 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition-colors">
-                    Continuar para Pagamento
-                </button>
-            </form>
+                <div id="selectedPlan" class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                    <!-- Plano selecionado será inserido aqui -->
+                </div>
+
+                <form id="subscriptionForm" action="" method="POST">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Telefone (opcional)</label>
+                            <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-6 py-3 px-4 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition-colors">
+                        Continuar para Pagamento
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+
 </div>
+
 @endsection
 
 @push('scripts')
@@ -489,27 +491,29 @@
     lucide.createIcons();
 
     document.getElementById('buyButton').addEventListener('click', function() {
-    const hashId = this.dataset.hash;
+        const hashId = this.dataset.hash;
 
-    // Captura todos os UTM params da URL atual
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-    let queryString = '';
+        // Captura todos os UTM params da URL atual
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+        let queryString = '';
 
-    utmParams.forEach(param => {
-        if (urlParams.has(param)) {
-            queryString += `${param}=${encodeURIComponent(urlParams.get(param))}&`;
+        utmParams.forEach(param => {
+            if (urlParams.has(param)) {
+                queryString += `${param}=${encodeURIComponent(urlParams.get(param))}&`;
+            }
+        });
+
+        // Remove o & final
+        if (queryString.endsWith('&')) {
+            queryString = queryString.slice(0, -1);
         }
+
+        // Redireciona para a rota de checkout
+        const checkoutUrl = `/checkout/product/${hashId}${queryString ? '?' + queryString : ''}`;
+        window.location.href = checkoutUrl;
     });
-
-    // Remove o & final
-    if (queryString.endsWith('&')) {
-        queryString = queryString.slice(0, -1);
-    }
-
-    // Redireciona para a rota de checkout
-    const checkoutUrl = `/checkout/product/${hashId}${queryString ? '?' + queryString : ''}`;
-    window.location.href = checkoutUrl;
-});
 </script>
 @endpush
+
+
