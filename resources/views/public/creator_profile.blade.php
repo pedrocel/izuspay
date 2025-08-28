@@ -44,11 +44,15 @@
         </div>
     </div>
 
-   <div class="relative h-40 overflow-hidden">
+   <div class="relative h-32 overflow-hidden">
     @if($creator->cover_image)
-        <div class="background inset-0">
-            <img class="bg-image w-full h-full object-cover object-center" src="{{ Storage::url($creator->cover_image) }}" loading="lazy" alt="Capa de {{ $creator->display_name }}">
-        </div>
+       <div class="relative h-32 overflow-hidden flex items-center justify-center">
+    <img class="bg-image min-w-full min-h-full object-cover object-center" 
+         src="{{ Storage::url($creator->cover_image) }}" 
+         loading="lazy" 
+         alt="Capa de {{ $creator->display_name }}">
+</div>
+
     @else
         <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600"></div>
     @endif
