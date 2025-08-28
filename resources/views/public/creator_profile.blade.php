@@ -46,7 +46,7 @@
 
    <div class="relative h-40 overflow-hidden">
     @if($creator->cover_image)
-        <div class="background absolute inset-0">
+        <div class="background inset-0">
             <img class="bg-image w-full h-full object-cover object-center" src="{{ Storage::url($creator->cover_image) }}" loading="lazy" alt="Capa de {{ $creator->display_name }}">
         </div>
     @else
