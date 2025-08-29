@@ -321,7 +321,7 @@ class News extends Model
 
         static::creating(function ($news) {
             if (!$news->slug) {
-                $news->slug = Str::slug($news->title);
+                $news->slug = Str::slug($news->title) . '-' . $news->id;
                 
                 // Garantir que o slug seja único
                 $originalSlug = $news->slug;

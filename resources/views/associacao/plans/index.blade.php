@@ -82,7 +82,7 @@
             <div class="p-6 flex-grow">
                 <div class="text-center mb-6">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Preço</p>
-                    <p class="text-4xl font-bold text-pink-500">R$ {{ number_format($plan->price, 2, ',', '.') }}</p>
+                    <p class="text-4xl font-bold text-pink-500">R$ {{ number_format($plan->total_price, 2, ',', '.') }}</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
                         @if($plan->recurrence === 'monthly')
                             /mês

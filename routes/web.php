@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
@@ -250,7 +251,7 @@ Route::domain('{subdomain}.copywave.com.br')->group(function () {
 });
 
 Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     
     Route::get('/organizacoes', [OrganizationController::class, 'index'])->name('admin.organizacoes.index');
     Route::get('/organizacoes/create', [OrganizationController::class, 'create'])->name('admin.organizacoes.create');

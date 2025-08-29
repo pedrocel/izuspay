@@ -9,7 +9,7 @@
                             <i data-lucide="zap" class="w-4 lg:w-6 h-4 lg:h-6 text-white"></i>
                         </div>
                         <div>
-                            <h1 class="text-base lg:text-lg font-semibold">AssociaçõesPro</h1>
+                            <h1 class="text-base lg:text-lg font-semibold">Escritório</h1>
                             <p class="text-xs text-gray-400 hidden lg:block">Admin Panel</p>
                         </div>
                     </div>
@@ -21,55 +21,58 @@
             </div>
 
             <!-- Navigation Menu -->
-            <nav class="flex-1 px-3 lg:px-4 py-4 lg:py-6 space-y-1 lg:space-y-2 overflow-y-auto">
-                <a href="#" onclick="showSection('dashboard')" class="sidebar-item active flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Dashboard</span>
-                </a>
-                
-                <a href="#" onclick="showSection('users')" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Usuários</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Analytics</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center justify-between px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <div class="flex items-center space-x-3">
-                        <i data-lucide="bell" class="w-5 h-5 flex-shrink-0"></i>
-                        <span>Notificações</span>
-                    </div>
-                    <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full flex-shrink-0">3</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="shopping-cart" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Vendas</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="package" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Produtos</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="credit-card" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Financeiro</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="file-text" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Relatórios</span>
-                </a>
-                
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-3 lg:px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:text-white">
-                    <i data-lucide="settings" class="w-5 h-5 flex-shrink-0"></i>
-                    <span>Configurações</span>
-                </a>
-            </nav>
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="layout-dashboard" class="h-5 w-5 text-gray-400"></i>
+    <span>Resumo</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="package" class="h-5 w-5 text-gray-400"></i>
+    <span>Produtos</span>
+  </a>
+
+  <a href="#" class="sidebar-item active flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-white bg-gray-800 dark:bg-gray-700">
+    <i data-lucide="shopping-cart" class="h-5 w-5 text-white"></i>
+    <span>Vendas</span>
+  </a>
+  
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="wallet" class="h-5 w-5 text-gray-400"></i>
+    <span>Contas</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="shield-alert" class="h-5 w-5 text-gray-400"></i>
+    <span>Chargeback</span>
+  </a>
+  
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="credit-card" class="h-5 w-5 text-gray-400"></i>
+    <span>Painel Financeiro</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="bar-chart-2" class="h-5 w-5 text-gray-400"></i>
+    <span>Relatórios</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="building-2" class="h-5 w-5 text-gray-400"></i>
+    <span>Empresa</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="file-text" class="h-5 w-5 text-gray-400"></i>
+    <span>Faturas do Whitelabel</span>
+  </a>
+
+  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="check-square" class="h-5 w-5 text-gray-400"></i>
+    <span>Lista de Aprovação</span>
+  </a>
+</nav>
+
 
             <!-- User Profile -->
             <div class="p-3 lg:p-4 border-t border-gray-800 dark:border-gray-700">
