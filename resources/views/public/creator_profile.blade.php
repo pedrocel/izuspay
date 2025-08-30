@@ -277,7 +277,7 @@
                                 @endif
                             </div>
 
-                            @if((!$post->is_private || $isSubscriber) && $post->tags)
+                            {{-- @if((!$post->is_private || $isSubscriber) && $post->tags)
                                 <div class="mt-2">
                                     @if(is_array($post->tags))
                                         @foreach($post->tags as $tag)
@@ -289,7 +289,7 @@
                                         @endforeach
                                     @endif
                                 </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                 @endforeach
