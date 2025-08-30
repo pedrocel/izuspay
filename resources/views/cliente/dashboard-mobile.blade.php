@@ -118,15 +118,7 @@
             <div class="p-4">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center space-x-4">
-                        <button class="text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors">
-                            <i data-lucide="heart" class="w-6 h-6"></i>
-                        </button>
-                        <button class="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition-colors">
-                            <i data-lucide="message-circle" class="w-6 h-6"></i>
-                        </button>
-                        <button class="text-gray-700 dark:text-gray-300 hover:text-green-500 transition-colors">
-                            <i data-lucide="send" class="w-6 h-6"></i>
-                        </button>
+                      
                     </div>
                     <div class="flex items-center space-x-2">
                         <!-- Indicador de conteúdo privado -->
