@@ -139,7 +139,7 @@
                 <div class="border-t border-green-600/30 my-4"></div>
 
                 <!-- Mais opções -->
-                <div class="space-y-2">
+                {{-- <div class="space-y-2">
                     <h3 class="px-4 text-xs font-semibold text-green-200 uppercase tracking-wider">Mais</h3>
                     
                     <a href="{{ route('cliente.creators.following') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
@@ -150,7 +150,7 @@
                         <i data-lucide="settings" class="w-5 h-5 flex-shrink-0"></i>
                         <span>Configurações</span>
                     </a>
-                </div>
+                </div> --}}
             </nav>
 
             <!-- User Profile -->
