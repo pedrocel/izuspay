@@ -552,10 +552,11 @@
                 });
 
                 const result = await response.json();
+
                 
                 if (response.ok && result.status !== 'paid') {
                     clearInterval(verificarInterval); // Para de verificar
-                    
+                     
                     paymentStatusBox.innerHTML = `
                         <div class="flex items-center justify-center gap-2">
                             <i class="fas fa-check-circle text-green-600 text-xl"></i>

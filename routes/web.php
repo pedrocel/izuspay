@@ -77,6 +77,7 @@ Route::get('/checkout/pix-payment', [CheckoutController::class, 'showPixPayment'
 
 Route::get('/checkout/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.show');
     Route::post('/checkout/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.store');
+    
     Route::get('/checkout/success/{sale}', [CheckoutController::class, 'showSuccess'])->name('checkout.success');
 
 

@@ -125,8 +125,11 @@ class CheckoutController extends Controller
      * @param \App\Models\Sale $sale O modelo da venda.
      * @return \Illuminate\View\View
      */
-    public function showSuccess(Sale $sale)
+    public function showSuccess($hash)
     {
+        $sale = Sale::where('transaction_hash', $hash)->first();
+        
+
         $sale->load(['user', 'plan', 'association']);
         return view('checkout-success', compact('sale'));
     }
