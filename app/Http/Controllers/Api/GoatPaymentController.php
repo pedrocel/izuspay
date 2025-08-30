@@ -298,14 +298,14 @@ class GoatPaymentController extends Controller
                     $sale->save();
 
                     // Se foi pago, cria/atualiza assinatura
-                    if ($paymentStatus !== 'paid' && $sale->plan_id) {
+                    if ($paymentStatus === 'paid' && $sale->plan_id) {
                         $this->createOrUpdateSubscription($sale);
                     }
 
                     return response()->json(['status' => $paymentStatus]);
                 }
 
-                return response()->json(['status' => 'waiting_payment']);
+                return response()->json(['status' => 'awaiting_payment']);
             } else {
                 Log::error('Erro ao verificar status da transação:', [
                     'status' => $response->status(),
