@@ -290,7 +290,7 @@ class GoatPaymentController extends Controller
                     ], 404);
                 }
 
-                if (isset($responseData['payment_status'])) {
+                if (isset($responseData['status'])) {
                     $paymentStatus = $responseData['payment_status'];
 
                     // Atualiza o status da venda no banco
