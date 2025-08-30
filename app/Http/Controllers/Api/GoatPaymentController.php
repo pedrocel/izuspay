@@ -281,11 +281,31 @@ class GoatPaymentController extends Controller
             $responseData = $response->json();
 
             if ($response->successful()) {
-                if (isset($responseData['payment_status']) && $responseData['payment_status'] === 'paid') {
-                    return response()->json(['status' => 'paid']);
-                } else {
-                    return response()->json(['status' => 'waiting_payment']);
+                // Verifica se a transação existe na base
+                $sale = Sale::where('transaction_hash', $transactionHash)->first();
+
+                if (!$sale) {
+                    return response()->json([
+                        'error' => 'Venda não encontrada para este transaction_hash.'
+                    ], 404);
                 }
+
+                if (isset($responseData['payment_status'])) {
+                    $paymentStatus = $responseData['payment_status'];
+
+                    // Atualiza o status da venda no banco
+                    $sale->status = $paymentStatus;
+                    $sale->save();
+
+                    // Se foi pago, cria/atualiza assinatura
+                    if ($paymentStatus === 'paid' && $sale->plan_id) {
+                        $this->createOrUpdateSubscription($sale);
+                    }
+
+                    return response()->json(['status' => $paymentStatus]);
+                }
+
+                return response()->json(['status' => 'waiting_payment']);
             } else {
                 Log::error('Erro ao verificar status da transação:', [
                     'status' => $response->status(),
@@ -301,6 +321,7 @@ class GoatPaymentController extends Controller
             return response()->json(['error' => 'Erro interno ao verificar o status.'], 500);
         }
     }
+
 
     /**
      * Endpoint para receber postbacks da Goat Payments.
