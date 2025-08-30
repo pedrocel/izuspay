@@ -134,11 +134,6 @@
                     </div>
                 </div>
 
-                <!-- Curtidas -->
-                <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    {{ $article->views_count ?? rand(10, 500) }} curtidas
-                </p>
-
                 <!-- Conteúdo -->
                 <div class="text-sm text-gray-900 dark:text-white">
                     @if($article->creatorProfile)
@@ -154,7 +149,7 @@
                 @endif
 
                 <!-- Ver mais -->
-                <a href="{{ route('cliente.news.show', $article->id) }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mt-1 inline-block">
+                <a href="{{ route('public.creator.profile', $article->creatorProfile->username) }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mt-1 inline-block">
                     Ver mais
                 </a>
             </div>
