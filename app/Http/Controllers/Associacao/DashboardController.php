@@ -49,7 +49,7 @@ class DashboardController extends Controller
 
         $totalRevenue = Sale::where('association_id', $associationId)->where('status', 'paid')->sum('total_price');
         $totalSales = Sale::where('association_id', $associationId)->where('status', 'paid')->count();
-        $totalMembers = User::comPerfil('Membro')->where('association_id', $associationId)->count();
+        $totalMembers = User::where('association_id', $associationId)->count();
 
         // Enhanced levels with more rewards and achievements
         $userGender = $this->detectGender(auth()->user());
@@ -126,8 +126,8 @@ class DashboardController extends Controller
 
         // === MÉTRICAS DE USUÁRIOS E PERFIS (EXISTENTES) ===
         $totalUsers = User::where('association_id', $associationId)->count();
-        $totalMembers = User::comPerfil('Membro')->where('association_id', $associationId)->count();
-        $totalClients = User::comPerfil('Cliente')->where('association_id', $associationId)->count();
+        $totalMembers = User::where('association_id', $associationId)->count();
+        $totalClients = User::where('association_id', $associationId)->count();
 
         // === MÉTRICAS DO FUNIL DE ONBOARDING (EXISTENTES) ===
         $docsPendingUploadCount = User::where('association_id', $associationId)->where('status', 'documentation_pending')->count();

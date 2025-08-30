@@ -66,6 +66,7 @@ class GoatPaymentController extends Controller
             $perfilClienteId = 3;
             $perfilCliente = PerfilModel::find($perfilClienteId);
 
+
             $data = [
                 "amount" => ((int) round($plan->getTotalPriceAttribute() * 100)),
                 "offer_hash" => $plan->offer_hash,
@@ -123,7 +124,7 @@ class GoatPaymentController extends Controller
                     'plan_id' => $plan->id,
                     'transaction_hash' => $responseData['hash'],
                     'status' => 'awaiting_payment', // Status inicial
-                    'total_price' => ((int) round($plan->getTotalPriceAttribute() * 100)),
+                    'total_price' => $plan->getTotalPriceAttribute(),
                     'payment_method' => 'pix',
                     'association_id' => $plan->association_id,
                 ]);
