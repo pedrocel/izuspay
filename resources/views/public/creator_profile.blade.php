@@ -264,9 +264,9 @@
                                 </button> --}}
                             </div>
 
-                            @if(!$post->is_private || $isSubscriber)
+                            {{-- @if(!$post->is_private || $isSubscriber)
                                 <p class="font-semibold text-sm mb-2">{{ $post->likes_count ?? 0 }} curtidas</p>
-                            @endif
+                            @endif --}}
 
                             <div class="text-sm">
                                 <span class="font-semibold">{{ $creator->display_name }}</span>
