@@ -128,9 +128,7 @@
                             <span class="text-xs text-yellow-600 dark:text-yellow-400 font-medium">Premium</span>
                         </div>
                         @endif
-                        <button class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 transition-colors">
-                            <i data-lucide="bookmark" class="w-6 h-6"></i>
-                        </button>
+                        
                     </div>
                 </div>
 
