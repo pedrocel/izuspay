@@ -119,22 +119,22 @@
                 </div>
                 
                 <!-- Explorar -->
-                <a href="{{ route('cliente.creators.explore') }}" class="sidebar-item {{ request()->is('*criadores/explorar*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
+                {{-- <a href="{{ route('cliente.creators.explore') }}" class="sidebar-item {{ request()->is('*criadores/explorar*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
                     <i data-lucide="compass" class="w-6 h-6 flex-shrink-0"></i>
                     <span>Explorar</span>
-                </a>
+                </a> --}}
                 
                 <!-- Mensagens -->
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
+                {{-- <a href="#" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
                     <i data-lucide="message-circle" class="w-6 h-6 flex-shrink-0"></i>
                     <span>Mensagens</span>
-                </a>
+                </a> --}}
                 
                 <!-- Notificações -->
-                <a href="#" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
+                {{-- <a href="#" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-green-100 hover:text-white">
                     <i data-lucide="heart" class="w-6 h-6 flex-shrink-0"></i>
                     <span>Notificações</span>
-                </a>
+                </a> --}}
                 <!-- Divider -->
                 <div class="border-t border-green-600/30 my-4"></div>
 

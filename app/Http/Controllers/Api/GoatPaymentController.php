@@ -299,7 +299,7 @@ class GoatPaymentController extends Controller
                     $sale->save();
 
                     // Se foi pago, cria/atualiza assinatura
-                    if ($paymentStatus !== 'paid' && $sale->plan_id) {
+                    if ($paymentStatus === 'paid' && $sale->plan_id) {
 
                         $sale->status = 'paid';
                         $sale->save();
