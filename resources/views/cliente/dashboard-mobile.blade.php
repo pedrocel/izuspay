@@ -34,7 +34,7 @@
     @endif
 
     <!-- Sugestões de Criadores -->
-    @if(isset($suggestedCreators) && $suggestedCreators->count() > 0)
+    {{-- @if(isset($suggestedCreators) && $suggestedCreators->count() > 0)
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
         <div class="p-6">
             <div class="flex items-center justify-between mb-4">
@@ -68,7 +68,7 @@
             </div>
         </div>
     </div>
-    @endif
+    @endif --}}
 
     <!-- Feed de Notícias -->
     @if(isset($news) && $news->count() > 0)
