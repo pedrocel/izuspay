@@ -70,13 +70,13 @@
                 <div class="stat-display">
                     <div class="count-item flex items-center space-x-1">
                         <i data-lucide="video" class="w-4 h-4"></i>
-                        <span>267</span>
+                        <span>0</span>
                     </div>
                 </div>
                 <div class="stat-display">
                     <div class="count-item flex items-center space-x-1">
                         <i data-lucide="lock" class="w-4 h-4"></i>
-                        <span>86</span>
+                        <span>0</span>
                     </div>
                 </div>
                 <div class="stat-display">
@@ -242,7 +242,7 @@
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center space-x-4">
                                     @if(!$post->is_private || $isSubscriber)
-                                        <button onclick="toggleLike({{ $post->id }})" class="hover:text-red-500 transition-colors">
+                                        {{-- <button onclick="toggleLike({{ $post->id }})" class="hover:text-red-500 transition-colors">
                                             <i data-lucide="heart" class="w-6 h-6"></i>
                                         </button>
                                         <button class="hover:text-blue-500 transition-colors">
@@ -250,18 +250,18 @@
                                         </button>
                                         <button class="hover:text-green-500 transition-colors">
                                             <i data-lucide="send" class="w-6 h-6"></i>
-                                        </button>
+                                        </button> --}}
                                     @else
                                         <div class="flex items-center space-x-4 opacity-50">
-                                            <i data-lucide="heart" class="w-6 h-6"></i>
+                                            {{-- <i data-lucide="heart" class="w-6 h-6"></i>
                                             <i data-lucide="message-circle" class="w-6 h-6"></i>
-                                            <i data-lucide="send" class="w-6 h-6"></i>
+                                            <i data-lucide="send" class="w-6 h-6"></i> --}}
                                         </div>
                                     @endif
                                 </div>
-                                <button class="hover:text-gray-700 transition-colors">
+                                {{-- <button class="hover:text-gray-700 transition-colors">
                                     <i data-lucide="bookmark" class="w-6 h-6"></i>
-                                </button>
+                                </button> --}}
                             </div>
 
                             @if(!$post->is_private || $isSubscriber)
