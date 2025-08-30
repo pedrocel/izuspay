@@ -554,7 +554,7 @@
                 const result = await response.json();
 
                 
-                if (response.ok && result.status !== 'paid') {
+                if (response.ok && result.status === 'paid') {
                     clearInterval(verificarInterval); // Para de verificar
                      
                     paymentStatusBox.innerHTML = `
