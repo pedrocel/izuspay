@@ -290,7 +290,7 @@ class GoatPaymentController extends Controller
                     ], 404);
                 }
 
-                if (isset($responseData['status'])) {
+                if (isset($responseData['payment_status'])) {
                     $paymentStatus = $responseData['payment_status'];
 
                     // Atualiza o status da venda no banco
@@ -298,14 +298,19 @@ class GoatPaymentController extends Controller
                     $sale->save();
 
                     // Se foi pago, cria/atualiza assinatura
-                    if ($paymentStatus === 'paid' && $sale->plan_id) {
+                    if ($paymentStatus !== 'paid' && $sale->plan_id) {
+
+                        $sale->status = 'paid';
+                        $sale->save();
+
+
                         $this->createOrUpdateSubscription($sale);
                     }
 
                     return response()->json(['status' => $paymentStatus]);
                 }
 
-                return response()->json(['status' => 'awaiting_payment']);
+                return response()->json(['status' => 'waiting_payment']);
             } else {
                 Log::error('Erro ao verificar status da transação:', [
                     'status' => $response->status(),
