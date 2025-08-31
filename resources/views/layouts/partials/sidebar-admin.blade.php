@@ -22,26 +22,31 @@
 
             <!-- Navigation Menu -->
         <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
-    <i data-lucide="layout-dashboard" class="h-5 w-5 text-gray-400"></i>
+  <a href="{{ route('admin.dashboard') }}" class="sidebar-item {{ request()->is('*dashboard*') ? 'active text-white ' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="layout-dashboard" class="h-5 w-5 {{ request()->is('*dashboard*') ? 'text-white' : '' }} "></i>
     <span>Resumo</span>
   </a>
 
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  <a href="{{ route('admin.produtos.index') }}" class="sidebar-item {{ request()->is('*produtos*') ? 'active text-white ' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="package" class="h-5 w-5 text-gray-400"></i>
     <span>Produtos</span>
   </a>
-
-  <a href="#" class="sidebar-item active flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-white bg-gray-800 dark:bg-gray-700">
-    <i data-lucide="shopping-cart" class="h-5 w-5 text-white"></i>
-    <span>Vendas</span>
-  </a>
   
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  <a href="{{ route('admin.planos.index') }}" class="sidebar-item {{ request()->is('*planos*') ? 'active text-white ' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+    <i data-lucide="package" class="h-5 w-5 text-gray-400"></i>
+    <span>Planos</span>
+  </a>
+
+  <a href="{{ route('admin.users.index') }}" class="sidebar-item {{ request()->is('*users*') ? 'active' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="wallet" class="h-5 w-5 text-gray-400"></i>
     <span>Contas</span>
   </a>
-
+  
+  <a href="#" class="sidebar-item {{ request()->is('*vendas*') ? 'active' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm text-gray-300 font-medium hover:bg-gray-800 dark:bg-gray-700">
+    <i data-lucide="shopping-cart" class="h-5 w-5 text-gray-400"></i>
+    <span>Vendas</span>
+  </a>
+  
   <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="shield-alert" class="h-5 w-5 text-gray-400"></i>
     <span>Chargeback</span>

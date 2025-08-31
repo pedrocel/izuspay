@@ -4,9 +4,11 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Cliente\DashboardController as ClienteDashboardController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Associacao\AssociacaoController;
 use App\Http\Controllers\Associacao\BankAccountController;
 use App\Http\Controllers\Associacao\BannerController;
@@ -77,7 +79,7 @@ Route::get('/checkout/pix-payment', [CheckoutController::class, 'showPixPayment'
 
 Route::get('/checkout/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.show');
     Route::post('/checkout/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.store');
-    
+
     Route::get('/checkout/success/{sale}', [CheckoutController::class, 'showSuccess'])->name('checkout.success');
 
 
@@ -278,23 +280,20 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
         Route::delete('{id}', [StoreController::class, 'destroy'])->name('admin.stores.destroy');
     });
 
-    Route::get('users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::prefix('/produtos')->group(function () {
+        Route::get('/', [AdminProductController::class, 'index'])->name('admin.produtos.index');
+        Route::get('{id}', [AdminProductController::class, 'show'])->name('admin.produtos.show');
+        Route::delete('{id}', [AdminProductController::class, 'destroy'])->name('admin.produtos.destroy');
+    });
+    Route::get('/planos', [PlanController::class, 'index'])->name('admin.planos.index');
+
+    Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('users', [UserController::class, 'store'])->name('admin.users.store');
     Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('users/{user}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     
-    // Route::prefix('produtos')->group(function () {
-    //     Route::get('/', [ProductController::class, 'index'])->name('admin.products.index');
-    //     Route::get('/criar', [ProductController::class, 'create'])->name('admin.products.create');
-    //     Route::post('/', [ProductController::class, 'store'])->name('admin.products.store');
-    //     Route::get('{id}', [ProductController::class, 'show'])->name('admin.products.show');
-    //     Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('admin.products.edit');
-    //     Route::put('{product}', [ProductController::class, 'update'])->name('admin.products.update');
-    //     Route::delete('{id}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
-    // });
-
     Route::get('domains', [DomainController::class, 'index'])->name('domains.index');
     Route::get('domains/create', [DomainController::class, 'create'])->name('domains.create');
     Route::post('domains', [DomainController::class, 'store'])->name('domains.store');

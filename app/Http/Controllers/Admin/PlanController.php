@@ -13,7 +13,7 @@ class PlanController extends Controller
     public function index()
     {
         $plans = Plan::paginate(20);
-        return view('associacao.plans.index', compact('plans'));
+        return view('admin.plans.index', compact('plans'));
     }
 
     public function create()

@@ -1,112 +1,188 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Lista de Produtos
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="container mx-auto">
-        <div class="mb-6">
-            <!-- Botão para abrir o modal -->
-            <!-- Botões lado a lado -->
-                <div class="flex gap-4 mt-4">
-                    <!-- Botão para abrir o modal -->
-                    <button id="openModal" class="block px-4 py-2 text-gray-200 bg-gradient-to-r from-[#50a8f2] to-[#6affe2] text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">        
-                        Filtrar produtos
-                    </button>
+@section('title', 'Produtos - Administração')
 
-                    <!-- Botão Produtos Favoritos com ícone e gradiente -->
-                    <button id="favoriteProducts" class="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.91c.969 0 1.371 1.24.588 1.81l-3.978 2.89a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.978-2.89a1 1 0 00-1.176 0l-3.978 2.89c-.784.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.364-1.118L2.476 9.1c-.783-.57-.381-1.81.588-1.81h4.91a1 1 0 00.95-.69l1.518-4.674z" />
-                        </svg>
-                        Produtos Favoritos
-                    </button>
+@section('content')
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Produtos</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie todos os produtos do sistema</p>
+        </div>
+        <div class="mt-4 sm:mt-0">
+            <button class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                Novo Produto
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar</label>
+                <div class="relative">
+                    <input type="text" placeholder="Nome do produto..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"></i>
                 </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="">Todos</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoria</label>
+                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="">Todas</option>
+                    <option value="1">Categoria 1</option>
+                    <option value="2">Categoria 2</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                    <i data-lucide="filter" class="w-4 h-4 mr-2 inline"></i>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+    </div>
 
-            <!-- Modal -->
-            <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-gray-800 text-gray-200 rounded-lg shadow-lg p-6 w-full max-w-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium">Filtrar Produtos</h3>
-                        <button id="closeModal" class="text-gray-400 hover:text-white focus:outline-none">
-                            &times;
-                        </button>
-                    </div>
+    <!-- Products Table -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Produto
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Preço
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Categoria
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Criado em
+                        </th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Ações
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    @forelse($products as $product)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12">
+                                    @if($product->image)
+                                        <img class="h-12 w-12 rounded-lg object-cover" src="{{ $product->image }}" alt="{{ $product->name }}">
+                                    @else
+                                        <div class="h-12 w-12 rounded-lg bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                                            <i data-lucide="package" class="w-6 h-6 text-white"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $product->name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ Str::limit($product->description, 50) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                R$ {{ number_format($product->price, 2, ',', '.') }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                Categoria {{ $product->categoria_produto }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($product->is_active)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
+                                    Ativo
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    <i data-lucide="x-circle" class="w-3 h-3 mr-1"></i>
+                                    Inativo
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {{ $product->created_at->format('d/m/Y') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1 rounded transition-colors duration-200" title="Visualizar">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 p-1 rounded transition-colors duration-200" title="Editar">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors duration-200" title="Excluir">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <i data-lucide="package" class="w-12 h-12 text-gray-400 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Nenhum produto encontrado</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-4">Comece criando seu primeiro produto.</p>
+                                <button class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                    <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                    Criar Produto
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                    <!-- Formulário de Filtros -->
-                    <form method="GET" action="{{ route('admin.products.index') }}" class="flex flex-col gap-4">
-                        <div>
-                            <label for="category" class="block text-sm font-medium">Categoria</label>
-                            <select id="category" name="category" class="mt-2 block w-full bg-gray-700 p-2 rounded focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Todas as Categorias</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="store" class="block text-sm font-medium">Loja</label>
-                            <select id="store" name="store" class="mt-2 block w-full bg-gray-700 p-2 rounded focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Todas as Lojas</option>
-                                @foreach($stores as $store)
-                                    <option value="{{ $store->id }}" {{ request('store') == $store->id ? 'selected' : '' }}>
-                                        {{ $store->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="search" class="block text-sm font-medium">Buscar</label>
-                            <input type="text" id="search" name="search" placeholder="Buscar por nome" value="{{ request('search') }}" class="mt-2 block w-full bg-gray-700 p-2 rounded focus:ring-blue-500 focus:border-blue-500" />
-                        </div>
-
-                        <button type="submit" class="block px-4 py-2 text-gray-200 bg-gradient-to-r from-[#50a8f2] to-[#6affe2] text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
-                            Aplicar Filtros
-                        </button>
-                    </form>
+        <!-- Pagination -->
+        @if($products->hasPages())
+        <div class="bg-white dark:bg-gray-800 px-6 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Mostrando {{ $products->firstItem() }} a {{ $products->lastItem() }} de {{ $products->total() }} resultados
+                </div>
+                <div class="flex items-center space-x-2">
+                    {{ $products->links() }}
                 </div>
             </div>
         </div>
-        <!-- Listagem de Produtos -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach($products as $product)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <!-- Imagem do Produto -->
-                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
-
-                    <div class="p-4">
-                        <h3 class="text-xl font-semibold text-gray-900">{{ $product->name }}</h3>
-                        <p class="text-gray-600 mt-2">{{ $product->description }}</p>
-
-                        <div class="mt-4 flex justify-between items-center">
-                            <!-- Status "Em Alta" -->
-                            @if($product->is_trending)
-                                <span class="text-green-500 font-bold">Em Alta</span>
-                            @endif
-                            <!-- Preço -->
-                            <span class="text-lg font-semibold text-gray-800">R$ {{ number_format($product->price, 2, ',', '.') }}</span>
-                        </div>
-
-                        <div class="mt-2 flex justify-between items-center">
-                            <!-- Quantidade de Vendas -->
-                            <span class="text-sm text-gray-600">Vendas: {{ $product->sales_count }}</span>
-
-                            <!-- Link para Detalhes -->
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="text-blue-500 hover:text-blue-700 text-sm font-medium">Editar</a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <!-- Paginação -->
-        <div class="mt-6">
-            {{ $products->links() }}
-        </div>
+        @endif
     </div>
-</x-app-layout>
+</div>
+
+@push('scripts')
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+</script>
+@endpush
+@endsection
+
