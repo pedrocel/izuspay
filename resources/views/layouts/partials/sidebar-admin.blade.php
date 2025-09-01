@@ -37,12 +37,12 @@
     <span>Planos</span>
   </a>
 
-  <a href="{{ route('admin.users.index') }}" class="sidebar-item {{ request()->is('*users*') ? 'active' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  <a href="{{ route('admin.contas.index') }}" class="sidebar-item {{ request()->is('*contas*') ? 'active' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="wallet" class="h-5 w-5 text-gray-400"></i>
     <span>Contas</span>
   </a>
   
-  <a href="#" class="sidebar-item {{ request()->is('*vendas*') ? 'active' : '' }} flex items-center space-x-3 px-3 py-3 rounded-lg text-sm text-gray-300 font-medium hover:bg-gray-800 dark:bg-gray-700">
+  <a href="{{ route('admin.sales.index') }}" class="{{ request()->is('*vendas*') ? 'active' : '' }} sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="shopping-cart" class="h-5 w-5 text-gray-400"></i>
     <span>Vendas</span>
   </a>

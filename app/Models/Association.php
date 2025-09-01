@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Association extends Model
@@ -67,12 +69,143 @@ class Association extends Model
         return $this->hasOne(User::class)->where('tipo', 'cliente');
     }
 
+    public function fees(): HasMany
+    {
+        return $this->hasMany(Fee::class);
+    }
+
+
+    /**
+     * Calcula e retorna um array detalhado com os valores da carteira.
+     *
+     * @return array
+     */
+    public function getBalanceDetailsAttribute(): array
+    {
+        // Carrega as relações se ainda não estiverem carregadas
+        $this->loadMissing(['sales', 'withdrawals', 'fees']);
+
+        // 1. Total Bruto Faturado (todas as vendas pagas)
+        $totalGross = $this->sales->where('status', 'paid')->sum('total_price');
+
+        // 2. Total de Taxas
+        $totalFees = $this->sales->where('status', 'paid')->sum(function ($sale) {
+            $feeConfig = $this->fees->where('payment_method', $sale->payment_method)->first();
+            
+            // Valores padrão se não houver taxa configurada
+            $percentage = $feeConfig->percentage_fee ?? 4.99;
+            $fixed = $feeConfig->fixed_fee ?? 0.40;
+
+            $feeForSale = ($sale->total_price * ($percentage / 100)) + $fixed;
+            return $feeForSale;
+        });
+
+        // 3. Total Líquido (Bruto - Taxas)
+        $totalNet = $totalGross - $totalFees;
+
+        // 4. Total Transferido (Saques aprovados/concluídos)
+        $totalWithdrawn = $this->withdrawals->whereIn('status', ['completed', 'approved'])->sum('amount');
+
+        // 5. Saldo Disponível para Saque (Líquido - Transferido)
+        // Aqui você pode adicionar regras de liberação (ex: D+14, D+30)
+        $available = $totalNet - $totalWithdrawn;
+
+        // 6. Aguardando Liberação (Vendas recentes que ainda não podem ser sacadas)
+        // Exemplo simples: vendas nos últimos 14 dias. Adapte à sua regra.
+        $pendingRelease = $this->sales
+            ->where('status', 'paid')
+            ->where('created_at', '>', now()->subDays(14))
+            ->sum('total_price'); // Este seria o valor bruto, o ideal é calcular o líquido.
+
+        // 7. Retido (Chargebacks, disputas, etc.)
+        $retained = $this->sales->whereIn('status', ['chargeback', 'in_dispute'])->sum('total_price');
+
+        // 8. Aguardando Aprovação de Saque
+        $pendingWithdrawal = $this->withdrawals->where('status', 'pending')->sum('amount');
+
+        return [
+            'total_gross' => $totalGross,
+            'total_withdrawn' => $totalWithdrawn,
+            'available' => $available,
+            'pending_release' => $pendingRelease,
+            'retained' => $retained,
+            'pending_withdrawal' => $pendingWithdrawal,
+            'last_update' => now()->diffForHumans(),
+        ];
+    }
+    
     /**
      * Membros da associação
      */
     public function membros()
     {
         return $this->hasMany(User::class)->where('tipo', 'membro');
+    }
+
+    public function wallet(): HasOne // Adicione este método
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+     public function sales(): HasMany // <<<<<<< ADICIONE ESTE MÉTODO
+    {
+        return $this->hasMany(Sale::class);
+    }
+    
+    /**
+     * Contas bancárias da associação
+     */
+    public function bankAccounts(): HasMany // Adicione este também, será útil
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
+    /**
+     * Retorna os detalhes das taxas para a associação.
+     * 
+     * NOTA: Atualmente, estes valores são fixos (hardcoded).
+     * O ideal é que estes dados venham de uma tabela de configurações
+     * ou de um relacionamento com a associação.
+     *
+     * @return array
+     */
+    public function getFeeDetailsAttribute(): array
+    {
+        // Lógica para buscar as taxas da associação.
+        // Por enquanto, vamos retornar valores padrão.
+        // Você pode substituir esta lógica para buscar do banco de dados.
+        
+        if (isset($this->configuracoes['fees'])) {
+            // Se você já armazena as taxas em uma coluna JSON 'configuracoes'
+            return $this->configuracoes['fees'];
+        }
+
+        // Valores padrão caso não encontre configuração específica
+        return [
+            'credit_card' => [
+                'label' => 'Cartão de Crédito',
+                'fee_percentage' => 4.99, // em %
+                'fee_fixed' => 0.40,      // em R$
+            ],
+            'pix' => [
+                'label' => 'Pix',
+                'fee_percentage' => 0.99,
+                'fee_fixed' => 0.00,
+            ],
+            'boleto' => [
+                'label' => 'Boleto',
+                'fee_percentage' => 0.00,
+                'fee_fixed' => 3.49,
+            ],
+        ];
+    }
+
+    /**
+     * Saques da associação através da carteira
+     */
+    public function withdrawals(): HasManyThrough // Adicione este para a tela de detalhes
+    {
+        return $this->hasManyThrough(Withdrawal::class, Wallet::class);
     }
 
     // ==================== ACCESSORS ====================

@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AssociationController as AdminAssociationController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SaleController as AdminSaleController;
 use App\Http\Controllers\Cliente\DashboardController as ClienteDashboardController;
 use App\Http\Controllers\Admin\StoreController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
@@ -286,6 +288,12 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
         Route::delete('{id}', [AdminProductController::class, 'destroy'])->name('admin.produtos.destroy');
     });
     Route::get('/planos', [PlanController::class, 'index'])->name('admin.planos.index');
+
+     Route::get("/vendas", [AdminSaleController::class, "index"])->name("admin.sales.index");
+     Route::get("/vendas/{sale}", [AdminSaleController::class, "show"])->name("admin.sales.show");
+
+    Route::get("/contas", [AdminAssociationController::class, "index"])->name("admin.contas.index");
+    Route::get("/contas/{association}", [AdminAssociationController::class, "show"])->name("admin.contas.show");
 
     Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('admin.users.create');

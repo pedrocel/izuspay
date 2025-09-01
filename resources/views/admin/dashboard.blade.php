@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Páginas')
+@section('title', 'Painel THANOS SAAS')
 
 @section('content')
 <!-- Professional Payment Gateway Dashboard -->
@@ -253,16 +253,17 @@
 </div>
 
 <!-- Top 10 Creators Ranking -->
+{{-- ... (código anterior do dashboard: header, filtros, cards, gráficos) ... --}}
+
+<!-- Top 10 Creators Ranking -->
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-slate-200 dark:border-gray-700 overflow-hidden mb-8">
     <div class="px-6 py-4 border-b border-slate-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
+                    <i data-lucide="award" class="w-5 h-5 text-white"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Top 10 Criadores - {{ date('F Y') }}</h3>
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Top 10 Vendedores - Setembro</h3>
             </div>
             <div class="text-sm text-slate-500 dark:text-slate-400">
                 Maiores vendedores do mês
@@ -272,7 +273,8 @@
     
     <div class="p-6">
         <div class="space-y-4">
-            @forelse ($topCreators ?? [] as $index => $creator)
+            {{-- SUBSTITUÍMOS O @for E O @empty POR UM ÚNICO @forelse --}}
+            @forelse ($topCreators as $index => $creator)
                 <div class="flex items-center space-x-4 p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors duration-200 group">
                     <!-- Ranking Badge -->
                     <div class="flex-shrink-0">
@@ -296,23 +298,23 @@
                         <div class="flex items-center space-x-3">
                             <!-- Avatar -->
                             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 via-pink-500 to-indigo-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                                <span class="text-white font-bold text-lg">{{ substr($creator->name ?? 'C', 0, 1) }}</span>
+                                {{-- Usamos a primeira letra do nome real do criador --}}
+                                <span class="text-white font-bold text-lg">{{ substr($creator->name, 0, 1) }}</span>
                             </div>
                             
                             <!-- Name and Stats -->
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-base font-semibold text-slate-900 dark:text-white truncate">{{ $creator->name ?? 'Criador ' . ($index + 1) }}</h4>
+                                {{-- Usamos o nome real do criador --}}
+                                <h4 class="text-base font-semibold text-slate-900 dark:text-white truncate">{{ $creator->name }}</h4>
                                 <div class="flex items-center space-x-4 mt-1">
                                     <div class="flex items-center space-x-1 text-sm text-slate-600 dark:text-slate-400">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                        </svg>
-                                        <span>{{ $creator->total_sales ?? rand(15, 89) }} vendas</span>
+                                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                                        {{-- Usamos o total de vendas real --}}
+                                        <span>{{ $creator->total_sales }} vendas</span>
                                     </div>
+                                    {{-- A estatística de crescimento pode ser implementada no futuro --}}
                                     <div class="flex items-center space-x-1 text-sm text-green-600 dark:text-green-400">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                        </svg>
+                                        <i data-lucide="trending-up" class="w-4 h-4"></i>
                                         <span>+{{ rand(5, 25) }}% vs mês anterior</span>
                                     </div>
                                 </div>
@@ -323,92 +325,34 @@
                     <!-- Revenue -->
                     <div class="flex-shrink-0 text-right">
                         <div class="text-xl font-bold text-slate-900 dark:text-white">
-                            R$ {{ number_format($creator->total_revenue ?? rand(5000, 50000), 2, ',', '.') }}
+                            {{-- Usamos a receita total real --}}
+                            R$ {{ number_format($creator->total_revenue, 2, ',', '.') }}
                         </div>
                         <div class="text-xs text-slate-500 dark:text-slate-400">
-                            {{ rand(5, 15) }} produtos ativos
+                            ID: {{ $creator->id }}
                         </div>
                     </div>
                     
                     <!-- Action -->
                     <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button class="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
+                        <a href="{{ route('admin.associations.show', $creator->id) }}" class="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300" title="Ver detalhes da conta">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
                     </div>
                 </div>
             @empty
-                <!-- Placeholder Data -->
-                @for($i = 0; $i < 10; $i++)
-                <div class="flex items-center space-x-4 p-4 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors duration-200 group">
-                    <div class="flex-shrink-0">
-                        @if($i < 3)
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-lg
-                                {{ $i == 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : '' }}
-                                {{ $i == 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500' : '' }}
-                                {{ $i == 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600' : '' }}
-                            ">
-                                @if($i == 0) 👑 @elseif($i == 1) 🥈 @else 🥉 @endif
-                            </div>
-                        @else
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center font-bold text-white shadow-lg">
-                                {{ $i + 1 }}
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 via-pink-500 to-indigo-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                                <span class="text-white font-bold text-lg">{{ chr(65 + $i) }}</span>
-                            </div>
-                            
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-base font-semibold text-slate-900 dark:text-white truncate">
-                                    {{ ['Maria Silva', 'João Santos', 'Ana Costa', 'Pedro Lima', 'Carla Oliveira', 'Bruno Ferreira', 'Lucia Mendes', 'Rafael Souza', 'Camila Rocha', 'Daniel Alves'][$i] }}
-                                </h4>
-                                <div class="flex items-center space-x-4 mt-1">
-                                    <div class="flex items-center space-x-1 text-sm text-slate-600 dark:text-slate-400">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                        </svg>
-                                        <span>{{ [124, 98, 87, 76, 65, 54, 43, 39, 32, 28][$i] }} vendas</span>
-                                    </div>
-                                    <div class="flex items-center space-x-1 text-sm text-green-600 dark:text-green-400">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                        </svg>
-                                        <span>+{{ [23, 18, 15, 12, 9, 7, 5, 4, 3, 2][$i] }}% vs mês anterior</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-shrink-0 text-right">
-                        <div class="text-xl font-bold text-slate-900 dark:text-white">
-                            R$ {{ number_format([45230, 38750, 32180, 28940, 25630, 22470, 19850, 17290, 15420, 13780][$i], 2, ',', '.') }}
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">
-                            {{ [12, 10, 9, 8, 7, 6, 5, 5, 4, 3][$i] }} produtos ativos
-                        </div>
-                    </div>
-                    
-                    <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button class="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
-                    </div>
+                <div class="text-center py-12">
+                    <i data-lucide="cloud-off" class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600"></i>
+                    <h4 class="mt-4 text-lg font-semibold text-gray-600 dark:text-gray-400">Nenhum dado de vendas encontrado para este mês.</h4>
+                    <p class="text-sm text-gray-400 dark:text-gray-500">O ranking será exibido assim que as primeiras vendas forem confirmadas.</p>
                 </div>
-                @endfor
             @endforelse
         </div>
     </div>
 </div>
+
+{{-- ... (resto do código do dashboard: tabela de transações, modais, scripts) ... --}}
+
 
 <!-- Compact Filter Button - More Discrete -->
 <button id="filter-btn" class="fixed bottom-4 right-4 bg-slate-600 hover:bg-slate-700 text-white p-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 z-40 opacity-80 hover:opacity-100">
@@ -447,184 +391,7 @@
                             <input type="date" name="end_date" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white" value
 
 <style>
-/* Animações personalizadas premium */
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25% { transform: translateY(-5px) rotate(1deg); }
-    50% { transform: translateY(-10px) rotate(0deg); }
-    75% { transform: translateY(-5px) rotate(-1deg); }
-}
 
-@keyframes glow-pulse {
-    0%, 100% { 
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        transform: scale(1);
-    }
-    50% { 
-        box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(59, 130, 246, 0.4);
-        transform: scale(1.01);
-    }
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-@keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Efeitos de borda premium */
-.card-premium {
-    position: relative;
-}
-
-.card-premium::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    padding: 1px;
-    background: linear-gradient(45deg, 
-        transparent, 
-        rgba(255,255,255,0.1), 
-        transparent, 
-        rgba(255,255,255,0.1), 
-        transparent
-    );
-    border-radius: inherit;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    opacity: 0;
-    transition: opacity 0.3s;
-    animation: shimmer 3s infinite;
-}
-
-.card-premium:hover::before {
-    opacity: 1;
-}
-
-/* Efeito de vidro premium */
-.glass-effect {
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.125);
-}
-
-/* Gradientes animados para ícones */
-@keyframes gradient-rotate {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.animate-gradient {
-    background: linear-gradient(-45deg, currentColor, rgba(255,255,255,0.8), currentColor);
-    background-size: 400% 400%;
-    animation: gradient-rotate 3s ease infinite;
-}
-
-/* Melhorar responsividade */
-@media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .rounded-3xl {
-        border-radius: 1.5rem;
-    }
-    
-    .p-8 {
-        padding: 1.5rem;
-    }
-    
-    .text-3xl {
-        font-size: 1.875rem;
-    }
-    
-    .w-16.h-16 {
-        width: 3.5rem;
-        height: 3.5rem;
-    }
-    
-    .w-8.h-8 {
-        width: 1.75rem;
-        height: 1.75rem;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Efeitos de hover premium */
-.group:hover .animate-float {
-    animation: float 3s ease-in-out infinite;
-}
-
-.group:hover .animate-heartbeat {
-    animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-/* Efeito de partículas flutuantes */
-@keyframes particle-float {
-    0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.4; }
-    25% { transform: translateY(-10px) translateX(5px) rotate(90deg); opacity: 0.8; }
-    50% { transform: translateY(-5px) translateX(-5px) rotate(180deg); opacity: 1; }
-    75% { transform: translateY(-15px) translateX(10px) rotate(270deg); opacity: 0.6; }
-}
-
-.animate-particle {
-    animation: particle-float 4s ease-in-out infinite;
-}
-
-/* Dark mode aprimorado */
-@media (prefers-color-scheme: dark) {
-    .group:hover .glass-effect {
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .dark .group:hover .absolute.inset-0 {
-        background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
-    }
-}
-
-/* Animação de loading personalizada */
-@keyframes custom-spin {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.1); }
-    100% { transform: rotate(360deg) scale(1); }
-}
-
-.animate-custom-spin {
-    animation: custom-spin 2s linear infinite;
-}
-
-/* Efeito de brilho nas bordas dos cards */
-.card-glow-border {
-    position: relative;
-    overflow: hidden;
-}
-
-.card-glow-border::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: conic-gradient(from 0deg, transparent, rgba(59, 130, 246, 0.4), transparent, rgba(139, 92, 246, 0.4), transparent);
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: -1;
-    animation: custom-spin 4s linear infinite;
-}
-
-.card-glow-border:hover::after {
-    opacity: 1;
-}
 </style>
 
 <!-- Charts Section Melhorada -->
@@ -939,141 +706,6 @@
         </div>
     </div>
 </div>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-body {
-    font-family: 'Inter', sans-serif;
-}
-
-/* Animações personalizadas */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-@keyframes glow {
-    0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6); }
-}
-
-@keyframes slide-down {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.animate-float {
-    animation: float 6s ease-in-out infinite;
-}
-
-.animate-glow {
-    animation: glow 3s ease-in-out infinite;
-}
-
-.animate-slide-down {
-    animation: slide-down 0.3s ease-out;
-}
-
-.animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-}
-
-/* Gradiente animado para bordas */
-@keyframes gradient-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.animate-gradient {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient-shift 3s ease infinite;
-}
-
-/* Scrollbar customizada */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-track {
-    background: #374151;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #6b7280;
-}
-
-/* Responsividade melhorada */
-@media (max-width: 640px) {
-    .grid {
-        gap: 1rem;
-    }
-    
-    .text-2xl {
-        font-size: 1.5rem;
-    }
-    
-    .w-16.h-16 {
-        width: 3rem;
-        height: 3rem;
-    }
-    
-    .w-8.h-8 {
-        width: 1.75rem;
-        height: 1.75rem;
-    }
-}
-
-/* Hover effects aprimorados */
-.card-glow {
-    position: relative;
-}
-
-.card-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    padding: 2px;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-    border-radius: inherit;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.card-glow:hover::before {
-    opacity: 1;
-}
-</style>
 
 <!-- Chart.js Script Melhorado -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
