@@ -259,6 +259,8 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Resumo do Pedido</h3>
                     
+                    <!-- Plano Selecionado -->
+                    
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         
                         <div class="flex items-center justify-between text-lg font-semibold text-gray-900 dark:text-gray-100">
