@@ -62,7 +62,7 @@
     <span>Relatórios</span>
   </a> --}}
 
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  {{-- <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="building-2" class="h-5 w-5 text-gray-400"></i>
     <span>Empresa</span>
   </a>
@@ -75,7 +75,7 @@
   <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="check-square" class="h-5 w-5 text-gray-400"></i>
     <span>Lista de Aprovação</span>
-  </a>
+  </a> --}}
 </nav>
 
 
