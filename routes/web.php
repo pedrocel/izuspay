@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AssociationController as AdminAssociationController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\FinancialController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -281,6 +282,10 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
         Route::put('{id}', [StoreController::class, 'update'])->name('admin.stores.update');
         Route::delete('{id}', [StoreController::class, 'destroy'])->name('admin.stores.destroy');
     });
+
+    Route::get('/financeiro', [FinancialController::class, 'index'])->name('admin.financial.index');
+    Route::post('/financeiro/saque/{withdrawal}/aprovar', [FinancialController::class, 'approve'])->name('admin.financial.withdrawals.approve');
+    Route::post('/financeiro/saque/{withdrawal}/rejeitar', [FinancialController::class, 'reject'])->name('admin.financial.withdrawals.reject');
 
     Route::prefix('/produtos')->group(function () {
         Route::get('/', [AdminProductController::class, 'index'])->name('admin.produtos.index');
