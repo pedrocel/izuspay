@@ -21,7 +21,7 @@ class FinancialService
     public function getKpiData()
     {
         // ===================================================================
-        // LÓGICA DE KPI CORRIGIDA E SIMPLIFICADA
+        // LÓGICA DE KPI CORRIGIDA E SIMPLIFICADAs
         // ===================================================================
 
         // 1. Calcula a receita bruta total das vendas
