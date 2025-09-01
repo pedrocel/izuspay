@@ -259,20 +259,6 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Resumo do Pedido</h3>
                     
-                    <!-- Plano Selecionado -->
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6 shadow-sm">
-                        @if($plan->image)
-                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="w-full h-32 object-cover rounded-lg mb-4 shadow-md">
-                        @else
-                            <div class="w-full h-32 bg-gradient-to-br from-pink-500 to-pink-700 rounded-lg mb-4 flex items-center justify-center shadow-md">
-                                <i class="fas fa-star text-white text-3xl"></i>
-                            </div>
-                        @endif
-                        
-                        <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">{{ $plan->name }}</h4>
-                        
-                    </div>
-                    
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         
                         <div class="flex items-center justify-between text-lg font-semibold text-gray-900 dark:text-gray-100">
