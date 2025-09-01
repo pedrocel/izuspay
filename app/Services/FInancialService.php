@@ -24,7 +24,7 @@ class FinancialService
         // LÓGICA DE KPI CORRIGIDA E SIMPLIFICADAs
         // ===================================================================
 
-        // 1. Calcula a receita bruta total das vendas
+        // 1. Calcula a receita brsuta total dass vendas
         $grossRevenue = (clone $this->query)->where('type', 'sale_revenue')->sum('amount');
 
         // 2. Calcula a RECEITA DA PLATAFORMA (seu lucro) somando as taxas
