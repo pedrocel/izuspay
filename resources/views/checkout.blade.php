@@ -7,6 +7,7 @@
     {{-- Adicionado: CSRF Token para requisições AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -255,7 +256,7 @@
             </div>
 
             <!-- Resumo do Pedido -->
-            <div class="lg:col-span-1">
+            <div class="lg:col-span-1" id="order-summary-section">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Resumo do Pedido</h3>
                     
@@ -447,6 +448,7 @@
 
             const formData = new FormData(checkoutForm);
             const data = Object.fromEntries(formData.entries());
+            const orderSummarySection = document.getElementById('order-summary-section');
 
             // Adiciona o hash_id do plano diretamente aos dados
             data.plan_id = "{{ $plan->id }}"; // Usar o ID do plano, não o hash_id para o backend
@@ -466,21 +468,47 @@
 
                 if (response.ok) { // Status 2xx
                     showNotification(result.message || 'Compra finalizada com sucesso!', 'success');
-                    
-                    // Preencher e exibir a seção Pix
-                    document.getElementById('pix-plan-name').textContent = result.plan_name;
-                    document.getElementById('pix-total-price').textContent = (result.total_price / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    document.getElementById('pix-qr-code-image').src = result.pix_qr_code_image;
-                    document.getElementById('pix-code').textContent = result.pix_qr_code;
-                    currentTransactionHash = result.transaction_hash;
 
-                    formSection.classList.add('hidden'); // Esconde o formulário
-                    pixPaymentSection.classList.remove('hidden'); // Mostra a seção Pix
+    // --- INÍCIO DA CORREÇÃO ---
 
-                    // Inicia a verificação do pagamento
-                    verificarInterval = setInterval(() => {
-                        verificarPagamento(currentTransactionHash);
-                    }, 5000);
+    // 1. Preenche os dados do PIX
+    document.getElementById('pix-plan-name').textContent = result.plan_name;
+    document.getElementById('pix-total-price').textContent = (result.total_price / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('pix-code').textContent = result.pix_qr_code; // O código PIX Copia e Cola
+    currentTransactionHash = result.transaction_hash;
+
+    // 2. Gera o QR Code a partir da string recebida
+    try {
+        const typeNumber = 0; // Autodetecta o tamanho
+        const errorCorrectionLevel = 'L'; // Baixa correção, suficiente para PIX
+        const qr = qrcode(typeNumber, errorCorrectionLevel);
+        qr.addData(result.pix_qr_code); // Adiciona a string do PIX
+        qr.make(); // Gera o QR Code
+
+        // 3. Exibe a imagem do QR Code gerada
+        const qrCodeImageElement = document.getElementById('pix-qr-code-image');
+        // O método createDataURL() retorna uma imagem em base64 (formato data:image/gif;base64,...)
+        qrCodeImageElement.src = qr.createDataURL(4); // O '4' é o tamanho do módulo em pixels
+        qrCodeImageElement.alt = "QR Code PIX para pagamento";
+
+        } catch (e) {
+            console.error("Erro ao gerar o QR Code:", e);
+            // Opcional: Mostrar uma mensagem de erro para o usuário no lugar do QR Code
+            const qrCodeContainer = document.getElementById('pix-qr-code-image').parentElement;
+            qrCodeContainer.innerHTML = '<p class="text-red-500 text-sm">Erro ao gerar o QR Code. Tente copiar o código manualmente.</p>';
+        }
+
+        // --- FIM DA CORREÇÃO ---
+
+        formSection.classList.add('hidden'); // Esconde o formulário
+        pixPaymentSection.classList.remove('hidden'); // Mostra a seção Pix
+        orderSummarySection.classList.add('hidden'); // <-- ADICIONE ESTA LINHA
+
+        // Inicia a verificação do pagamento
+        verificarInterval = setInterval(() => {
+            verificarPagamento(currentTransactionHash);
+        }, 5000);
+
 
                 } else if (response.status === 422) { // Erros de validação
                     displayFieldErrors(result.errors);
