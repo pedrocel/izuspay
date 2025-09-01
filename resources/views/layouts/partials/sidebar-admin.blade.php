@@ -47,25 +47,20 @@
     <span>Vendas</span>
   </a>
 
-  <a href="{{ route('admin.financial.index') }}" class="{{ request()->is('*vendas*') ? 'active' : '' }} sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  <a href="{{ route('admin.financial.index') }}" class="{{ request()->is('*financeiro*') ? 'active' : '' }} sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="credit-card" class="h-5 w-5 text-gray-400"></i>
     <span>Painel Financeiro</span>
   </a>
   
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  {{-- <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="shield-alert" class="h-5 w-5 text-gray-400"></i>
     <span>Chargeback</span>
-  </a>
-  
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
-    <i data-lucide="credit-card" class="h-5 w-5 text-gray-400"></i>
-    <span>Painel Financeiro</span>
-  </a>
+  </a> --}}
 
-  <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
+  {{-- <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="bar-chart-2" class="h-5 w-5 text-gray-400"></i>
     <span>Relatórios</span>
-  </a>
+  </a> --}}
 
   <a href="#" class="sidebar-item flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700">
     <i data-lucide="building-2" class="h-5 w-5 text-gray-400"></i>
