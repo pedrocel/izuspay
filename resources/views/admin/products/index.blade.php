@@ -10,15 +10,15 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Produtos</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie todos os produtos do sistema</p>
         </div>
-        <div class="mt-4 sm:mt-0">
+        {{-- <div class="mt-4 sm:mt-0">
             <button class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                 <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
                 Novo Produto
-            </button>
+            </button> --}}
         </div>
     </div>
 
-    <!-- Filters -->
+    {{-- <!-- Filters -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -51,7 +51,7 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Products Table -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -73,9 +73,6 @@
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Criado em
-                        </th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Ações
                         </th>
                     </tr>
                 </thead>
@@ -128,19 +125,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {{ $product->created_at->format('d/m/Y') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center justify-end space-x-2">
-                                <button class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 p-1 rounded transition-colors duration-200" title="Visualizar">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                                <button class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 p-1 rounded transition-colors duration-200" title="Editar">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors duration-200" title="Excluir">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
                         </td>
                     </tr>
                     @empty

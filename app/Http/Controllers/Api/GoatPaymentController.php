@@ -150,6 +150,12 @@ class GoatPaymentController extends Controller
     /**
      * Verifica o status de uma transação.
      */
+    /**
+     * Verifica o status de uma transação Pix na Goat Payments.
+     *
+     * @param Request $request Espera 'transaction_hash' na URL
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function checkTransactionStatus(Request $request)
     {
         $request->validate([
@@ -166,7 +172,6 @@ class GoatPaymentController extends Controller
 
             $responseData = $response->json();
 
-            // A chamada à API ainda acontece, mas vamos manipular o resultado para teste.
             if ($response->successful()) {
                 $sale = Sale::where('transaction_hash', $transactionHash)->first();
 
@@ -182,40 +187,49 @@ class GoatPaymentController extends Controller
                 if (isset($responseData['payment_status'])) {
                     
                     // ===================================================================
-                    // FALSA VERIFICAÇÃO PARA TESTES (MODO DE DESENVOLVIMENTO)
+                    // LÓGICA DE PRODUÇÃO ATIVADA
                     // ===================================================================
-                    // A linha abaixo FORÇA o status para 'paid', ignorando a resposta real da API.
-                    // Lembre-se de REMOVER ou COMENTAR esta linha antes de ir para produção!
+                    // A linha que forçava o status foi removida.
+                    // Agora, lemos o status real que a API da Goat Payments nos enviou.
                     
-                    $paymentStatus = 'paid'; // <<<<<<< CHAVE MESTRA PARA TESTES
-
-                    // O código original seria:
-                    // $paymentStatus = $responseData['payment_status'];
+                    $paymentStatus = $responseData['payment_status'];
+                    
                     // ===================================================================
 
-                    // Agora, o resto do fluxo funcionará com o status forçado.
+                    // O fluxo continua, mas agora depende do status REAL.
+                    // Este bloco só será executado se a Goat Payments confirmar "paid".
                     if ($paymentStatus === 'paid') {
-                        $sale->status = 'paid';
-                        $sale->save();
-                        Log::info("TESTE: Status da venda {$sale->id} forçado para 'paid'.");
+                        DB::beginTransaction();
+                        try {
+                            $sale->status = 'paid';
+                            $sale->save();
+                            Log::info("Status da venda {$sale->id} atualizado para 'paid' via verificação de status.");
 
-                        // Se for um plano, cria/atualiza a assinatura
-                        if ($sale->plan_id) {
-                            $this->createOrUpdateSubscription($sale);
+                            // Se for um plano, cria/atualiza a assinatura
+                            if ($sale->plan_id) {
+                                $this->createOrUpdateSubscription($sale);
+                            }
+
+                            // Registra as movimentações financeiras no livro-razão
+                            $this->registerFinancialEntries($sale);
+                            
+                            DB::commit();
+                            
+                            return response()->json([
+                                'status' => 'paid', 
+                                'message' => 'Pagamento confirmado e processado com sucesso.'
+                            ]);
+
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+                            Log::error("Erro ao processar a venda #{$sale->id} após confirmação de pagamento: " . $e->getMessage());
+                            return response()->json(['error' => 'Erro interno ao finalizar a venda.'], 500);
                         }
-
-                        // Registra as movimentações financeiras no livro-razão
-                        $this->registerFinancialEntries($sale);
-                        
-                        // Retorna o status real da API, mas a ação já foi feita.
-                        return response()->json([
-                            'status' => $responseData['payment_status'], 
-                            'message' => 'Ação de pagamento concluída com sucesso para fins de teste.'
-                        ]);
                     }
                 }
 
-                // Se a API retornar algo inesperado, ou se o status não for 'paid' (no modo produção)
+                // Se a API retornar um status diferente de 'paid' (ex: 'awaiting_payment'),
+                // apenas retornamos esse status para o front-end.
                 return response()->json(['status' => $responseData['payment_status'] ?? 'waiting_payment']);
 
             } else {

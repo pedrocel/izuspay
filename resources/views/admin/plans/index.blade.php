@@ -74,7 +74,7 @@
             <div class="p-6 flex-grow">
                 <div class="text-center mb-6">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Preço</p>
-                    <p class="text-4xl font-bold text-purple-500">R$ {{ number_format($plan->total_price / 100, 2, ',', '.') }}</p>
+                    <p class="text-4xl font-bold text-purple-500">R$ {{ number_format($plan->total_price, 2, ',', '.') }}</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">
                         @if($plan->recurrence === 'monthly')
                             /mês
@@ -102,7 +102,7 @@
                         <i data-lucide="copy" class="w-4 h-4 mr-2"></i>
                         <span class="copy-text">Copiar Link</span>
                     </button>
-                    <a href="#" 
+                    {{-- <a href="#" 
                        class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors">
                         <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
                         Editar
@@ -111,7 +111,7 @@
                             class="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-lg transition-colors">
                         <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
                         Excluir
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>
