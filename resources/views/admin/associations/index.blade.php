@@ -16,20 +16,6 @@
                 </div>
                 <p class="text-gray-600 dark:text-gray-400">Gerencie todas as contas (associações) da plataforma</p>
             </div>
-            <div class="flex items-center space-x-3">
-                <button class="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>
-                    PESQUISAR
-                </button>
-                <button class="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                    <i data-lucide="filter" class="w-4 h-4 mr-2"></i>
-                    FILTRO
-                </button>
-                <button class="inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                    <i data-lucide="download" class="w-4 h-4 mr-2"></i>
-                    EXPORTAR LISTA
-                </button>
-            </div>
         </div>
     </div>
 
