@@ -317,12 +317,12 @@ class GoatPaymentController extends Controller
         // ===================================================================
         
         // Defina a taxa como um valor percentual (ex: 0.1 para 0.1%)
-        $platformFeeAsPercentage = 0.1; 
+        $platformFeeAsPercentage = 9.0; 
         
         // Converta a porcentagem para o formato decimal correto para cálculo
         $platformFeeAsDecimal = $platformFeeAsPercentage / 100; // 0.1 / 100 = 0.001
 
-        $acquirerFixedCost = -0.50; // Custo fixo de R$0,50 por transação
+        $acquirerFixedCost = -1.0; // Custo fixo de R$1,00 por transação
 
         // 1. Entrada da Receita Bruta (sem alterações)
         LedgerEntry::create([

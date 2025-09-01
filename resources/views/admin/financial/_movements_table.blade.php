@@ -12,8 +12,8 @@
                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($kpiData['net_margin'], 2, ',', '.') }}%</p>
             </div>
             <div class="col-span-2 bg-green-100 dark:bg-green-900/30 p-4 rounded-lg border border-green-200 dark:border-green-500/50">
-                <p class="text-sm text-green-800 dark:text-green-300">Lucro Líquido</p>
-                <p class="text-3xl font-extrabold text-green-700 dark:text-green-400">R$ {{ number_format($kpiData['net_revenue'], 2, ',', '.') }}</p>
+                <p class="text-sm text-green-800 dark:text-green-300">Receita da Plataforma (Seu Lucro)</p>
+                <p class="text-3xl font-extrabold text-green-700 dark:text-green-400">R$ {{ number_format($kpiData['platform_revenue'], 2, ',', '.') }}</p>
             </div>
         </div>
         <!-- Linha 2 de KPIs -->
