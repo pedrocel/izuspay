@@ -1,365 +1,205 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Dashboard - Izus Payment')
 @section('page-title', 'Dashboard')
 
+@push('styles')
+<style>
+    /* Efeitos de brilho e flutuação com a nova paleta AZUL */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    @keyframes glow-pulse-blue {
+        0%, 100% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.2), 0 0 40px rgba(30, 64, 175, 0.1); }
+        50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.4), 0 0 60px rgba(30, 64, 175, 0.3); }
+    }
+
+    .card-hover-effect {
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .card-hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+    }
+    .icon-float:hover {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Scrollbar customizada para o tema azul */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e40af; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+</style>
+@endpush
+
 @section('content')
-<div class="space-y-6">
-    {{-- CABEÇALHO PRINCIPAL --}}
-    <div class="bg-gradient-to-r from-purple-900 via-purple-800 to-black rounded-xl p-6 border border-purple-500/20 shadow-2xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <div class="flex items-center space-x-3 mb-2">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <i data-lucide="layout-dashboard" class="w-7 h-7 text-white"></i>
-                    </div>
-                    <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Lux Secrets Dashboard</h2>
-                </div>
-                <p class="text-purple-200">Controle total da sua plataforma de conteúdo exclusivo</p>
-            </div>
-            <div class="flex items-center gap-3">
-                @if(auth()->check() && auth()->user()->creatorProfile)
-    <a href="{{ route('public.creator.profile', ['username' => auth()->user()->creatorProfile->username]) }}" 
-       class="inline-flex items-center space-x-2 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
-        <i data-lucide="user" class="w-5 h-5"></i>
-        <span>Meu Perfil</span>
-    </a>
-@endif
-
-            </div>
-        </div>
-    </div>
-
-    {{-- GRID PRINCIPAL DO DASHBOARD --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {{-- PRIMEIRA LINHA - MÉTRICAS PRINCIPAIS --}}
-        <div class="bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">Total de Membros</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">{{ $totalMembers }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="user-square" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-2xl p-6 border border-green-200 dark:border-green-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-green-600 dark:text-green-400 mb-1">Receita Total</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">R$ {{ number_format($totalRevenue, 2, ',', '.') }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="wallet" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">Ticket Médio</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">R$ {{ number_format($averageTicket, 2, ',', '.') }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="dollar-sign" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-white to-orange-50 dark:from-gray-800 dark:to-orange-900/20 rounded-2xl p-6 border border-orange-200 dark:border-orange-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">Pagamentos Pendentes</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">R$ {{ number_format($pendingRevenue, 2, ',', '.') }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="credit-card" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        {{-- SEGUNDA LINHA - MÉTRICAS SECUNDÁRIAS --}}
-        <div class="bg-gradient-to-br from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-1">Membros Ativos</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">{{ $activeMembersCount }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="user-check" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-white to-red-50 dark:from-gray-800 dark:to-red-900/20 rounded-2xl p-6 border border-red-200 dark:border-red-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400 mb-1">Membros Inativos</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-500 bg-clip-text text-transparent">{{ $inactiveMembersCount }}</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="user-x" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-white to-teal-50 dark:from-gray-800 dark:to-teal-900/20 rounded-2xl p-6 border border-teal-200 dark:border-teal-500/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-teal-600 dark:text-teal-400 mb-1">Conversão de Onboarding</p>
-                    <p class="text-3xl font-bold bg-gradient-to-r from-teal-600 to-green-500 bg-clip-text text-transparent">{{ number_format($onboardingConversionRate, 1, ',', '.') }}%</p>
-                </div>
-                <div class="w-14 h-14 bg-gradient-to-br from-teal-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i data-lucide="trending-up" class="w-7 h-7 text-white"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- JORNADA DO SUCESSO - CARD MAIOR --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-purple-500/30 p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
-        {{-- Novo layout linear com barra de progresso no topo --}}
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Jornada do Sucesso</h3>
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                {{-- Using dynamic level badge instead of hardcoded seedling icon --}}
-                <i data-lucide="{{ $gamificationData['levelBadge'] }}" class="w-8 h-8 text-white"></i>
-            </div>
-        </div>
-
-        {{-- Layout horizontal com informações --}}
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-            <div class="text-center md:text-left">
-                {{-- Using dynamic level name and current revenue --}}
-                <p class="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">{{ $gamificationData['levelName'] }}</p>
-                <p class="text-lg text-gray-300">Faturamento: R$ {{ number_format($gamificationData['currentRevenue'], 2, ',', '.') }}</p>
-            </div>
-            
-            <div class="text-center md:text-right">
-                <p class="text-sm text-gray-400 mb-2">Progresso para próximo nível</p>
-                <div class="w-full max-w-md bg-gray-600 rounded-full h-3 mb-2 overflow-hidden">
-                    {{-- Using dynamic progress percentage --}}
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: {{ $gamificationData['progressPercentage'] }}%"></div>
-                </div>
-                {{-- Using dynamic progress percentage --}}
-                <p class="text-3xl font-bold text-white mb-2">{{ number_format($gamificationData['progressPercentage'], 1) }}%</p>
-                {{-- Using dynamic next level target --}}
-                <p class="text-sm text-gray-400">Meta: R$ {{ number_format($gamificationData['nextLevelTarget'], 0, ',', '.') }}</p>
-            </div>
-        </div>
+<div class="space-y-8">
+    {{-- CABEÇALHO PRINCIPAL - IZUS PAYMENT --}}
+    <div class="relative rounded-2xl p-8 overflow-hidden bg-slate-900 border border-blue-500/20 shadow-2xl">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-black to-black opacity-80"></div>
+        <div class="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full opacity-20 blur-3xl"></div>
+        <div class="absolute -bottom-12 -left-12 w-64 h-64 bg-gradient-to-br from-blue-700 to-sky-500 rounded-full opacity-10 blur-3xl"></div>
         
-        {{-- Sistema de elos com 5 níveis inspirado no LoL --}}
-        <div class="border-t border-gray-700 pt-6">
-            <h4 class="text-lg font-semibold text-gray-300 mb-6 text-center">Elos de Faturamento</h4>
-            
-            {{-- Desktop: Layout horizontal --}}
-            <div class="hidden md:flex justify-center items-end gap-8 mb-6">
-                @foreach($gamificationData['allLevels'] as $index => $level)
-                    <div class="flex flex-col items-center group">
-                        <div class="relative w-20 h-20 mb-3">
-                            {{-- Dynamic level status and colors --}}
-                            @if($index < $gamificationData['currentLevel'])
-                                {{-- Nível completado --}}
-                                <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }}"></div>
-                            @elseif($index == $gamificationData['currentLevel'])
-                                {{-- Nível atual com progresso --}}
-                                <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                                <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-60" style="clip-path: polygon(0 {{ 100 - $gamificationData['progressPercentage'] }}%, 100% {{ 100 - $gamificationData['progressPercentage'] }}%, 100% 100%, 0 100%)"></div>
-                            @else
-                                {{-- Nível bloqueado --}}
-                                <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                            @endif
-                            
-                            {{-- SVG do elo mantido original --}}
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                @if($level['name'] == 'Semente')
-                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-amber-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
-                                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                                    </svg>
-                                @elseif($level['name'] == 'Bronze')
-                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-orange-600' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                        <path d="M12 6L13.5 10.5L18 12L13.5 13.5L12 18L10.5 13.5L6 12L10.5 10.5L12 6Z"/>
-                                    </svg>
-                                @elseif($level['name'] == 'Prata')
-                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-gray-300' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                        <path d="M12 4L14 9L19 10L14 11L12 15L9.5 11L5 10L9.5 9L12 4Z"/>
-                                        <circle cx="12" cy="10" r="2"/>
-                                    </svg>
-                                @elseif($level['name'] == 'Ouro')
-                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-yellow-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                        <path d="M12 3L14.5 8.5L20 9L14.5 9.5L12 15L9.5 9.5L4 9L9.5 8.5L12 3Z"/>
-                                        <path d="M12 5L13.5 9.5L18 10L13.5 10.5L12 15L10.5 10.5L6 10L10.5 9.5L12 5Z"/>
-                                    </svg>
-                                @else
-                                    <svg class="w-12 h-12 {{ $index <= $gamificationData['currentLevel'] ? 'text-blue-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
-                                        <path d="M6 3l4 6h4l4-6"/>
-                                        <path d="M6 9l6 12 6-12"/>
-                                    </svg>
-                                @endif
-                            </div>
-                        </div>
-                        {{-- Using dynamic level names and targets --}}
-                        <span class="text-xs font-semibold {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-500' }}">{{ strtoupper($level['name']) }}</span>
-                        <span class="text-xs text-gray-400">R$ {{ number_format($level['min'], 0, ',', '.') }}</span>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <div class="flex items-center space-x-4 mb-2">
+                    <div class="w-16 h-16 bg-black/30 backdrop-blur-sm border border-white/10 rounded-xl flex items-center justify-center shadow-lg icon-float">
+                        <i data-lucide="zap" class="w-8 h-8 text-blue-300 animate-pulse"></i>
                     </div>
-                @endforeach
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">
+                        Izus Payment
+                    </h1>
+                </div>
+                <p class="text-blue-200/80 ml-20 md:ml-0">Sua plataforma de pagamentos, simples e poderosa.</p>
             </div>
-
-            {{-- Mobile: Timeline vertical --}}
-            <div class="md:hidden space-y-4 mb-6">
-                @foreach($gamificationData['allLevels'] as $index => $level)
-                    <div class="flex items-center space-x-4">
-                        {{-- Timeline connector --}}
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-16 h-16">
-                                {{-- Dynamic level status and colors --}}
-                                @if($index < $gamificationData['currentLevel'])
-                                    {{-- Nível completado --}}
-                                    <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }}"></div>
-                                @elseif($index == $gamificationData['currentLevel'])
-                                    {{-- Nível atual com progresso --}}
-                                    <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                                    <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-60" style="clip-path: polygon(0 {{ 100 - $gamificationData['progressPercentage'] }}%, 100% {{ 100 - $gamificationData['progressPercentage'] }}%, 100% 100%, 0 100%)"></div>
-                                @else
-                                    {{-- Nível bloqueado --}}
-                                    <div class="absolute inset-0 rounded-full bg-gray-600"></div>
-                                @endif
-                                
-                                {{-- SVG do elo --}}
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    @if($level['name'] == 'Semente')
-                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-amber-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
-                                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                                        </svg>
-                                    @elseif($level['name'] == 'Bronze')
-                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-orange-600' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                            <path d="M12 6L13.5 10.5L18 12L13.5 13.5L12 18L10.5 13.5L6 12L10.5 10.5L12 6Z"/>
-                                        </svg>
-                                    @elseif($level['name'] == 'Prata')
-                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-gray-300' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                            <path d="M12 4L14 9L19 10L14 11L12 15L9.5 11L5 10L9.5 9L12 4Z"/>
-                                            <circle cx="12" cy="10" r="2"/>
-                                        </svg>
-                                    @elseif($level['name'] == 'Ouro')
-                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-yellow-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2L15.09 8.26L22 9L15.09 9.74L12 16L8.91 9.74L2 9L8.91 8.26L12 2Z"/>
-                                            <path d="M12 3L14.5 8.5L20 9L14.5 9.5L12 15L9.5 9.5L4 9L9.5 8.5L12 3Z"/>
-                                            <path d="M12 5L13.5 9.5L18 10L13.5 10.5L12 15L10.5 10.5L6 10L10.5 9.5L12 5Z"/>
-                                        </svg>
-                                    @else
-                                        <svg class="w-8 h-8 {{ $index <= $gamificationData['currentLevel'] ? 'text-blue-400' : 'text-gray-500' }}" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M6 3h12l4 6-10 12L2 9l4-6z"/>
-                                            <path d="M6 3l4 6h4l4-6"/>
-                                            <path d="M6 9l6 12 6-12"/>
-                                        </svg>
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            {{-- Connector line --}}
-                            @if($index < count($gamificationData['allLevels']) - 1)
-                                <div class="w-0.5 h-8 {{ $index < $gamificationData['currentLevel'] ? 'bg-gradient-to-b from-purple-500 to-pink-500' : 'bg-gray-600' }} mt-2"></div>
-                            @endif
-                        </div>
-                        
-                        {{-- Level info --}}
-                        <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-semibold {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-500' }}">{{ strtoupper($level['name']) }}</span>
-                                <span class="text-sm text-gray-400">R$ {{ number_format($level['min'], 0, ',', '.') }}</span>
-                            </div>
-                            @if($index == $gamificationData['currentLevel'])
-                                <div class="mt-2">
-                                    <div class="w-full bg-gray-600 rounded-full h-2">
-                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000" style="width: {{ $gamificationData['progressPercentage'] }}%"></div>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">{{ number_format($gamificationData['progressPercentage'], 1) }}% completo</p>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            
-            <p class="text-sm text-gray-400 text-center">
-                Alcance metas de faturamento para desbloquear novos elos e recompensas exclusivas
-            </p>
         </div>
     </div>
-</div>
 
-</div>
+    {{-- GRID DE MÉTRICAS PRINCIPAIS --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @php
+            $metrics = [
+                // ['title' => 'Total de Clientes', 'value' => $totalMembers, 'icon' => 'users-round', 'color' => 'blue-cyan'],
+                ['title' => 'Receita Total', 'value' => 'R$ ' . number_format($totalRevenue, 2, ',', '.'), 'icon' => 'wallet-cards', 'color' => 'green-emerald'],
+                ['title' => 'Ticket Médio', 'value' => 'R$ ' . number_format($averageTicket, 2, ',', '.'), 'icon' => 'dollar-sign', 'color' => 'sky-teal'],
+                ['title' => 'Pagamentos Pendentes', 'value' => 'R$ ' . number_format($pendingRevenue, 2, ',', '.'), 'icon' => 'hourglass', 'color' => 'orange-amber'],
+                // ['title' => 'Clientes Ativos', 'value' => $activeMembersCount, 'icon' => 'user-check', 'color' => 'emerald-teal'],
+                // ['title' => 'Clientes Inativos', 'value' => $inactiveMembersCount, 'icon' => 'user-x', 'color' => 'red-rose'],
+                ['title' => 'Conversão', 'value' => number_format($onboardingConversionRate, 1, ',', '.') . '%', 'icon' => 'trending-up', 'color' => 'teal-green'],
+            ];
+            $colors = [
+                'blue-cyan' => ['from' => 'from-blue-500', 'to' => 'to-cyan-500', 'text' => 'text-blue-300'],
+                'green-emerald' => ['from' => 'from-green-500', 'to' => 'to-emerald-500', 'text' => 'text-green-400'],
+                'sky-teal' => ['from' => 'from-sky-500', 'to' => 'to-teal-500', 'text' => 'text-sky-300'],
+                'orange-amber' => ['from' => 'from-orange-500', 'to' => 'to-amber-500', 'text' => 'text-orange-400'],
+                'emerald-teal' => ['from' => 'from-emerald-500', 'to' => 'to-teal-500', 'text' => 'text-emerald-400'],
+                'red-rose' => ['from' => 'from-red-500', 'to' => 'to-rose-500', 'text' => 'text-red-400'],
+                'teal-green' => ['from' => 'from-teal-500', 'to' => 'to-green-500', 'text' => 'text-teal-400'],
+            ];
+        @endphp
 
-    {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
-   {{-- TERCEIRA LINHA - ATIVIDADE RECENTE (LARGURA TOTAL) --}}
-<div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
-    <div class="bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-4">
-        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-            <i data-lucide="activity" class="w-5 h-5"></i>
-            Atividade Recente
-        </h3>
+        @foreach($metrics as $metric)
+        <div class="relative bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 card-hover-effect overflow-hidden">
+            <div class="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br {{ $colors[$metric['color']]['from'] }} {{ $colors[$metric['color']]['to'] }} opacity-10 blur-2xl"></div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-1x1 font-medium {{ $colors[$metric['color']]['text'] }} mb-1">{{ $metric['title'] }}</p>
+                    <p class="text-2xl font-bold text-white">{{ $metric['value'] }}</p>
+                </div>
+                <div class="w-14 h-14 bg-black/20 border border-white/10 rounded-2xl flex items-center justify-center shadow-lg icon-float">
+                    <i data-lucide="{{ $metric['icon'] }}" class="w-7 h-7 {{ $colors[$metric['color']]['text'] }}"></i>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
-    <div class="p-6">
-        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-            @forelse($recentSales as $sale)
-            <li class="py-4 hover:bg-purple-50 dark:hover:bg-purple-900/10 rounded-lg px-2 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                            {{-- Ícone diferente para planos vs produtos --}}
-                            @if($sale->plan_id)
-                                <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
-                            @else
-                                <i data-lucide="package" class="w-6 h-6 text-white"></i>
-                            @endif
-                        </div>
-                        <div>
-                            {{-- Verificar se é plano ou produto --}}
-                            @if($sale->plan_id && $sale->plan)
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda do Plano: {{ $sale->plan->name }}</p>
-                            @elseif($sale->product_id && $sale->product)
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda do Produto: {{ $sale->product->name }}</p>
-                            @else
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Venda realizada</p>
-                            @endif
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Cliente: {{ $sale->user->name }}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">+ R$ {{ number_format($sale->total_price, 2, ',', '.') }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $sale->created_at->diffForHumans() }}</p>
+
+    {{-- JORNADA DE CRESCIMENTO E ATIVIDADE RECENTE --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- JORNADA DE CRESCIMENTO --}}
+        <div class="lg:col-span-2 relative bg-slate-900/70 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-8 shadow-2xl overflow-hidden" style="animation: glow-pulse-blue 4s infinite ease-in-out;">
+            <div class="absolute inset-0 bg-[url('/img/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-5"></div>
+            <div class="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full opacity-20 blur-3xl"></div>
+
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold bg-gradient-to-r from-blue-300 to-cyan-400 bg-clip-text text-transparent">Jornada de Crescimento</h3>
+                    <div class="w-16 h-16 bg-black/30 border border-white/10 rounded-2xl flex items-center justify-center shadow-lg icon-float">
+                        <i data-lucide="{{ $gamificationData['levelBadge'] }}" class="w-8 h-8 text-blue-300"></i>
                     </div>
                 </div>
-            </li>
-            @empty
-            <li class="py-8 text-center text-gray-500 dark:text-gray-400">
-                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
-                <p>Nenhuma venda recente.</p>
-            </li>
-            @endforelse
-        </ul>
-    </div>
-</div>
 
+                <div class="bg-black/20 border border-white/10 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-center md:text-left">
+                        <p class="text-4xl font-bold bg-gradient-to-r from-blue-300 to-cyan-400 bg-clip-text text-transparent mb-1">{{ $gamificationData['levelName'] }}</p>
+                        <p class="text-lg text-gray-300">Faturamento: R$ {{ number_format($gamificationData['currentRevenue'], 2, ',', '.') }}</p>
+                    </div>
+                    <div class="w-full md:w-auto text-center md:text-right">
+                        <p class="text-sm text-gray-400 mb-2">Progresso para o próximo nível</p>
+                        <div class="w-full bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: {{ $gamificationData['progressPercentage'] }}%"></div>
+                        </div>
+                        <p class="text-sm text-gray-400">Meta: <span class="font-bold text-white">R$ {{ number_format($gamificationData['nextLevelTarget'], 0, ',', '.') }}</span></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-300 mb-6 text-center">Níveis de Faturamento</h4>
+                    <div class="flex justify-between items-end gap-2 md:gap-4">
+                        @foreach($gamificationData['allLevels'] as $index => $level)
+                            <div class="flex flex-col items-center group flex-1 text-center">
+                                <div class="relative w-16 h-16 md:w-20 md:h-20 mb-3 transition-transform duration-300 group-hover:scale-110">
+                                    @if($index < $gamificationData['currentLevel'])
+                                        <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-80 shadow-lg" style="box-shadow: 0 0 15px {{ $level['shadowColor'] ?? 'rgba(59, 130, 246, 0.5)' }};"></div>
+                                    @elseif($index == $gamificationData['currentLevel'])
+                                        <div class="absolute inset-0 rounded-full bg-gray-700"></div>
+                                        <div class="absolute inset-0 rounded-full bg-gradient-to-br {{ $level['color'] }} opacity-70" style="clip-path: polygon(0 {{ 100 - $gamificationData['progressPercentage'] }}%, 100% {{ 100 - $gamificationData['progressPercentage'] }}%, 100% 100%, 0 100%)"></div>
+                                    @else
+                                        <div class="absolute inset-0 rounded-full bg-gray-800 border-2 border-dashed border-gray-700"></div>
+                                    @endif
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <i data-lucide="{{ $level['badge'] }}" class="w-8 h-8 md:w-10 md:h-10 {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-600' }}"></i>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-semibold {{ $index <= $gamificationData['currentLevel'] ? $level['textColor'] ?? 'text-white' : 'text-gray-600' }}">{{ strtoupper($level['name']) }}</span>
+                                <span class="text-xs text-gray-500">R${{ number_format($level['min']/1000, 0) }}k</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ATIVIDADE RECENTE --}}
+        <div class="lg:col-span-1 bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl card-hover-effect">
+            <div class="p-6 border-b border-white/10">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i data-lucide="activity" class="w-5 h-5 text-blue-300"></i>
+                    Atividade Recente
+                </h3>
+            </div>
+            <div class="p-4 max-h-[480px] overflow-y-auto custom-scrollbar">
+                <ul role="list" class="divide-y divide-white/10">
+                    @forelse($recentSales as $sale)
+                    <li class="py-4 px-2 hover:bg-blue-900/20 rounded-lg transition-colors duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-black/20 border border-white/10 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="{{ $sale->plan_id ? 'credit-card' : 'package' }}" class="w-5 h-5 text-gray-300"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-100">
+                                        @if($sale->plan_id && $sale->plan) Venda: {{ $sale->plan->name }}
+                                        @elseif($sale->product_id && $sale->product) Venda: {{ $sale->product->name }}
+                                        @else Venda Realizada @endif
+                                    </p>
+                                    <p class="text-xs text-gray-400">Cliente: {{ Str::limit($sale->user->name, 15) }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <p class="text-sm font-bold text-green-400">+ R$ {{ number_format($sale->total_price, 2, ',', '.') }}</p>
+                                <p class="text-xs text-gray-500">{{ $sale->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                    </li>
+                    @empty
+                    <li class="py-8 text-center text-gray-500">
+                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                        <p>Nenhuma venda recente.</p>
+                    </li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Inicializa os ícones da página
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
 </script>
 @endsection
-

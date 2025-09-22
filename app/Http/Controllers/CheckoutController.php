@@ -2,137 +2,150 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PerfilModel;
-use App\Models\Plan;
+use App\Models\Product;
 use App\Models\Sale;
-use App\Models\User;
-use App\Models\Product; // Importando modelo Product
+use App\Models\LedgerEntry;
+use App\Http\Requests\StoreCheckoutRequest;
+use App\Services\PaymentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use App\Http\Controllers\Api\GoatPaymentController; // Importa o GoatPaymentController
-use Illuminate\Http\JsonResponse; // Importa JsonResponse
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Método modificado para suportar tanto planos quanto produtos
-     * Exibe a página de checkout para um plano ou produto específico.
-     *
-     * @param string $hash_id O hash ID do plano ou produto.
-     * @return \Illuminate\View\View
-     */
-    public function showCheckout(string $hash_id)
-    {
-        // Tenta encontrar primeiro como plano
-        $plan = Plan::where('hash_id', $hash_id)->with(['association', 'products'])->first();
-        
-        if ($plan) {
-            return view('checkout', compact('plan'))->with('type', 'plan');
-        }
-        
-        // Se não encontrou plano, tenta como produto
-        $product = Product::where('hash_id', $hash_id)->with(['association'])->first();
+    protected $paymentService;
 
-        if ($product) {
-            return view('checkout-product', compact('product'))->with('type', 'product');
-        }
-        
-        abort(404, 'Item não encontrado');
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
     }
 
-    /**
-     * Método modificado para processar tanto planos quanto produtos
-     * Processa a venda e inicia a transação de pagamento Pix.
-     * Retorna uma resposta JSON com os dados do Pix ou erros.
-     *
-     * @param Request $request Os dados do formulário de checkout.
-     * @param string $hash_id O hash ID do plano ou produto.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function storeSale(Request $request, string $hash_id): JsonResponse
+    public function show(string $hash_id)
     {
-        // Tenta encontrar primeiro como plano
-        $plan = Plan::where('hash_id', $hash_id)->first();
-        $product = null;
-        
-        if (!$plan) {
-            // Se não é plano, tenta como produto
-            $product = Product::where('hash_id', $hash_id)->first();
-            if (!$product) {
-                return response()->json(['error' => 'Item não encontrado.'], 404);
-            }
-        }
+        $product = Product::where('hash_id', $hash_id)->with(['association'])->firstOrFail();
+        return view('checkout-product', compact('product'));
+    }
 
-        // Remove formatação do documento e telefone
-        $document = preg_replace('/\D/', '', $request->document);
-        $phone = preg_replace('/\D/', '', $request->phone);
+    public function store(StoreCheckoutRequest $request, string $hash_id): JsonResponse
+    {
+        $product = Product::where('hash_id', $hash_id)->firstOrFail();
+        $validatedData = $request->validated();
 
-        $goatPaymentController = new GoatPaymentController();
-
-        $requestData = array_merge($request->only(['name', 'email', 'password']), [
-            'nome' => $request->name,
-            'cpf' => $document,
-            'telefone' => $phone,
-            'utm_source' => $request->query('utm_source'),
-            'utm_medium' => $request->query('utm_medium'),
-            'utm_campaign' => $request->query('utm_campaign'),
-            'utm_term' => $request->query('utm_term'),
-            'utm_content' => $request->query('utm_content'),
-            'hash_id' => $request->hash_id,
-        ]);
-
-        if ($plan) {
-            $requestData['plan_id'] = $plan->id;
-            $response = $goatPaymentController->createPixTransaction(Request::create('/', 'GET', $requestData));
-            $itemName = $plan->name;
-            $totalPrice = $plan->getTotalPriceAttribute();
-        } else {
-            $requestData['product_id'] = $product->id;
-            $response = $goatPaymentController->createProductPixTransaction(Request::create('/', 'GET', $requestData));
-            $itemName = $product->name;
-            $totalPrice = $product->price;
-        }
-
-        $responseData = $response->getData(true);
-
-        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+        try {
+            $paymentData = $this->paymentService->createTransaction($product, $validatedData);
             return response()->json([
                 'success' => true,
-                'message' => 'Transação Pix criada com sucesso!',
-                'transaction_hash' => $responseData['hash'],
-                'pix_qr_code' => $responseData['pix']['pix_qr_code'],
-                'pix_qr_code_image' => $responseData['pix']['pix_qr_code'],
-                'item_name' => $itemName,
-                'total_price' => $totalPrice * 100, // Convertendo para centavos
+                'message' => 'Transação iniciada com sucesso!',
+                'transaction_hash' => $paymentData['transaction_hash'],
+                'pix_qr_code' => $paymentData['pix_qr_code'],
+                'total_price' => $product->price * 100,
             ]);
-        } else {
-            $errorMessage = $responseData['error'] ?? 'Erro desconhecido ao processar pagamento.';
-            \Log::error("Erro no checkout Pix: " . $errorMessage, ['details' => $responseData]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => $errorMessage,
-                'errors' => $responseData['details'] ?? []
-            ], $response->getStatusCode());
+        } catch (\Exception $e) {
+            Log::error("Falha ao criar transação: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
     /**
-     * Exibe a página de sucesso após a compra.
-     * (Mantido caso você queira uma página de sucesso final após o Pix ser pago)
-     *
-     * @param \App\Models\Sale $sale O modelo da venda.
-     * @return \Illuminate\View\View
+     * Endpoint para receber postbacks da WiteTec.
      */
-    public function showSuccess($hash)
+    public function handlePostback(Request $request)
     {
-        $sale = Sale::where('transaction_hash', $hash)->first();
+        Log::info('WiteTec Postback Recebido:', $request->all());
         
+        // A WiteTec envia o ID da transação no corpo do postback
+        $transactionHash = $request->input('id'); 
+        $status = $request->input('status');
 
-        $sale->load(['user', 'plan', 'association']);
-        return view('checkout-success', compact('sale'));
+        if (!$transactionHash || !$status) {
+            Log::warning('Postback inválido da WiteTec: parâmetros ausentes.');
+            return response()->json(['error' => 'Parâmetros ausentes'], 400);
+        }
+
+        if ($status === 'PAID') { // WiteTec usa 'PAID' em maiúsculas
+            $this->processPaidSale($transactionHash);
+        }
+
+        return response()->json(['status' => 'success'], 200);
     }
 
-    // O método showPixPayment não é mais necessário aqui, pois a lógica foi mesclada na view de checkout.
+    /**
+     * Endpoint para o frontend verificar o status do pagamento.
+     */
+    public function checkTransactionStatus(Request $request)
+    {
+        $request->validate(['transaction_hash' => 'required|string']);
+        $transactionHash = $request->transaction_hash;
+
+        $sale = Sale::where('transaction_hash', $transactionHash)->first();
+
+        if (!$sale) {
+            return response()->json(['error' => 'Venda não encontrada'], 404);
+        }
+
+        // Para simplificar, vamos apenas retornar o status do nosso banco.
+        // O status do nosso banco é a "fonte da verdade", atualizada pelo postback.
+        if ($sale->status === 'paid') {
+            return response()->json([
+                'status' => 'paid',
+                'redirect_url' => route('checkout.success', $sale->transaction_hash)
+            ]);
+        }
+
+        return response()->json(['status' => $sale->status]);
+    }
+
+    /**
+     * Lógica centralizada para processar uma venda paga.
+     */
+    private function processPaidSale(string $transactionHash)
+    {
+        DB::transaction(function () use ($transactionHash) {
+            $sale = Sale::where('transaction_hash', $transactionHash)->lockForUpdate()->first();
+
+            // Se a venda não existe ou já foi paga, não faz nada.
+            if (!$sale || $sale->status === 'paid') {
+                return;
+            }
+
+            // 1. Atualiza o status da venda
+            $sale->update(['status' => 'paid']);
+            Log::info("Venda #{$sale->id} atualizada para 'paga' via postback/verificação.");
+
+            // 2. Registra as movimentações financeiras
+            $this->registerFinancialEntries($sale);
+        });
+    }
+
+    /**
+     * Registra as movimentações financeiras no livro-razão.
+     */
+    private function registerFinancialEntries(Sale $sale)
+    {
+        $platformFeePercentage = 9.0;
+        $platformFeeDecimal = $platformFeePercentage / 100;
+        $platformFeeAmount = $sale->total_price * $platformFeeDecimal;
+
+        // Receita Bruta
+        LedgerEntry::create([
+            'association_id' => $sale->association_id, 'related_type' => get_class($sale),
+            'related_id' => $sale->id, 'type' => 'sale_revenue',
+            'description' => "Receita da Venda #{$sale->id}", 'amount' => $sale->total_price,
+        ]);
+
+        // Taxa da Plataforma
+        LedgerEntry::create([
+            'association_id' => $sale->association_id, 'related_type' => get_class($sale),
+            'related_id' => $sale->id, 'type' => 'platform_fee',
+            'description' => "Taxa da Plataforma ({$platformFeePercentage}%) sobre Venda #{$sale->id}",
+            'amount' => -$platformFeeAmount,
+        ]);
+    }
+
+    public function showSuccess(string $hash)
+    {
+        $sale = Sale::where('transaction_hash', $hash)->with(['user', 'product.association'])->firstOrFail();
+        return view('checkout-success', compact('sale'));
+    }
 }

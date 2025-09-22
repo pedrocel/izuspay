@@ -80,14 +80,14 @@ Route::post('/checkout/{hash_id}', [CheckoutController::class, 'storeSale'])->na
 Route::get('/checkout/pix-payment', [CheckoutController::class, 'showPixPayment'])->name('checkout.pix-payment');
 
 
-Route::get('/checkout/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.show');
-    Route::post('/checkout/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.store');
+Route::get('/checkout/{hash_id}', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{hash_id}', [CheckoutController::class, 'store'])->name('checkout.store');
 
     Route::get('/checkout/success/{sale}', [CheckoutController::class, 'showSuccess'])->name('checkout.success');
 
 
     Route::get('/checkout/product/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.product.show');
-Route::post('/checkout/product/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.product.store');
+Route::post('/checkout/product/{hash_id}', [CheckoutController::class, 'store'])->name('checkout.product.store');
 
 // Rotas de cadastro de associação (públicas)
 Route::get('/cadastro-associacao', [AssociationController::class, 'showRegistrationForm'])->name('association.register.form');

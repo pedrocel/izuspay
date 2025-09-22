@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'witetec' => [
+        'key' => env('WITETEC_API_KEY'),
+        'url' => env('WITETEC_API_URL'),
+    ],
 
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\GoatPaymentController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebhookController;
@@ -21,5 +22,6 @@ Route::post('/goat-payments/create-pix-transaction', [GoatPaymentController::cla
 // E a rota de postback da Goat Payments:
 Route::post('/goat-payments/postback', [GoatPaymentController::class, 'handlePostback'])->name('api.goat.postback');
 
+Route::post('/witetec/postback', [CheckoutController::class, 'handlePostback'])->name('api.witetec.postback');
 
 
