@@ -60,15 +60,22 @@ public function handlePostback(Request $request)
             throw new \Exception('Segredo do webhook ou campo de assinatura não encontrados.');
         }
 
-        // --- INÍCIO DA CORREÇÃO FINALÍSSIMA ---
+        // --- INÍCIO DA CORREÇÃO FINAL (MANIPULAÇÃO DE STRING) ---
 
-        // 1. Pega todos os dados do corpo, exceto 'signature' E 'secretKey'
-        $payloadData = $request->except(['signature', 'secretKey']);
+        // 1. Pega o corpo completo da requisição como uma string bruta.
+        $rawPayload = $request->getContent();
 
-        // 2. Recodifica para o formato JSON canônico
-        $payload = json_encode($payloadData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        // 2. Encontra a posição do campo "signature" na string.
+        $signaturePos = strpos($rawPayload, '"signature"');
 
-        // --- FIM DA CORREÇÃO FINALÍSSIMA ---
+        // 3. Pega tudo na string ANTES do campo "signature".
+        // O -1 é para remover a vírgula que vem antes.
+        $payload = substr($rawPayload, 0, $signaturePos - 1);
+
+        // 4. Adiciona o "}" final para fechar o JSON.
+        $payload .= '}';
+
+        // --- FIM DA CORREÇÃO FINAL (MANIPULAÇÃO DE STRING) ---
 
         @list($version, $hash) = explode('=', $signatureWithVersion, 2);
         if (!$version || !$hash) {
@@ -79,7 +86,7 @@ public function handlePostback(Request $request)
         $expectedSignature = rtrim(strtr(base64_encode($binaryHash), '+/', '-_'), '=');
 
         if (!hash_equals($expectedSignature, $hash)) {
-            Log::error('Assinatura do Webhook Inválida (Após Remoção da SecretKey).', [
+            Log::error('Assinatura do Webhook Inválida (Após Manipulação de String).', [
                 'assinatura_esperada' => $expectedSignature,
                 'assinatura_recebida' => $hash,
                 'payload_usado' => $payload,
