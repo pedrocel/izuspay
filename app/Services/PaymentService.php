@@ -110,12 +110,14 @@ class PaymentService
         ])->post("{$this->apiUrl}/transactions", $payload);
 
         if ($response->failed()) {
-            $errorData = $response->json();
-            $errorMessage = $errorData['message'] ?? 'Falha na comunicação com o gateway de pagamento.';
-            Log::error('WiteTec API Error:', ['payload' => $payload, 'response' => $errorData]);
-            // Esta exceção irá acionar o DB::rollBack() automaticamente
-            throw new \Exception($errorMessage);
-        }
+    $errorData = $response->json() ?? $response->body();
+    Log::error('WiteTec API Error:', [
+        'payload' => $payload,
+        'status' => $response->status(),
+        'response' => $errorData,
+    ]);
+    throw new \Exception($errorData['message'] ?? 'Falha na comunicação com o gateway de pagamento.');
+}
 
         return $response->json();
     }
