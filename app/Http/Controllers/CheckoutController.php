@@ -80,55 +80,56 @@ class CheckoutController extends Controller
         return response()->json(['status' => 'success'], 200);
     }
 
-    public function checkTransactionStatus(Request $request)
-    {
-        $request->validate(['transaction_hash' => 'required|string']);
-        $transactionHash = $request->transaction_hash;
+   public function checkTransactionStatus(Request $request)
+{
+    $request->validate(['transaction_hash' => 'required|string']);
+    $transactionHash = $request->transaction_hash;
 
-        $sale = Sale::where('transaction_hash', $transactionHash)->first();
+    $sale = Sale::where('transaction_hash', $transactionHash)->first();
 
-        if (!$sale) {
-            return response()->json(['error' => 'Venda não encontrada'], 404);
-        }
-
-        // Verificação 1: O status já foi atualizado no nosso banco pelo postback?
-        if ($sale->status === 'paid') {
-            return response()->json([
-                'status' => 'paid',
-                'redirect_url' => route('checkout.success', $sale->transaction_hash)
-            ]);
-        }
-
-        // Verificação 2: Se o postback ainda não chegou, consultamos a API da WiteTec
-        try {
-            $witetecApiToken = config('services.witetec.key');
-            $response = Http::withToken($witetecApiToken)
-                            ->get("https://api.witetec.com/transactions/{$transactionHash}" ); // URL da API da WiteTec (ajuste se necessário)
-
-            if ($response->successful()) {
-                $witetecData = $response->json('data');
-                
-                // Se a API externa confirmar o pagamento, atualizamos nosso sistema e informamos o frontend.
-                if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
-                    // Chamamos a mesma lógica do postback para garantir consistência
-                    $this->processPaidSale($transactionHash);
-
-                    return response()->json([
-                        'status' => 'paid',
-                        'redirect_url' => route('checkout.success', $sale->transaction_hash)
-                    ]);
-                }
-            }
-        } catch (\Exception $e) {
-            // Se a API da WiteTec falhar, não quebramos a aplicação.
-            // Apenas registramos o erro e continuamos confiando no nosso banco.
-            Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
-        }
-
-        // Se nenhuma das verificações confirmou o pagamento, retornamos o status atual do nosso banco.
-        return response()->json(['status' => $sale->status]);
+    if (!$sale) {
+        return response()->json(['error' => 'Venda não encontrada'], 404);
     }
 
+    if ($sale->status === 'paid') {
+        return response()->json([
+            'status' => 'paid',
+            'redirect_url' => route('checkout.success', $sale->transaction_hash)
+        ]);
+    }
+
+    try {
+        // CORREÇÃO APLICADA AQUI
+        $witetecApiKey = config('services.witetec.key');
+        $witetecApiUrl = config('services.witetec.url'); // 1. Lemos a URL base da configuração
+
+        // 2. Verificamos se a URL não está vazia para evitar erros
+        if (empty($witetecApiUrl)) {
+            throw new \Exception('A URL da API da WiteTec não está configurada.');
+        }
+
+        // 3. Construímos a URL completa dinamicamente
+        $response = Http::withToken($witetecApiKey)
+                        ->get("{$witetecApiUrl}/transactions/{$transactionHash}");
+
+        if ($response->successful()) {
+            $witetecData = $response->json('data');
+            
+            if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
+                $this->processPaidSale($transactionHash);
+
+                return response()->json([
+                    'status' => 'paid',
+                    'redirect_url' => route('checkout.success', $sale->transaction_hash)
+                ]);
+            }
+        }
+    } catch (\Exception $e) {
+        Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
+    }
+
+    return response()->json(['status' => $sale->status]);
+}
     /**
      * Lógica centralizada para processar uma venda paga.
      */
