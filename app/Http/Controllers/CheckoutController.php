@@ -48,40 +48,36 @@ class CheckoutController extends Controller
         }
     }
 
-   // Em app/Http/Controllers/CheckoutController.php
-
 public function handlePostback(Request $request)
 {
     try {
-        // Pega o segredo que criamos e salvamos no .env
         $secret = config('services.witetec.webhook_secret');
-        
-        // Pega a assinatura, que vem DENTRO do corpo do JSON.
         $signatureWithVersion = $request->input('signature');
         
         if (!$secret || !$signatureWithVersion) {
             throw new \Exception('Segredo do webhook ou campo de assinatura não encontrados.');
         }
 
-        // O corpo da requisição que foi usado para gerar a assinatura
-        // é o JSON completo, ANTES de ser processado pelo Laravel.
-        $payload = $request->getContent();
+        // --- INÍCIO DA CORREÇÃO ---
 
-        // Separa a versão ('v1') do hash
+        // 1. Pega todos os dados do corpo, exceto o campo 'signature'
+        $payloadData = $request->except('signature');
+
+        // 2. Recodifica esses dados para o formato JSON original, sem espaços extras.
+        // Isso garante que o texto que vamos assinar é idêntico ao que a WiteTec assinou.
+        $payload = json_encode($payloadData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        // --- FIM DA CORREÇÃO ---
+
         list($version, $hash) = explode('=', $signatureWithVersion, 2);
 
-        // Gera nossa própria assinatura usando o mesmo método
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
-        // Compara as duas assinaturas de forma segura
-        // ATENÇÃO: A WiteTec pode estar enviando o hash em um formato diferente (ex: base64).
-        // Se a comparação direta falhar, precisaremos ajustar aqui.
-        // Mas vamos começar com a comparação direta.
         if (!hash_equals($expectedSignature, $hash)) {
-            // Se falhar, vamos logar as duas para comparar
-            Log::error('Assinatura do Webhook Inválida.', [
+            Log::error('Assinatura do Webhook Inválida (Após Correção do Payload).', [
                 'assinatura_esperada' => $expectedSignature,
                 'assinatura_recebida' => $hash,
+                'payload_usado' => $payload,
             ]);
             throw new \Exception('Assinatura do webhook inválida.');
         }
@@ -96,10 +92,7 @@ public function handlePostback(Request $request)
     
     $eventType = $request->input('eventType');
     
-    // Processamos apenas se o evento for de pagamento confirmado
     if ($eventType === 'TRANSACTION_PAID') {
-        // Precisamos do ID da transação. Vamos supor que ele venha no campo 'transactionId' ou 'id'.
-        // Se não soubermos, teremos que inspecionar o corpo completo novamente.
         $transactionId = $request->input('transactionId') ?? $request->input('id');
 
         if ($transactionId) {
@@ -111,7 +104,6 @@ public function handlePostback(Request $request)
 
     return response()->json(['status' => 'success'], 200);
 }
-
 
 
     public function checkTransactionStatus(Request $request)
