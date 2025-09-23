@@ -10,6 +10,7 @@ use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
@@ -100,7 +101,7 @@ class CheckoutController extends Controller
 
         // Verificação 2: Se o postback ainda não chegou, consultamos a API da WiteTec
         try {
-            $witetecApiToken = config('services.witetec.api_token');
+            $witetecApiToken = config('services.witetec.key');
             $response = Http::withToken($witetecApiToken)
                             ->get("https://api.witetec.com/transactions/{$transactionHash}" ); // URL da API da WiteTec (ajuste se necessário)
 
