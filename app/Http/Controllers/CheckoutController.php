@@ -99,38 +99,48 @@ public function handlePostback(Request $request)
     return response()->json(['status' => 'success'], 200);
 }
 
-
-
-
     public function checkTransactionStatus(Request $request)
     {
         $request->validate(['transaction_hash' => 'required|string']);
         $transactionHash = $request->transaction_hash;
 
-        $sale = Sale::where('transaction_hash', $transactionHash)->first();
+        // Carregamos a venda e o produto relacionado de uma só vez para otimizar a consulta.
+        // O método with('product') é a chave aqui.
+        $sale = Sale::where('transaction_hash', $transactionHash)->with('product')->first();
 
         if (!$sale) {
             return response()->json(['error' => 'Venda não encontrada'], 404);
         }
 
+        // --- INÍCIO DA ALTERAÇÃO ---
+
+        // Verificação 1: O status já foi atualizado no nosso banco pelo postback?
         if ($sale->status === 'paid') {
+            // 1. Verificamos se o produto e a URL de venda existem.
+            // Se não existir, usamos a rota de sucesso padrão como um fallback seguro.
+            $redirectUrl = $sale->product && $sale->product->url_venda 
+                        ? $sale->product->url_venda 
+                        : route('checkout.success', $sale->transaction_hash);
+
+            // 2. Retornamos a URL correta (a url_venda ou a de fallback) para o frontend.
             return response()->json([
                 'status' => 'paid',
-                'redirect_url' => route('checkout.success', $sale->transaction_hash)
+                'redirect_url' => $redirectUrl
             ]);
         }
 
-        try {
-            // CORREÇÃO APLICADA AQUI
-            $witetecApiKey = config('services.witetec.key');
-            $witetecApiUrl = config('services.witetec.url'); // 1. Lemos a URL base da configuração
+        // --- FIM DA ALTERAÇÃO ---
 
-            // 2. Verificamos se a URL não está vazia para evitar erros
+        // Verificação 2: Se o postback ainda não chegou, consultamos a API da WiteTec
+        // (Esta parte continua igual, mas o bloco de sucesso dentro dela também precisa ser ajustado)
+        try {
+            $witetecApiKey = config('services.witetec.key');
+            $witetecApiUrl = config('services.witetec.url');
+
             if (empty($witetecApiUrl)) {
                 throw new \Exception('A URL da API da WiteTec não está configurada.');
             }
 
-            // 3. Construímos a URL completa dinamicamente
             $response = Http::withToken($witetecApiKey)
                             ->get("{$witetecApiUrl}/transactions/{$transactionHash}");
 
@@ -140,9 +150,14 @@ public function handlePostback(Request $request)
                 if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
                     $this->processPaidSale($transactionHash);
 
+                    // --- ALTERAÇÃO APLICADA AQUI TAMBÉM ---
+                    $redirectUrl = $sale->product && $sale->product->url_venda 
+                                ? $sale->product->url_venda 
+                                : route('checkout.success', $sale->transaction_hash);
+
                     return response()->json([
                         'status' => 'paid',
-                        'redirect_url' => route('checkout.success', $sale->transaction_hash)
+                        'redirect_url' => $redirectUrl
                     ]);
                 }
             }
@@ -150,8 +165,10 @@ public function handlePostback(Request $request)
             Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
         }
 
+        // Se nenhuma das verificações confirmou o pagamento, retornamos o status atual.
         return response()->json(['status' => $sale->status]);
     }
+
     /**
      * Lógica centralizada para processar uma venda paga.
      */
