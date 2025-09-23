@@ -382,11 +382,7 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('cliente')->group(
     });
     
     // Módulo de Contrato
-    Route::prefix('contrato')->name('contrato.')->group(function () {
-        Route::get('/', [ContratoController::class, 'index'])->name('index');
-        // Rota para a ação de assinatura do contrato
-        Route::post('/', [ContratoController::class, 'sign'])->name('sign');
-    });
+ 
 
 
     Route::get('/profile', [ClienteNewsController::class, 'profile'])->name('cliente.profile');

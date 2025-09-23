@@ -47,32 +47,38 @@ class CheckoutController extends Controller
         }
     }
 
-    /**
-     * Endpoint para receber postbacks da WiteTec.
-     */
     public function handlePostback(Request $request)
     {
-        Log::info('WiteTec Postback Recebido:', $request->all());
-        
-        // A WiteTec envia o ID da transação no corpo do postback
-        $transactionHash = $request->input('id'); 
-        $status = $request->input('status');
+        // Passo 1: Validar o token de segurança do webhook
+        $secret = config('services.witetec.webhook_secret');
+        // A WiteTec pode enviar o token no header 'Authorization: Bearer <token>'
+        if (!$secret || $request->bearerToken() !== $secret) {
+            Log::warning('Postback da WiteTec com token inválido ou ausente.');
+            return response()->json(['error' => 'Não autorizado'], 401);
+        }
 
-        if (!$transactionHash || !$status) {
-            Log::warning('Postback inválido da WiteTec: parâmetros ausentes.');
+        Log::info('WiteTec Postback Recebido e Autenticado:', $request->all());
+        
+        // Passo 2: Extrair dados do corpo da requisição
+        // Com base na sua documentação, os dados estão dentro de um objeto 'data'
+        $data = $request->input('data');
+        
+        if (!$data || !isset($data['id']) || !isset($data['status'])) {
+            Log::warning('Postback inválido da WiteTec: parâmetros ausentes no objeto data.');
             return response()->json(['error' => 'Parâmetros ausentes'], 400);
         }
 
-        if ($status === 'PAID') { // WiteTec usa 'PAID' em maiúsculas
+        $transactionHash = $data['id'];
+        $status = $data['status'];
+
+        // Passo 3: Processar o pagamento se o status for 'PAID'
+        if ($status === 'PAID') {
             $this->processPaidSale($transactionHash);
         }
 
         return response()->json(['status' => 'success'], 200);
     }
 
-    /**
-     * Endpoint para o frontend verificar o status do pagamento.
-     */
     public function checkTransactionStatus(Request $request)
     {
         $request->validate(['transaction_hash' => 'required|string']);
@@ -84,8 +90,7 @@ class CheckoutController extends Controller
             return response()->json(['error' => 'Venda não encontrada'], 404);
         }
 
-        // Para simplificar, vamos apenas retornar o status do nosso banco.
-        // O status do nosso banco é a "fonte da verdade", atualizada pelo postback.
+        // Verificação 1: O status já foi atualizado no nosso banco pelo postback?
         if ($sale->status === 'paid') {
             return response()->json([
                 'status' => 'paid',
@@ -93,6 +98,33 @@ class CheckoutController extends Controller
             ]);
         }
 
+        // Verificação 2: Se o postback ainda não chegou, consultamos a API da WiteTec
+        try {
+            $witetecApiToken = config('services.witetec.api_token');
+            $response = Http::withToken($witetecApiToken)
+                            ->get("https://api.witetec.com/transactions/{$transactionHash}" ); // URL da API da WiteTec (ajuste se necessário)
+
+            if ($response->successful()) {
+                $witetecData = $response->json('data');
+                
+                // Se a API externa confirmar o pagamento, atualizamos nosso sistema e informamos o frontend.
+                if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
+                    // Chamamos a mesma lógica do postback para garantir consistência
+                    $this->processPaidSale($transactionHash);
+
+                    return response()->json([
+                        'status' => 'paid',
+                        'redirect_url' => route('checkout.success', $sale->transaction_hash)
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Se a API da WiteTec falhar, não quebramos a aplicação.
+            // Apenas registramos o erro e continuamos confiando no nosso banco.
+            Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
+        }
+
+        // Se nenhuma das verificações confirmou o pagamento, retornamos o status atual do nosso banco.
         return response()->json(['status' => $sale->status]);
     }
 
@@ -101,11 +133,13 @@ class CheckoutController extends Controller
      */
     private function processPaidSale(string $transactionHash)
     {
+        // Usamos transaction para garantir que todas as operações ocorram com sucesso.
         DB::transaction(function () use ($transactionHash) {
             $sale = Sale::where('transaction_hash', $transactionHash)->lockForUpdate()->first();
 
-            // Se a venda não existe ou já foi paga, não faz nada.
+            // Idempotência: Se a venda não existe ou já foi processada, não fazemos nada.
             if (!$sale || $sale->status === 'paid') {
+                if ($sale) Log::info("Venda #{$sale->id} já estava paga. Nenhuma ação necessária.");
                 return;
             }
 

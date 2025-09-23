@@ -37,6 +37,7 @@ return [
     'witetec' => [
         'key' => env('WITETEC_API_KEY'),
         'url' => env('WITETEC_API_URL'),
+        'webhook_secret' => env('WITETEC_WEBHOOK_SECRET'),
     ],
 
 ];
