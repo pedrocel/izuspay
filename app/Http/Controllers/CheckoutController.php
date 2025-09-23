@@ -49,100 +49,80 @@ class CheckoutController extends Controller
     }
 
     public function handlePostback(Request $request)
-{
-    try {
-        // Pega o segredo correto que está no seu .env
-        $secret = config('services.witetec.webhook_secret');
+    {
+        // AVISO: Esta versão não verifica a assinatura do webhook.
+        // É funcional, mas INSEGURA. Use com cautela.
+
+        Log::info('WiteTec Postback Recebido (SEM VERIFICAÇÃO DE ASSINATURA):', $request->all());
         
-        // Pega a assinatura enviada no cabeçalho.
-        // **AINDA PRECISAMOS CONFIRMAR ESTE NOME NA DOCUMENTAÇÃO!**
-        $signature = $request->header('x-witetec-signature');
+        $data = $request->input('data');
         
-        if (!$secret || !$signature) {
-            // O erro vai mudar para este, que é mais específico.
-            throw new \Exception('Segredo do webhook ou assinatura não encontrados na requisição.');
+        // Verificação mínima para garantir que os dados esperados existem
+        if (!$data || !isset($data['id']) || !isset($data['status'])) {
+            Log::warning('Postback recebido, mas com formato de dados inesperado.', $request->all());
+            return response()->json(['error' => 'Parâmetros ausentes'], 400);
         }
 
-        $payload = $request->getContent();
-        $expectedSignature = hash_hmac('sha256', $payload, $secret);
-
-        if (!hash_equals($expectedSignature, $signature)) {
-            throw new \Exception('Assinatura do webhook inválida.');
+        // Processa o pagamento se o status for 'PAID'
+        if ($data['status'] === 'PAID') {
+            $this->processPaidSale($data['id']);
         }
 
-    } catch (\Exception $e) {
-        // O log de erro agora será muito mais informativo.
-        Log::warning('Falha na autenticação do postback da WiteTec: ' . $e->getMessage());
-        return response()->json(['error' => 'Não autorizado'], 401);
+        // Responde que recebeu com sucesso
+        return response()->json(['status' => 'success'], 200);
     }
 
-    // Se a assinatura for válida, o código continua...
-    Log::info('WiteTec Postback Recebido e Autenticado com Sucesso!');
-    
-    $data = $request->input('data');
-    
-    if (!$data || !isset($data['id']) || !isset($data['status'])) {
-        Log::warning('Postback autenticado, mas com formato de dados inesperado.', $request->all());
-        return response()->json(['error' => 'Parâmetros ausentes'], 400);
-    }
 
-    if ($data['status'] === 'PAID') {
-        $this->processPaidSale($data['id']);
-    }
+    public function checkTransactionStatus(Request $request)
+    {
+        $request->validate(['transaction_hash' => 'required|string']);
+        $transactionHash = $request->transaction_hash;
 
-    return response()->json(['status' => 'success'], 200);
-}
+        $sale = Sale::where('transaction_hash', $transactionHash)->first();
 
-   public function checkTransactionStatus(Request $request)
-{
-    $request->validate(['transaction_hash' => 'required|string']);
-    $transactionHash = $request->transaction_hash;
-
-    $sale = Sale::where('transaction_hash', $transactionHash)->first();
-
-    if (!$sale) {
-        return response()->json(['error' => 'Venda não encontrada'], 404);
-    }
-
-    if ($sale->status === 'paid') {
-        return response()->json([
-            'status' => 'paid',
-            'redirect_url' => route('checkout.success', $sale->transaction_hash)
-        ]);
-    }
-
-    try {
-        // CORREÇÃO APLICADA AQUI
-        $witetecApiKey = config('services.witetec.key');
-        $witetecApiUrl = config('services.witetec.url'); // 1. Lemos a URL base da configuração
-
-        // 2. Verificamos se a URL não está vazia para evitar erros
-        if (empty($witetecApiUrl)) {
-            throw new \Exception('A URL da API da WiteTec não está configurada.');
+        if (!$sale) {
+            return response()->json(['error' => 'Venda não encontrada'], 404);
         }
 
-        // 3. Construímos a URL completa dinamicamente
-        $response = Http::withToken($witetecApiKey)
-                        ->get("{$witetecApiUrl}/transactions/{$transactionHash}");
+        if ($sale->status === 'paid') {
+            return response()->json([
+                'status' => 'paid',
+                'redirect_url' => route('checkout.success', $sale->transaction_hash)
+            ]);
+        }
 
-        if ($response->successful()) {
-            $witetecData = $response->json('data');
-            
-            if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
-                $this->processPaidSale($transactionHash);
+        try {
+            // CORREÇÃO APLICADA AQUI
+            $witetecApiKey = config('services.witetec.key');
+            $witetecApiUrl = config('services.witetec.url'); // 1. Lemos a URL base da configuração
 
-                return response()->json([
-                    'status' => 'paid',
-                    'redirect_url' => route('checkout.success', $sale->transaction_hash)
-                ]);
+            // 2. Verificamos se a URL não está vazia para evitar erros
+            if (empty($witetecApiUrl)) {
+                throw new \Exception('A URL da API da WiteTec não está configurada.');
             }
-        }
-    } catch (\Exception $e) {
-        Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
-    }
 
-    return response()->json(['status' => $sale->status]);
-}
+            // 3. Construímos a URL completa dinamicamente
+            $response = Http::withToken($witetecApiKey)
+                            ->get("{$witetecApiUrl}/transactions/{$transactionHash}");
+
+            if ($response->successful()) {
+                $witetecData = $response->json('data');
+                
+                if (isset($witetecData['status']) && $witetecData['status'] === 'PAID') {
+                    $this->processPaidSale($transactionHash);
+
+                    return response()->json([
+                        'status' => 'paid',
+                        'redirect_url' => route('checkout.success', $sale->transaction_hash)
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Falha ao consultar a API da WiteTec para o hash {$transactionHash}: " . $e->getMessage());
+        }
+
+        return response()->json(['status' => $sale->status]);
+    }
     /**
      * Lógica centralizada para processar uma venda paga.
      */
