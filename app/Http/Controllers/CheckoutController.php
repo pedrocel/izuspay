@@ -48,38 +48,37 @@ class CheckoutController extends Controller
         }
     }
 
+// Em app/Http/Controllers/CheckoutController.php
+
 public function handlePostback(Request $request)
 {
     try {
         $secret = config('services.witetec.webhook_secret');
         $signatureWithVersion = $request->input('signature');
         
-        if (!$secret || !$signatureWithVersion) {
-            throw new \Exception('Segredo do webhook ou campo de assinatura não encontrados.');
-        }
+        if ($signatureWithVersion) {
+           
 
-        // --- INÍCIO DA CORREÇÃO ---
+            $payloadData = $request->except('signature');
+            $payload = json_encode($payloadData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        // 1. Pega todos os dados do corpo, exceto o campo 'signature'
-        $payloadData = $request->except('signature');
+            @list($version, $hash) = explode('=', $signatureWithVersion, 2);
 
-        // 2. Recodifica esses dados para o formato JSON original, sem espaços extras.
-        // Isso garante que o texto que vamos assinar é idêntico ao que a WiteTec assinou.
-        $payload = json_encode($payloadData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if (!$version || !$hash) {
+                throw new \Exception('Formato da assinatura inválido. Esperado "v1=..."');
+            }
 
-        // --- FIM DA CORREÇÃO ---
+            $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
-        list($version, $hash) = explode('=', $signatureWithVersion, 2);
-
-        $expectedSignature = hash_hmac('sha256', $payload, $secret);
-
-        if (!hash_equals($expectedSignature, $hash)) {
-            Log::error('Assinatura do Webhook Inválida (Após Correção do Payload).', [
-                'assinatura_esperada' => $expectedSignature,
-                'assinatura_recebida' => $hash,
-                'payload_usado' => $payload,
-            ]);
-            throw new \Exception('Assinatura do webhook inválida.');
+            if (!hash_equals($expectedSignature, $hash)) {
+                Log::error('Assinatura do Webhook Inválida.', [
+                    'assinatura_esperada' => $expectedSignature,
+                    'assinatura_recebida' => $hash,
+                ]);
+                throw new \Exception('Assinatura do webhook inválida.');
+            }
+            
+            Log::info('WiteTec Postback com Assinatura Validada com Sucesso!');
         }
 
     } catch (\Exception $e) {
@@ -87,23 +86,48 @@ public function handlePostback(Request $request)
         return response()->json(['error' => 'Não autorizado'], 401);
     }
 
-    // Se a assinatura for válida, o código continua...
-    Log::info('WiteTec Postback Recebido e Autenticado com Sucesso!');
-    
-    $eventType = $request->input('eventType');
-    
-    if ($eventType === 'TRANSACTION_PAID') {
-        $transactionId = $request->input('transactionId') ?? $request->input('id');
+    // --- INÍCIO DA LÓGICA DE MÚLTIPLOS EVENTOS ---
 
-        if ($transactionId) {
+    $eventType = $request->input('eventType');
+    $transactionId = $request->input('id');
+
+    if (!$transactionId) {
+        Log::warning('Webhook recebido, mas o ID da transação não foi encontrado.', $request->all());
+        return response()->json(['status' => 'success'], 200); // Retornamos sucesso para não bloquear outros webhooks.
+    }
+
+    switch ($eventType) {
+        case 'TRANSACTION_PAID':
+            Log::info("Processando pagamento para a transação #{$transactionId} via webhook.");
             $this->processPaidSale($transactionId);
-        } else {
-            Log::warning('Postback autenticado, mas o ID da transação não foi encontrado no corpo.', $request->all());
-        }
+            break;
+
+        case 'TRANSACTION_PENDING':
+            Log::info("Atualizando 'updated_at' para a transação pendente #{$transactionId}.");
+            
+            // Encontra a venda e apenas atualiza o timestamp.
+            // O método touch() é perfeito para isso no Laravel.
+            $sale = Sale::where('transaction_hash', $transactionId)->first();
+            if ($sale) {
+                $sale->touch(); // O método touch() atualiza o updated_at para o tempo atual.
+            }
+            break;
+        
+        // Você pode adicionar outros casos aqui no futuro
+        // case 'TRANSACTION_FAILED':
+        // case 'TRANSACTION_CANCELED':
+        //     Log::info("Transação #{$transactionId} com status: {$eventType}");
+        //     Sale::where('transaction_hash', $transactionId)->update(['status' => 'failed']); // Exemplo
+        //     break;
+
+        default:
+            Log::info("Evento de webhook não processado recebido: {$eventType}");
+            break;
     }
 
     return response()->json(['status' => 'success'], 200);
 }
+
 
 
     public function checkTransactionStatus(Request $request)
