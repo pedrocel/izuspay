@@ -14,7 +14,7 @@ Route::post('/webhook-cakto', [WebhookController::class, 'handle'])->name('webho
 Route::post('/webhook-kiwify', [WebhookController::class, 'kiwify'])->name('webhook.kiwify');
 
 
-Route::get('/goat-payments/check-transaction-status', [GoatPaymentController::class, 'checkTransactionStatus'])->name('api.goat.check_status');
+Route::get('/goat-payments/check-transaction-status', [CheckoutController::class, 'checkTransactionStatus'])->name('api.goat.check_status');
 
 // Certifique-se também que a rota para criar a transação Pix está presente:
 Route::post('/goat-payments/create-pix-transaction', [GoatPaymentController::class, 'createPixTransaction'])->name('api.goat.create_pix');
