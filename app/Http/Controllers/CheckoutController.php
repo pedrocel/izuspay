@@ -52,83 +52,50 @@ class CheckoutController extends Controller
 
 public function handlePostback(Request $request)
 {
-    try {
-        $secret = config('services.witetec.webhook_secret');
-        $signatureWithVersion = $request->input('signature');
-        
-        if (!$secret || !$signatureWithVersion) {
-            throw new \Exception('Segredo do webhook ou campo de assinatura não encontrados.');
-        }
+    /**
+     * AVISO DE SEGURANÇA: Esta versão do webhook está com a verificação de
+     * assinatura DESABILITADA por solicitação. Ela processa qualquer
+     * notificação recebida, o que representa um risco de segurança.
+     * Um invasor pode enviar requisições falsas para marcar vendas
+     * como pagas sem ter efetuado o pagamento.
+     * Recomenda-se reativar a segurança assim que possível.
+     */
 
-        // --- INÍCIO DA CORREÇÃO FINAL (MANIPULAÇÃO DE STRING) ---
-
-        // 1. Pega o corpo completo da requisição como uma string bruta.
-        $rawPayload = $request->getContent();
-
-        // 2. Encontra a posição do campo "signature" na string.
-        $signaturePos = strpos($rawPayload, '"signature"');
-
-        // 3. Pega tudo na string ANTES do campo "signature".
-        // O -1 é para remover a vírgula que vem antes.
-        $payload = substr($rawPayload, 0, $signaturePos - 1);
-
-        // 4. Adiciona o "}" final para fechar o JSON.
-        $payload .= '}';
-
-        // --- FIM DA CORREÇÃO FINAL (MANIPULAÇÃO DE STRING) ---
-
-        @list($version, $hash) = explode('=', $signatureWithVersion, 2);
-        if (!$version || !$hash) {
-            throw new \Exception('Formato da assinatura inválido. Esperado "v1=..."');
-        }
-
-        $binaryHash = hash_hmac('sha256', $payload, $secret, true);
-        $expectedSignature = rtrim(strtr(base64_encode($binaryHash), '+/', '-_'), '=');
-
-        if (!hash_equals($expectedSignature, $hash)) {
-            Log::error('Assinatura do Webhook Inválida (Após Manipulação de String).', [
-                'assinatura_esperada' => $expectedSignature,
-                'assinatura_recebida' => $hash,
-                'payload_usado' => $payload,
-            ]);
-            throw new \Exception('Assinatura do webhook inválida.');
-        }
-
-    } catch (\Exception $e) {
-        Log::warning('Falha na autenticação do postback da WiteTec: ' . $e->getMessage());
-        return response()->json(['error' => 'Não autorizado'], 401);
-    }
-
-    // Se a assinatura for válida, o código continua...
-    Log::info('WiteTec Postback Recebido e Autenticado com Sucesso!');
+    Log::info('Webhook recebido (SEM VERIFICAÇÃO DE ASSINATURA). Processando dados diretamente.', $request->all());
     
     $eventType = $request->input('eventType');
     $transactionId = $request->input('id');
 
+    // Se não houver um ID de transação, não há nada a fazer.
     if (!$transactionId) {
-        Log::warning('Webhook autenticado, mas o ID da transação não foi encontrado.', $request->all());
-        return response()->json(['status' => 'success'], 200);
+        Log::warning('Webhook recebido, mas o ID da transação não foi encontrado no corpo.', $request->all());
+        // Retornamos sucesso para que a WiteTec não continue reenviando uma notificação malformada.
+        return response()->json(['status' => 'success - no transaction id'], 200);
     }
 
+    // Trata os diferentes tipos de evento que nos interessam
     switch ($eventType) {
         case 'TRANSACTION_PAID':
-            Log::info("Processando pagamento para a transação #{$transactionId} via webhook.");
+            Log::info("[Webhook Direto] Processando pagamento para a transação #{$transactionId}.");
             $this->processPaidSale($transactionId);
             break;
 
         case 'TRANSACTION_PENDING':
-            Log::info("Atualizando 'updated_at' para a transação pendente #{$transactionId}.");
+            Log::info("[Webhook Direto] Atualizando 'updated_at' para a transação pendente #{$transactionId}.");
             $sale = Sale::where('transaction_hash', $transactionId)->first();
             if ($sale) {
+                // O método touch() é a forma mais eficiente de atualizar o timestamp 'updated_at'.
                 $sale->touch();
             }
             break;
 
         default:
-            Log::info("Evento de webhook não processado recebido: {$eventType}");
+            // Para qualquer outro evento (ex: TRANSACTION_CANCELED, etc.), apenas registramos no log.
+            Log::info("[Webhook Direto] Evento não processado recebido: {$eventType} para a transação #{$transactionId}.");
             break;
     }
 
+    // Informa à WiteTec que a notificação foi recebida e processada com sucesso.
     return response()->json(['status' => 'success'], 200);
 }
 
