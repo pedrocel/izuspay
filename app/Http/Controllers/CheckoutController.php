@@ -49,36 +49,49 @@ class CheckoutController extends Controller
     }
 
     public function handlePostback(Request $request)
-    {
-        // Passo 1: Validar o token de segurança do webhook
+{
+    try {
+        // Pega o segredo correto que está no seu .env
         $secret = config('services.witetec.webhook_secret');
-        // A WiteTec pode enviar o token no header 'Authorization: Bearer <token>'
-        if (!$secret || $request->bearerToken() !== $secret) {
-            Log::warning('Postback da WiteTec com token inválido ou ausente.');
-            return response()->json(['error' => 'Não autorizado'], 401);
-        }
-
-        Log::info('WiteTec Postback Recebido e Autenticado:', $request->all());
         
-        // Passo 2: Extrair dados do corpo da requisição
-        // Com base na sua documentação, os dados estão dentro de um objeto 'data'
-        $data = $request->input('data');
+        // Pega a assinatura enviada no cabeçalho.
+        // **AINDA PRECISAMOS CONFIRMAR ESTE NOME NA DOCUMENTAÇÃO!**
+        $signature = $request->header('x-witetec-signature');
         
-        if (!$data || !isset($data['id']) || !isset($data['status'])) {
-            Log::warning('Postback inválido da WiteTec: parâmetros ausentes no objeto data.');
-            return response()->json(['error' => 'Parâmetros ausentes'], 400);
+        if (!$secret || !$signature) {
+            // O erro vai mudar para este, que é mais específico.
+            throw new \Exception('Segredo do webhook ou assinatura não encontrados na requisição.');
         }
 
-        $transactionHash = $data['id'];
-        $status = $data['status'];
+        $payload = $request->getContent();
+        $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
-        // Passo 3: Processar o pagamento se o status for 'PAID'
-        if ($status === 'PAID') {
-            $this->processPaidSale($transactionHash);
+        if (!hash_equals($expectedSignature, $signature)) {
+            throw new \Exception('Assinatura do webhook inválida.');
         }
 
-        return response()->json(['status' => 'success'], 200);
+    } catch (\Exception $e) {
+        // O log de erro agora será muito mais informativo.
+        Log::warning('Falha na autenticação do postback da WiteTec: ' . $e->getMessage());
+        return response()->json(['error' => 'Não autorizado'], 401);
     }
+
+    // Se a assinatura for válida, o código continua...
+    Log::info('WiteTec Postback Recebido e Autenticado com Sucesso!');
+    
+    $data = $request->input('data');
+    
+    if (!$data || !isset($data['id']) || !isset($data['status'])) {
+        Log::warning('Postback autenticado, mas com formato de dados inesperado.', $request->all());
+        return response()->json(['error' => 'Parâmetros ausentes'], 400);
+    }
+
+    if ($data['status'] === 'PAID') {
+        $this->processPaidSale($data['id']);
+    }
+
+    return response()->json(['status' => 'success'], 200);
+}
 
    public function checkTransactionStatus(Request $request)
 {
