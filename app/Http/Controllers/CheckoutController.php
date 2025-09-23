@@ -48,29 +48,70 @@ class CheckoutController extends Controller
         }
     }
 
-    public function handlePostback(Request $request)
-    {
-        // AVISO: Esta versão não verifica a assinatura do webhook.
-        // É funcional, mas INSEGURA. Use com cautela.
+   // Em app/Http/Controllers/CheckoutController.php
 
-        Log::info('WiteTec Postback Recebido (SEM VERIFICAÇÃO DE ASSINATURA):', $request->all());
+public function handlePostback(Request $request)
+{
+    try {
+        // Pega o segredo que criamos e salvamos no .env
+        $secret = config('services.witetec.webhook_secret');
         
-        $data = $request->input('data');
+        // Pega a assinatura, que vem DENTRO do corpo do JSON.
+        $signatureWithVersion = $request->input('signature');
         
-        // Verificação mínima para garantir que os dados esperados existem
-        if (!$data || !isset($data['id']) || !isset($data['status'])) {
-            Log::warning('Postback recebido, mas com formato de dados inesperado.', $request->all());
-            return response()->json(['error' => 'Parâmetros ausentes'], 400);
+        if (!$secret || !$signatureWithVersion) {
+            throw new \Exception('Segredo do webhook ou campo de assinatura não encontrados.');
         }
 
-        // Processa o pagamento se o status for 'PAID'
-        if ($data['status'] === 'PAID') {
-            $this->processPaidSale($data['id']);
+        // O corpo da requisição que foi usado para gerar a assinatura
+        // é o JSON completo, ANTES de ser processado pelo Laravel.
+        $payload = $request->getContent();
+
+        // Separa a versão ('v1') do hash
+        list($version, $hash) = explode('=', $signatureWithVersion, 2);
+
+        // Gera nossa própria assinatura usando o mesmo método
+        $expectedSignature = hash_hmac('sha256', $payload, $secret);
+
+        // Compara as duas assinaturas de forma segura
+        // ATENÇÃO: A WiteTec pode estar enviando o hash em um formato diferente (ex: base64).
+        // Se a comparação direta falhar, precisaremos ajustar aqui.
+        // Mas vamos começar com a comparação direta.
+        if (!hash_equals($expectedSignature, $hash)) {
+            // Se falhar, vamos logar as duas para comparar
+            Log::error('Assinatura do Webhook Inválida.', [
+                'assinatura_esperada' => $expectedSignature,
+                'assinatura_recebida' => $hash,
+            ]);
+            throw new \Exception('Assinatura do webhook inválida.');
         }
 
-        // Responde que recebeu com sucesso
-        return response()->json(['status' => 'success'], 200);
+    } catch (\Exception $e) {
+        Log::warning('Falha na autenticação do postback da WiteTec: ' . $e->getMessage());
+        return response()->json(['error' => 'Não autorizado'], 401);
     }
+
+    // Se a assinatura for válida, o código continua...
+    Log::info('WiteTec Postback Recebido e Autenticado com Sucesso!');
+    
+    $eventType = $request->input('eventType');
+    
+    // Processamos apenas se o evento for de pagamento confirmado
+    if ($eventType === 'TRANSACTION_PAID') {
+        // Precisamos do ID da transação. Vamos supor que ele venha no campo 'transactionId' ou 'id'.
+        // Se não soubermos, teremos que inspecionar o corpo completo novamente.
+        $transactionId = $request->input('transactionId') ?? $request->input('id');
+
+        if ($transactionId) {
+            $this->processPaidSale($transactionId);
+        } else {
+            Log::warning('Postback autenticado, mas o ID da transação não foi encontrado no corpo.', $request->all());
+        }
+    }
+
+    return response()->json(['status' => 'success'], 200);
+}
+
 
 
     public function checkTransactionStatus(Request $request)
