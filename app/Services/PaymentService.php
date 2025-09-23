@@ -109,7 +109,7 @@ class PaymentService
             'Content-Type' => 'application/json',
         ])->post("{$this->apiUrl}/transactions", $payload);
 
-        if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === false)) {
+        if ($response->failed()) {
             $errorData = $response->json();
             $errorMessage = $errorData['message'] ?? 'Falha na comunicação com o gateway de pagamento.';
             Log::error('WiteTec API Error:', ['payload' => $payload, 'response' => $errorData]);
