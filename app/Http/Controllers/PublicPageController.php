@@ -18,4 +18,8 @@ class PublicPageController extends Controller
 
         return view('lp', compact('association'));
     }
+
+    public function docs(){
+        return view('docs');
+    }
 }

@@ -26,6 +26,7 @@ class User extends Authenticatable
         'telefone',
         'documento',
         'status',
+        'api_token',
         'avatar',
         'data_nascimento',
         'endereco',

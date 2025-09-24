@@ -74,6 +74,9 @@ Route::get('/cookies', function () {
     return view('cookies');
 });
 
+Route::get('/docs', [PublicPageController::class, 'docs'])->name('show.docs');
+
+
 Route::post('/checkout/{hash_id}', [CheckoutController::class, 'storeSale'])->name('checkout.store');
 
 // Nova rota para a página de pagamento Pix
@@ -192,6 +195,8 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('associacao')->gro
 
     Route::get('/configuracoes', [ConfiguracoesController::class, 'edit'])->name('associacao.configuracoes.edit');
     Route::put('/configuracoes', [ConfiguracoesController::class, 'update'])->name('associacao.configuracoes.update');
+
+    Route::post('configuracoes/regenerate-api-token', [ConfiguracoesController::class, 'regenerateApiToken'])->name('associacao.configuracoes.regenerateApiToken');
 
 
     Route::prefix('financeiro')->name('associacao.financeiro.')->group(function () {

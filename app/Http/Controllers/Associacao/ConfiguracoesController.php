@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str; // <-- Importe a classe Str
 
 class ConfiguracoesController extends Controller
 {
@@ -20,6 +21,8 @@ class ConfiguracoesController extends Controller
     public function edit()
     {
         $user = Auth::user();
+
+        $apiKey = $user->api_token;
         $association = $user->association;
         $creatorProfile = $user->creatorProfile;
 
@@ -27,7 +30,7 @@ class ConfiguracoesController extends Controller
             return redirect()->route('dashboard')->with('error', 'Associação não encontrada.');
         }
 
-        return view('associacao.configuracoes.edit', compact('association', 'creatorProfile', 'user'));
+        return view('associacao.configuracoes.edit', compact('association', 'creatorProfile', 'user', 'apiKey'));
     }
 
     /**
@@ -168,5 +171,24 @@ class ConfiguracoesController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Erro ao atualizar configurações: ' . $e->getMessage()]);
         }
+    }
+
+     public function regenerateApiToken()
+    {
+        $user = Auth::user();
+        
+        // Gera um novo token aleatório e seguro
+        $newToken = Str::random(60);
+
+        // Atualiza o usuário com o novo token
+        $user->forceFill([
+            'api_token' => hash('sha256', $newToken),
+        ])->save();
+
+        // Redireciona de volta com o novo token visível (apenas desta vez)
+        // e uma mensagem de sucesso.
+        return redirect()->route('associacao.configuracoes.edit')
+                         ->with('success', 'Nova chave de API gerada com sucesso!')
+                         ->with('newApiKey', $newToken);
     }
 }

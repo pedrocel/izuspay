@@ -63,18 +63,15 @@
                         Izus Pay
                     </div>
                     <div class="hidden md:flex space-x-8">
-                        <a href="#features" class="text-gray-300 hover:text-white transition-colors">Recursos</a>
-                        <a href="#pricing" class="text-gray-300 hover:text-white transition-colors">Preços</a>
-                        <a href="#integrations" class="text-gray-300 hover:text-white transition-colors">Integrações</a>
-                        <a href="#docs" class="text-gray-300 hover:text-white transition-colors">Documentação</a>
+                        <a href="{{ route('show.docs') }}" class="text-gray-300 hover:text-white transition-colors">Documentação</a>
                         <a href="#support" class="text-gray-300 hover:text-white transition-colors">Suporte</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-300 hover:text-white transition-colors">Login</button>
-                    <button onclick="openApiModal()" class="bg-primary hover:bg-primary-dark px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105">
+                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition-colors">Login</a>
+                    <a href="{{ route('show.docs') }}" class="bg-primary hover:bg-primary-dark px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105">
                         Integrar API
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -98,12 +95,9 @@
                     APIs robustas e segurança bancária.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <button onclick="openApiModal()" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
+                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
                         Começar Agora
-                    </button>
-                    <button onclick="openCalculator()" class="border border-white/20 hover:border-primary px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-                        Calcular Taxas
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -136,70 +130,7 @@
         </div>
     </section> --}}
 
-    <section id="features" class="py-32 bg-dark">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        Recursos Premium
-                    </span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Tecnologia de ponta para revolucionar seus pagamentos
-                </p>
-            </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-bolt text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">PIX Instantâneo</h3>
-                    <p class="text-gray-400 leading-relaxed">Processamento em menos de 1 segundo com confirmação automática e reconciliação inteligente.</p>
-                </div>
-
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-primary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-credit-card text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Cartões Globais</h3>
-                    <p class="text-gray-400 leading-relaxed">Aceite Visa, Mastercard, Elo e cartões internacionais com as menores taxas do mercado.</p>
-                </div>
-
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-accent/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-shield-alt text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Segurança Bancária</h3>
-                    <p class="text-gray-400 leading-relaxed">Criptografia AES-256 e monitoramento 24/7.</p>
-                </div>
-
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-code text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">APIs Robustas</h3>
-                    <p class="text-gray-400 leading-relaxed">Webhooks em tempo real e documentação completa.</p>
-                </div>
-
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-accent rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-chart-line text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Analytics Avançado</h3>
-                    <p class="text-gray-400 leading-relaxed">Dashboard em tempo real com insights de conversão, chargeback e performance.</p>
-                </div>
-
-                <div class="group bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-accent/50 transition-all duration-500 hover:transform hover:scale-105">
-                    <div class="w-16 h-16 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-headset text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Suporte Premium</h3>
-                    <p class="text-gray-400 leading-relaxed">Atendimento especializado 24/7.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <section id="integrations" class="py-32 bg-dark-light">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -284,228 +215,7 @@
         </div>
     </section>
 
-    <section id="pricing" class="py-32 bg-dark-light">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        Preços Transparentes
-                    </span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Sem taxas ocultas, sem surpresas. Pague apenas pelo que usar.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 mb-16">
-                <div class="bg-dark border border-white/10 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Starter</h3>
-                        <div class="text-4xl font-black text-primary mb-2">2,9%</div>
-                        <div class="text-gray-400">por transação</div>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>PIX instantâneo</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Cartões nacionais</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Dashboard básico</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Suporte por email</li>
-                    </ul>
-                    <button class="w-full bg-primary hover:bg-primary-dark py-3 rounded-xl font-semibold transition-all duration-300">
-                        Começar Grátis
-                    </button>
-                </div>
-
-                <div class="bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary rounded-2xl p-8 relative transform scale-105">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary px-6 py-2 rounded-full text-sm font-semibold">
-                        Mais Popular
-                    </div>
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Professional</h3>
-                        <div class="text-4xl font-black text-primary mb-2">2,4%</div>
-                        <div class="text-gray-400">por transação</div>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Tudo do Starter</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Cartões internacionais</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Analytics avançado</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Suporte prioritário</li>
-                        <li class="flex items-center"><i class="fas fa-check text-primary mr-3"></i>Webhooks</li>
-                    </ul>
-                    <button class="w-full bg-primary hover:bg-primary-dark py-3 rounded-xl font-semibold transition-all duration-300">
-                        Escolher Plano
-                    </button>
-                </div>
-
-                <div class="bg-dark border border-white/10 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Enterprise</h3>
-                        <div class="text-4xl font-black text-secondary mb-2">Custom</div>
-                        <div class="text-gray-400">sob medida</div>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-secondary mr-3"></i>Tudo do Professional</li>
-                        <li class="flex items-center"><i class="fas fa-check text-secondary mr-3"></i>Taxas negociadas</li>
-                        <li class="flex items-center"><i class="fas fa-check text-secondary mr-3"></i>SLA garantido</li>
-                        <li class="flex items-center"><i class="fas fa-check text-secondary mr-3"></i>Account Manager</li>
-                        <li class="flex items-center"><i class="fas fa-check text-secondary mr-3"></i>Integração dedicada</li>
-                    </ul>
-                    <button class="w-full bg-secondary hover:bg-secondary/80 py-3 rounded-xl font-semibold transition-all duration-300 text-dark">
-                        Falar com Vendas
-                    </button>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <button onclick="openCalculator()" class="bg-gradient-to-r from-accent to-primary hover:from-accent/80 hover:to-primary/80 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-calculator mr-2"></i>
-                    Calcular Economia
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 bg-dark">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
-                        Clientes Satisfeitos
-                    </span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Veja o que nossos clientes falam sobre o Izus Pay
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-semibold">Carlos Silva</div>
-                            <div class="text-gray-400 text-sm">CEO, TechStore</div>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4">"Aumentamos nossa conversão em 35% após migrar para o Izus Pay. A velocidade do PIX é impressionante!"</p>
-                    <div class="flex text-yellow-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-secondary to-accent rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-semibold">Ana Costa</div>
-                            <div class="text-gray-400 text-sm">CTO, EduPlatform</div>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4">"A API é fantástica! Integramos em 2 dias e o suporte técnico é excepcional. Recomendo muito!"</p>
-                    <div class="flex text-yellow-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-
-                <div class="bg-dark-light border border-white/10 rounded-2xl p-8 hover:border-accent/50 transition-all duration-500">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-semibold">Roberto Lima</div>
-                            <div class="text-gray-400 text-sm">Founder, FoodDelivery</div>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 mb-4">"Reduzimos custos em 40% e melhoramos a experiência do cliente. O Izus Pay é o futuro dos pagamentos!"</p>
-                    <div class="flex text-yellow-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 bg-dark-light">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 class="text-4xl md:text-6xl font-black mb-8">
-                        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                            Segurança Máxima
-                        </span>
-                    </h2>
-                    <p class="text-xl text-gray-400 mb-8 leading-relaxed">
-                        Protegemos seus dados e transações com os mais altos padrões de segurança da indústria.
-                    </p>
-                    
-                    <div class="space-y-6">
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mr-4 mt-1">
-                                <i class="fas fa-shield-alt text-primary"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">PCI DSS Level 1</h3>
-                                <p class="text-gray-400">Certificação máxima para processamento de cartões.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center mr-4 mt-1">
-                                <i class="fas fa-lock text-secondary"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">Criptografia AES-256</h3>
-                                <p class="text-gray-400">Dados protegidos com criptografia militar.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mr-4 mt-1">
-                                <i class="fas fa-eye text-accent"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">Monitoramento 24/7</h3>
-                                <p class="text-gray-400">Detecção de fraudes em tempo real.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="relative">
-                    <div class="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl p-8 border border-white/10">
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-dark/50 rounded-xl">
-                                <span class="text-gray-300">SSL Certificate</span>
-                                <i class="fas fa-check-circle text-green-400"></i>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-dark/50 rounded-xl">
-                                <span class="text-gray-300">2FA Authentication</span>
-                                <i class="fas fa-check-circle text-green-400"></i>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-dark/50 rounded-xl">
-                                <span class="text-gray-300">LGPD Compliance</span>
-                                <i class="fas fa-check-circle text-green-400"></i>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-dark/50 rounded-xl">
-                                <span class="text-gray-300">ISO 27001</span>
-                                <i class="fas fa-check-circle text-green-400"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+   
 
     <section id="support" class="py-32 bg-dark">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -520,30 +230,16 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="grid md:grid-cols-1 gap-8 mb-16">
                 <div class="text-center">
                     <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-headset text-3xl text-white"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">Chat 24/7</h3>
-                    <p class="text-gray-400">Atendimento instantâneo via chat com especialistas técnicos.</p>
+                    <h3 class="text-2xl font-bold mb-4">Agente de contas </h3>
+                    <p class="text-gray-400">Agente personalizado para seu negócio.</p>
                 </div>
 
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-secondary to-accent rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-phone text-3xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Telefone Premium</h3>
-                    <p class="text-gray-400">Linha direta para clientes Enterprise com SLA garantido.</p>
-                </div>
 
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-book text-3xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Documentação</h3>
-                    <p class="text-gray-400">Guias completos, tutoriais e exemplos de código.</p>
-                </div>
             </div>
 
             <div class="text-center">
@@ -552,10 +248,10 @@
                         <i class="fas fa-comments mr-2"></i>
                         Iniciar Chat
                     </button>
-                    <button onclick="openApiModal()" class="border border-white/20 hover:border-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
+                    <a href="{{ route('show.docs') }}" class="border border-white/20 hover:border-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
                         <i class="fas fa-book mr-2"></i>
                         Ver Documentação
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -577,12 +273,11 @@
                 Comece gratuitamente e veja a diferença em minutos.
             </p>
             <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <button onclick="openApiModal()" class="bg-primary hover:bg-primary-dark px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
-                    Começar Agora - Grátis
-                </button>
-                <button onclick="openCalculator()" class="border border-white/30 hover:border-primary px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 transform hover:scale-105">
-                    Calcular Economia
-                </button>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
+                        Começar Agora
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -623,10 +318,8 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-6">Desenvolvedores</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" onclick="openApiModal()" class="text-gray-400 hover:text-white transition-colors">Documentação</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">API Reference</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">SDKs</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Status</a></li>
+                        <li><a href="{{ route('show.docs') }}" class="text-gray-400 hover:text-white transition-colors">Documentação</a></li>
+                      
                     </ul>
                 </div>
                 
@@ -931,7 +624,6 @@ const payment = await client.payments.create({
         </div>
     </div>
 
-     Calculator Modal 
     <div id="calculatorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-dark-light border border-white/20 rounded-2xl max-w-2xl w-full">

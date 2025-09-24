@@ -180,23 +180,54 @@
                 </div>
             </div>
 
-            <!-- Aba: API -->
-            <div class="tab-content hidden" id="api">
-                <div class="bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
-                    <div class="p-6 border-b border-white/10">
-                        <h3 class="text-xl font-bold text-white flex items-center"><i data-lucide="code-2" class="w-6 h-6 mr-3 text-blue-400"></i>Chave de API</h3>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <p class="text-gray-300">Use esta chave para integrar seus sistemas com a plataforma Izus Payment. Mantenha sua chave de API segura e não a compartilhe publicamente.</p>
-                        <div class="relative">
-                            <input type="text" id="api-key" readonly value="{{ $apiKey ?? 'Nenhuma chave de API gerada' }}" class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12">
-                            <button type="button" onclick="copyToClipboard('api-key')" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white rounded-md hover:bg-slate-700 transition-colors" title="Copiar Chave">
-                                <i data-lucide="copy" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+<!-- Aba: API -->
+<div class="tab-content hidden" id="api">
+    <div class="bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-white flex items-center">
+                <i data-lucide="code-2" class="w-6 h-6 mr-3 text-blue-400"></i>Chave de API
+            </h3>
+            
+            <!-- BOTÃO CORRIGIDO: Agora é um link que aciona um formulário invisível via JS -->
+            <a href="{{ route('associacao.configuracoes.regenerateApiToken') }}"
+               id="regenerate-token-button"
+               class="inline-flex items-center space-x-2 bg-yellow-600/80 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-semibold text-sm">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>Gerar Nova Chave</span>
+            </a>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-gray-300">
+                @if(session('newApiKey'))
+                    Esta é sua nova chave de API. Copie-a e guarde em um lugar seguro. <strong>Você não poderá vê-la novamente.</strong>
+                @else
+                    Use esta chave para integrar seus sistemas com a nossa plataforma. Mantenha sua chave de API segura e não a compartilhe publicamente.
+                @endif
+            </p>
+            
+            <div class="relative">
+                <input type="text" id="api-key" readonly 
+                       value="{{ session('newApiKey') ?? ($apiKey ? '********************' . substr($user->api_token, -4) : 'Nenhuma chave de API gerada.') }}" 
+                       class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400">
+                
+                @if(session('newApiKey'))
+                <button type="button" onclick="copyToClipboard('api-key', '{{ session('newApiKey') }}')" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-white" title="Copiar Chave">
+                    <i data-lucide="copy" class="w-5 h-5"></i>
+                </button>
+                @endif
             </div>
+            
+            @if(!$apiKey && !session('newApiKey'))
+            <div class="bg-blue-500/10 border border-blue-500/30 text-blue-300 p-4 rounded-xl">
+                <i data-lucide="info" class="w-5 h-5 inline-block align-middle mr-2"></i>
+                <span class="font-medium">Clique em "Gerar Nova Chave" para criar sua primeira chave.</span>
+            </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+
 
             <!-- Aba: Integrações -->
             <div class="tab-content hidden" id="integrations">
@@ -247,7 +278,14 @@
             </button>
         </div>
     </form>
+
 </div>
+
+
+{{-- Formulário invisível para a ação de gerar token --}}
+<form id="regenerate-token-form" action="{{ route('associacao.configuracoes.regenerateApiToken') }}" method="POST" style="display: none;">
+    @csrf
+</form>
 @endsection
 
 @push('scripts')
@@ -255,6 +293,26 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
+
+
+
+// Dentro de document.addEventListener('DOMContentLoaded', function() { ... });
+
+const regenerateButton = document.getElementById('regenerate-token-button');
+if (regenerateButton) {
+    regenerateButton.addEventListener('click', function(event) {
+        // Previne a navegação padrão do link
+        event.preventDefault(); 
+        
+        // Pede confirmação ao usuário
+        if (confirm('Você tem certeza que deseja gerar uma nova chave de API? A chave antiga será invalidada permanentemente.')) {
+            // Submete o formulário invisível
+            document.getElementById('regenerate-token-form').submit();
+        }
+    });
+}
+
+        
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {

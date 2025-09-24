@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\GoatPaymentController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\CheckoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,9 @@ Route::post('/goat-payments/postback', [GoatPaymentController::class, 'handlePos
 Route::post('/witetec/postback', [CheckoutController::class, 'handlePostback'])->name('api.witetec.postback');
 
 
+
+Route::middleware('auth.api_token')->group(function () {
+    Route::post('/transactions', [PaymentController::class, 'create']);
+    Route::get('/transactions/{transactionId}', [PaymentController::class, 'show']);
+
+});

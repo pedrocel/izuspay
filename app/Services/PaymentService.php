@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
 
 class PaymentService
 {
@@ -42,9 +44,12 @@ class PaymentService
                     'name' => $customerData['name'],
                     'phone' => preg_replace('/\D/', '', $customerData['phone']),
                     'documento' => preg_replace('/\D/', '', $customerData['document']),
-                    'password' => Hash::make($customerData['password']),
+                    
+                    'password' => isset($customerData['password']) 
+                                    ? Hash::make($customerData['password']) 
+                                    : Hash::make(Str::random(16)),
                     'association_id' => $product->association_id,
-                    'tipo' => 'cliente',
+                    'tipo' => 'cliente', // Você pode querer renomear para 'customer' ou 'buyer'
                     'status' => 'active',
                 ]
             );
