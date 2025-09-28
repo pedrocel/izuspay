@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http; // Para futuras chamadas de API
 use Illuminate\Support\Facades\DB;   // Para transações de banco de dados
+use Illuminate\Support\Facades\Log;
 
 class FinancialController extends Controller
 {
@@ -49,6 +50,8 @@ class FinancialController extends Controller
 
         // 3. Instanciar o serviço com o período correto
         $financialService = new FinancialService($movStartDate, $movEndDate);
+
+        dd($financialService);
 
         // 4. Obter os dados dos KPIs e a lista de movimentações
         $kpiData = $financialService->getKpiData();
