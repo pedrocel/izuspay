@@ -60,7 +60,7 @@ Route::post('/criador/{username}/assinar/{planId}', [PublicCreatorController::cl
 Route::get('/page/{slug}', [PublicPageController::class, 'showAssociationLp'])->name('lp.show');
 
 Route::get('/', function () {
-    $appName = env('APP_NAME');
+    $appName = config('app.name'); 
     $view = strtolower($appName);
         return view($view);
 });
