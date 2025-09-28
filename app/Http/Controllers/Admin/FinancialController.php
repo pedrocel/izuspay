@@ -7,6 +7,7 @@ use App\Models\Withdrawal;
 use App\Models\Transaction; // Assumindo que você tenha um model para movimentações
 use App\Models\Sale;
 use App\Services\FinancialService;
+use App\Services\FinancialServices;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http; // Para futuras chamadas de API
@@ -17,7 +18,7 @@ class FinancialController extends Controller
 {
     protected $financialService;
 
-    public function __construct(FinancialService $financialService)
+    public function __construct(FinancialServices $financialService)
     {
         $this->financialService = $financialService;
     }
