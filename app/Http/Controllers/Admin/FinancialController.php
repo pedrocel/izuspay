@@ -15,55 +15,47 @@ use Illuminate\Support\Facades\Log;
 
 class FinancialController extends Controller
 {
+    protected $financialService;
+
+    public function __construct(FinancialService $financialService)
+    {
+        $this->financialService = $financialService;
+    }
+    
     public function index(Request $request)
     {
-        // --- Aba 1: Saques aguardando aprovação ---
-        $pendingWithdrawals = Withdrawal::with('wallet.association', 'bankAccount')
-            ->where('status', 'pending')
-            ->latest()
-            ->get();
-
-        // --- Aba 2: Últimos Saques (com filtros) ---
-        $processedQuery = Withdrawal::with('wallet.association', 'bankAccount')
-            ->whereIn('status', ['completed', 'failed', 'processing']);
-
+        // --- Abas 1 e 2 (Saques) ---
+        $pendingWithdrawals = Withdrawal::with('wallet.association', 'bankAccount')->where('status', 'pending')->latest()->get();
+        
+        $processedQuery = Withdrawal::with('wallet.association', 'bankAccount')->whereIn('status', ['completed', 'failed', 'processing']);
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $processedQuery->whereBetween('updated_at', [$request->start_date, $request->end_date]);
         }
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $processedQuery->whereHas('wallet.association', function ($query) use ($searchTerm) {
-                $query->where('nome', 'like', "%{$searchTerm}%")
-                      ->orWhere('email', 'like', "%{$searchTerm}%")
-                      ->orWhere('documento', 'like', "%{$searchTerm}%");
+                $query->where('nome', 'like', "%{$searchTerm}%");
             });
         }
         $processedWithdrawals = $processedQuery->latest()->paginate(10)->withQueryString();
 
-        // ===================================================================
-        // ABA 3: MOVIMENTAÇÃO DO SALDO (LÓGICA CORRIGIDA)
-        // ===================================================================
+        // --- Aba 3: Movimentação do Saldo ---
         
-        // 2. Definir o período para os KPIs e a lista de movimentações
+        // 1. Define o período a partir do request
         $movStartDate = Carbon::parse($request->input('mov_start_date', now()->startOfMonth()));
         $movEndDate = Carbon::parse($request->input('mov_end_date', now()->endOfMonth()));
 
-        // 3. Instanciar o serviço com o período correto
-        $financialService = new FinancialService($movStartDate, $movEndDate);
+        // 2. Usa o serviço injetado, passando as datas para os métodos
+        $kpiData = $this->financialService->getKpiData($movStartDate, $movEndDate);
+        $movements = $this->financialService->getMovements($movStartDate, $movEndDate);
 
-        dd($financialService);
-
-        // 4. Obter os dados dos KPIs e a lista de movimentações
-        $kpiData = $financialService->getKpiData();
-        $movements = $financialService->getMovements();
-
-        // 5. Enviar TODAS as variáveis para a view
+        // 3. Envia para a view
         return view('admin.financial.index', compact(
             'pendingWithdrawals',
             'processedWithdrawals',
-            'kpiData', // << A VARIÁVEL QUE FALTAVA
+            'kpiData',
             'movements',
-            'movStartDate', // Passando para preencher os filtros
+            'movStartDate',
             'movEndDate'
         ));
     }
