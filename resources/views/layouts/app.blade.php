@@ -13,7 +13,8 @@
     {{-- BIBLIOTECAS PARA GRÁFICOS E OUTROS --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     {{-- Alpine.js para interatividade --}}
     <script src="//unpkg.com/alpinejs" defer></script>
 

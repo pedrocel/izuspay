@@ -31,6 +31,8 @@
                 <button @click="tab = 'saques'" :class="{ 'border-purple-500 text-purple-600': tab === 'saques', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'saques' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Saques</button>
                 <button @click="tab = 'planos'" :class="{ 'border-purple-500 text-purple-600': tab === 'planos', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'planos' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Planos</button>
                 <button @click="tab = 'produtos'" :class="{ 'border-purple-500 text-purple-600': tab === 'produtos', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'produtos' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Produtos</button>
+                <button @click="tab = 'configuracoes'" :class="{ 'border-purple-500 text-purple-600': tab === 'configuracoes', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'configuracoes' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Configurações</button>
+
             </nav>
         </div>
 
@@ -59,6 +61,10 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Produtos</h3>
                 @include('admin.associations._products_table', ['products' => $association->products])
             </div>
+
+            <div x-show="tab === 'configuracoes'" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            @include('admin.associations._settings_form')
+        </div>
         </div>
     </div>
 </div>

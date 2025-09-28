@@ -27,6 +27,10 @@ class Sale extends Model
         'payment_method',
         'status',
         'transaction_hash',
+        'fee_percentage',
+        'fee_fixed',
+        'fee_total',
+        'net_amount',
     ];
 
     /**
@@ -38,6 +42,10 @@ class Sale extends Model
         'total_price' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'fee_percentage' => 'decimal:4',
+        'fee_fixed' => 'decimal:2',
+        'fee_total' => 'decimal:2',
+        'net_amount' => 'decimal:2',
     ];
 
     /**

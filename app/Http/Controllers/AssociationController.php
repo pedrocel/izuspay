@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\CreatorProfile;
 use App\Models\PerfilModel;
 use App\Models\UserPerfilModel;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -87,6 +88,22 @@ class AssociationController extends Controller
                 'numero_membros' => 0,
             ]);
 
+            Wallet::create([
+                'association_id' => $association->id,
+                'balance' => 0,
+                'gateway_id' => 2
+            ]);
+
+            $defaultFees = [
+                ['payment_method' => 'pix',         'percentage_fee' => 0.99, 'fixed_fee' => 0.00],
+                ['payment_method' => 'credit_card', 'percentage_fee' => 4.99, 'fixed_fee' => 0.40],
+                ['payment_method' => 'boleto',      'percentage_fee' => 0.00, 'fixed_fee' => 3.49],
+            ];
+
+            // Cria um registro de taxa para cada método de pagamento.
+            foreach ($defaultFees as $feeData) {
+                $association->fees()->create($feeData);
+            }
             // 2. Criar o User
             $user = User::create([
                 'association_id' => $association->id,

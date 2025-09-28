@@ -109,15 +109,17 @@
 
                             {{-- Coluna de Taxas --}}
                             <td class="px-6 py-4">
-                                <div class="flex flex-col space-y-2 text-sm">
-                                    @foreach($association->fee_details as $fee)
-                                        <div>
-                                            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ $fee['label'] }}:</span>
-                                            <span class="text-gray-600 dark:text-gray-400">
-                                                {{ $fee['fee_percentage'] }}% + R$ {{ number_format($fee['fee_fixed'], 2, ',', '.') }}
+                                <div class="flex flex-col space-y-1 text-sm">
+                                    @forelse($association->fees as $fee)
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-semibold text-gray-800 dark:text-gray-200">{{ ucfirst($fee->payment_method) }}:</span>
+                                            <span class="text-gray-600 dark:text-gray-400 text-right">
+                                                {{ rtrim(rtrim(number_format($fee->percentage_fee, 2, ',', '.'), '0'), ',') }}% + R$ {{ number_format($fee->fixed_fee, 2, ',', '.') }}
                                             </span>
                                         </div>
-                                    @endforeach
+                                    @empty
+                                        <span class="text-xs text-red-500">Nenhuma taxa configurada.</span>
+                                    @endforelse
                                 </div>
                             </td>
 

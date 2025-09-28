@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AssociationController as AdminAssociationController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\FinancialController;
+use App\Http\Controllers\Admin\GatewayController;
 use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -59,7 +60,9 @@ Route::post('/criador/{username}/assinar/{planId}', [PublicCreatorController::cl
 Route::get('/page/{slug}', [PublicPageController::class, 'showAssociationLp'])->name('lp.show');
 
 Route::get('/', function () {
-    return view('welcome');
+    $appName = env('APP_NAME');
+    $view = strtolower($appName);
+        return view($view);
 });
 
 Route::get('/termos', function () {
@@ -271,6 +274,18 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
     Route::put('/organizacoes/{organizacao}', [OrganizationController::class, 'update'])->name('admin.organizacoes.update');
     Route::delete('/organizacoes/{organizacao}', [OrganizationController::class, 'destroy'])->name('admin.organizacoes.destroy');
 
+    Route::get('/gateways', [GatewayController::class, 'index'])->name('admin.gateways.index');
+    Route::get('/gateways/criar', [GatewayController::class, 'create'])->name('admin.gateways.create');
+    Route::post('/gateways/criar', [GatewayController::class, 'store'])->name('admin.gateways.store');
+    Route::get('/gateways/editar/{gateway}', [GatewayController::class, 'edit'])->name('admin.gateways.edit');
+    Route::put('/gateways/editar/{gateway}', [GatewayController::class, 'update'])->name('admin.gateways.update');
+    Route::delete('/gateways/remover/{id}', [GatewayController::class, 'destroy'])->name('admin.gateways.destroy');
+
+
+
+
+
+
     Route::get('/perfis', [PerfilController::class, 'index'])->name('admin.perfis.index');
     Route::get('/perfis/create', [PerfilController::class, 'create'])->name('admin.perfis.create');
     Route::post('/perfis', [PerfilController::class, 'store'])->name('admin.perfis.store');
@@ -304,6 +319,7 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
 
     Route::get("/contas", [AdminAssociationController::class, "index"])->name("admin.contas.index");
     Route::get("/contas/{association}", [AdminAssociationController::class, "show"])->name("admin.contas.show");
+    Route::put('/contas/{association}/settings', [AdminAssociationController::class, 'updateSettings'])->name('admin.associations.updateSettings');
 
     Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('admin.users.create');

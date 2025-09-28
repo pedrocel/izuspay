@@ -241,7 +241,7 @@
 <body>
 
     <header class="header">
-        <div class="logo">Izus<span>Payment</span></div>
+        <div class="logo">{{ config('app.name') }}</div>
         <div class="header-right-actions">
             <div class="header-actions">
                 <a href="{{ route('login') }}" class="btn btn-secondary">Entrar no Portal</a>
@@ -296,7 +296,7 @@
         <main class="content">
             <section id="primeiros-passos">
                 <h1>Primeiros passos</h1>
-                <p>Para começar a utilizar as APIs da Izus Payment, é essencial compreender os processos de integração dos serviços disponíveis e os requisitos para sua utilização.</p>
+                <p>Para começar a utilizar as APIs da {{ config('app.name') }}, é essencial compreender os processos de integração dos serviços disponíveis e os requisitos para sua utilização.</p>
                 <h3>1. Obtenha sua Chave de API</h3>
                 <p>Acesse sua conta na plataforma, navegue até a seção <strong>Configurações > API</strong> e gere sua chave. Ela será usada para autenticar todas as suas requisições.</p>
             </section>

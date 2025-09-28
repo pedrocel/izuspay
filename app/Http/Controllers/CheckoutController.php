@@ -31,10 +31,12 @@ class CheckoutController extends Controller
     public function store(StoreCheckoutRequest $request, string $hash_id): JsonResponse
     {
         $product = Product::where('hash_id', $hash_id)->firstOrFail();
+
         $validatedData = $request->validated();
 
         try {
             $paymentData = $this->paymentService->createTransaction($product, $validatedData);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Transação iniciada com sucesso!',
@@ -187,6 +189,9 @@ public function handlePostback(Request $request)
             // 1. Atualiza o status da venda
             $sale->update(['status' => 'paid']);
             Log::info("Venda #{$sale->id} atualizada para 'paga' via postback/verificação.");
+
+            // 2. ATUALIZA O SALDO DA CARTEIRA DO VENDEDOR (NOVA LÓGICA)
+            
 
             // 2. Registra as movimentações financeiras
             $this->registerFinancialEntries($sale);
