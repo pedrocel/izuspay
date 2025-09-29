@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Izus Pay - Gateway de Pagamentos e Api pix</title>
+    <title>Wo Pago - Gateway de Pagamentos e Api pix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,11 +18,19 @@
                     colors: {
                         'primary': '#0066FF',
                         'primary-dark': '#0052CC',
+                        'primary-light': '#E6F2FF',
                         'secondary': '#00D4FF',
                         'accent': '#FF6B35',
-                        'dark': '#0A0A0A',
-                        'dark-light': '#1A1A1A',
-                        'dark-lighter': '#2A2A2A',
+                        'gray-50': '#FAFAFA',
+                        'gray-100': '#F5F5F5',
+                        'gray-200': '#E5E5E5',
+                        'gray-300': '#D4D4D4',
+                        'gray-400': '#A3A3A3',
+                        'gray-500': '#737373',
+                        'gray-600': '#525252',
+                        'gray-700': '#404040',
+                        'gray-800': '#262626',
+                        'gray-900': '#171717',
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
@@ -30,11 +38,13 @@
                         'slide-up': 'slideUp 0.5s ease-out',
                         'fade-in': 'fadeIn 0.6s ease-out',
                         'scale-in': 'scaleIn 0.4s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+                        'transaction': 'transaction 3s ease-in-out infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' },
+                            '50%': { transform: 'translateY(-10px)' },
                         },
                         slideUp: {
                             '0%': { transform: 'translateY(100px)', opacity: '0' },
@@ -48,588 +58,371 @@
                             '0%': { transform: 'scale(0.9)', opacity: '0' },
                             '100%': { transform: 'scale(1)', opacity: '1' },
                         },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        transaction: {
+                            '0%': { transform: 'translateX(-100px)', opacity: '0' },
+                            '50%': { transform: 'translateX(0)', opacity: '1' },
+                            '100%': { transform: 'translateX(100px)', opacity: '0' },
+                        },
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-dark text-white font-inter overflow-x-hidden">
-    <nav class="fixed top-0 w-full z-50 bg-dark/80 backdrop-blur-xl border-b border-white/10">
+<body class="bg-white text-gray-900 font-inter overflow-x-hidden">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-8">
-                    <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        Izus Pay
+                    <div class="text-2xl font-bold text-primary">
+                        Wo Pago
                     </div>
                     <div class="hidden md:flex space-x-8">
-                        <a href="{{ route('show.docs') }}" class="text-gray-300 hover:text-white transition-colors">Documentação</a>
-                        <a href="#support" class="text-gray-300 hover:text-white transition-colors">Suporte</a>
+                        <a href="{{ route('show.docs') }}"  class="text-gray-600 hover:text-primary transition-colors">Documentação</a>
+                        <a href="#support" class="text-gray-600 hover:text-primary transition-colors">Suporte</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition-colors">Login</a>
-                    <a href="{{ route('show.docs') }}" class="bg-primary hover:bg-primary-dark px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105">
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-primary transition-colors">Login</a>
+                    <a href="{{ route('show.docs') }}" class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg font-medium transition-all duration-300">
                         Integrar API
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-{{--  --}}
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,102,255,0.1),transparent_50%)]"></div>
-        
-        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-            <div class="animate-fade-in">
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight">
-                    <span class="bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent">
-                        Simplificando o faturamento do 
+
+    <section class="relative pt-24 pb-20 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight text-gray-900">
+                    Receba seus pagamentos
                     <br>
-                    <span class="text-white">seu negócio</span>
+                    <span class="text-primary">em segundos</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                    A plataforma de pagamentos mais avançada do Brasil. PIX instantâneo, cartões globais, 
-                    APIs robustas e segurança bancária.
+                <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+                    PIX instantâneo, cartões sem complicação e taxas transparentes. 
+                    Tudo em uma plataforma simples e segura.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
-                        Começar Agora
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+                        Criar conta agora
                     </a>
+                    <button onclick="openCalculator()" class="border border-gray-300 hover:border-primary text-gray-700 hover:text-primary px-8 py-4 rounded-lg font-semibold transition-all duration-300">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Falar com gerente de contas
+                    </button>
+                </div>
+
+                <div class="bg-gray-50 rounded-2xl p-8 max-w-4xl mx-auto">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6">Transações em tempo real</h3>
+                    <div class="space-y-3" id="transactionFeed">
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full animate-float"></div>
-        <div class="absolute bottom-20 right-10 w-32 h-32 bg-secondary/20 rounded-full animate-float" style="animation-delay: -2s;"></div>
-        <div class="absolute top-1/2 left-20 w-16 h-16 bg-accent/20 rounded-full animate-float" style="animation-delay: -4s;"></div>
     </section>
 
-    {{-- <section class="py-20 bg-dark-light">
+    <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="text-center animate-scale-in">
-                    <div class="text-4xl md:text-5xl font-black text-primary mb-2" data-counter="50000">0</div>
-                    <div class="text-gray-400">Transações/dia</div>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                    Integração em <span class="text-primary">5 minutos</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Nossa API é simples e poderosa. Veja como é fácil começar a aceitar pagamentos.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Criar Pagamento PIX</h3>
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        <pre class="text-sm text-gray-700 font-mono bg-gray-50 p-4 rounded-lg overflow-x-auto"><code>{
+  "amount": 10000,
+  "description": "Pedido #123",
+  "customer": {
+    "name": "João Silva",
+    "email": "joao@email.com"
+  }
+}</code></pre>
+                        <button onclick="simulateApiCall()" class="mt-4 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors">
+                            <i class="fas fa-play mr-2"></i>
+                            Executar
+                        </button>
+                    </div>
                 </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.1s;">
-                    <div class="text-4xl md:text-5xl font-black text-secondary mb-2" data-counter="99.9">0</div>
-                    <div class="text-gray-400">% Uptime</div>
-                </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.2s;">
-                    <div class="text-4xl md:text-5xl font-black text-accent mb-2" data-counter="2000">0</div>
-                    <div class="text-gray-400">Empresas</div>
-                </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.3s;">
-                    <div class="text-4xl md:text-5xl font-black text-primary mb-2" data-counter="24">0</div>
-                    <div class="text-gray-400">Países</div>
+
+                <div>
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold mb-4">Resposta da API</h3>
+                        <div id="apiResponse" class="text-sm text-gray-500 font-mono bg-gray-50 p-4 rounded-lg">
+                            Clique em "Executar" para ver a resposta
+                        </div>
+                        <div class="mt-4 flex items-center space-x-4">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="text-sm">200 OK</span>
+                            </div>
+                            <div class="text-sm text-gray-500" id="responseTime">
+                                Tempo: --ms
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section> --}}
+    </section>
 
-    <section class="py-32 bg-dark">
+    <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                        Para Todos os Negócios
-                    </span>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                    Todos os métodos de <span class="text-primary">pagamento</span>
                 </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Ofereça a melhor experiência para seus clientes com múltiplas opções de pagamento.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-primary-light to-white border border-primary/20 rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#000000" width="800px" height="800px" viewBox="0 0 16 16"><path d="M11.917 11.71a2.046 2.046 0 0 1-1.454-.602l-2.1-2.1a.4.4 0 0 0-.551 0l-2.108 2.108a2.044 2.044 0 0 1-1.454.602h-.414l2.66 2.66c.83.83 2.177.83 3.007 0l2.667-2.668h-.253zM4.25 4.282c.55 0 1.066.214 1.454.602l2.108 2.108a.39.39 0 0 0 .552 0l2.1-2.1a2.044 2.044 0 0 1 1.453-.602h.253L9.503 1.623a2.127 2.127 0 0 0-3.007 0l-2.66 2.66h.414z"/><path d="m14.377 6.496-1.612-1.612a.307.307 0 0 1-.114.023h-.733c-.379 0-.75.154-1.017.422l-2.1 2.1a1.005 1.005 0 0 1-1.425 0L5.268 5.32a1.448 1.448 0 0 0-1.018-.422h-.9a.306.306 0 0 1-.109-.021L1.623 6.496c-.83.83-.83 2.177 0 3.008l1.618 1.618a.305.305 0 0 1 .108-.022h.901c.38 0 .75-.153 1.018-.421L7.375 8.57a1.034 1.034 0 0 1 1.426 0l2.1 2.1c.267.268.638.421 1.017.421h.733c.04 0 .079.01.114.024l1.612-1.612c.83-.83.83-2.178 0-3.008z"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">PIX</h3>
+                    <p class="text-gray-600 mb-6">Pagamentos instantâneos 24/7 com QR Code automático</p>
+                    <div class="text-3xl font-bold text-primary">5,99% + R$0,99</div>
+                    <div class="text-sm text-gray-500">por transação</div>
+                </div>
+
+                <div class="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-credit-card text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Cartões</h3>
+                    <p class="text-gray-600 mb-6">Crédito e débito com parcelamento sem juros</p>
+                    <div class="text-3xl font-bold text-gray-700">7,99% + R$1,99</div>
+                    <div class="text-sm text-gray-500">débito / 4,9% crédito</div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300">
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-barcode text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Boleto</h3>
+                    <p class="text-gray-600 mb-6">Boleto bancário com vencimento em 2 dias</p>
+                    <div class="text-3xl font-bold text-green-600">R$ 3,90</div>
+                    <div class="text-sm text-gray-500">por boleto pago</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                    Para todos os <span class="text-primary">negócios</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
                     Soluções personalizadas para cada segmento
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
+                <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
                     <i class="fas fa-shopping-cart text-4xl text-primary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">E-commerce</h3>
-                    <p class="text-gray-400">Checkout otimizado, recuperação de carrinho abandonado e análise de conversão.</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">E-commerce</h3>
+                    <p class="text-gray-600">Checkout otimizado e recuperação de carrinho abandonado.</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-secondary/10 to-accent/10 border border-secondary/20 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500">
-                    <i class="fas fa-utensils text-4xl text-secondary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Food & Delivery</h3>
-                    <p class="text-gray-400">Pagamentos rápidos, split de comissões e integração com apps de delivery.</p>
+                <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                    <i class="fas fa-utensils text-4xl text-primary mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">Food & Delivery</h3>
+                    <p class="text-gray-600">Pagamentos rápidos e split de comissões automático.</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-accent/10 to-primary/10 border border-accent/20 rounded-2xl p-8 hover:border-accent/50 transition-all duration-500">
-                    <i class="fas fa-graduation-cap text-4xl text-accent mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Educação</h3>
-                    <p class="text-gray-400">Assinaturas recorrentes, parcelamento sem juros e gestão de inadimplência.</p>
+                <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                    <i class="fas fa-graduation-cap text-4xl text-primary mb-6"></i>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">Educação</h3>
+                    <p class="text-gray-600">Assinaturas recorrentes e parcelamento sem juros.</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
+                <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
                     <i class="fas fa-heartbeat text-4xl text-primary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Saúde</h3>
-                    <p class="text-gray-400">Conformidade LGPD, pagamentos seguros e integração com sistemas médicos.</p>
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">Saúde</h3>
+                    <p class="text-gray-600">Conformidade LGPD e integração com sistemas médicos.</p>
                 </div>
             </div>
         </div>
     </section>
 
-   
-
-    <section id="support" class="py-32 bg-dark">
+    <section id="support" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                        Suporte Excepcional
-                    </span>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                    Suporte <span class="text-primary">excepcional</span>
                 </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
                     Nossa equipe está sempre pronta para ajudar você
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-1 gap-8 mb-16">
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-headset text-3xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Agente de contas </h3>
-                    <p class="text-gray-400">Agente personalizado para seu negócio.</p>
-                </div>
-
-
-            </div>
-
             <div class="text-center">
-                <div class="inline-flex space-x-4">
-                    <button class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
+                <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-headset text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-900">Agente de contas</h3>
+                <p class="text-gray-600 mb-8">Agente personalizado para seu negócio.</p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300">
                         <i class="fas fa-comments mr-2"></i>
                         Iniciar Chat
                     </button>
-                    <a href="{{ route('show.docs') }}" class="border border-white/20 hover:border-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
+                    <button onclick="openApiModal()" class="border border-gray-300 hover:border-primary text-gray-700 hover:text-primary px-8 py-4 rounded-lg font-semibold transition-all duration-300">
                         <i class="fas fa-book mr-2"></i>
                         Ver Documentação
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-32 bg-gradient-to-br from-primary/20 via-dark to-secondary/20">
+    <section class="py-20 bg-primary">
         <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <h2 class="text-4xl md:text-6xl font-black mb-8">
-                <span class="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Pronto para Revolucionar
-                </span>
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 text-white">
+                Pronto para revolucionar
                 <br>
-                <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Seus Pagamentos?
-                </span>
+                seus pagamentos?
             </h2>
-            <p class="text-xl text-gray-300 mb-12 leading-relaxed">
-                Junte-se a milhares de empresas que já escolheram o Izus Pay. 
+            <p class="text-xl text-blue-100 mb-12 leading-relaxed">
+                Junte-se a milhares de empresas que já escolheram o Wo Pago. 
                 Comece gratuitamente e veja a diferença em minutos.
             </p>
             <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
-                        Começar Agora
-                    </a>
-                </div>
+                <a href="#" class="bg-white hover:bg-gray-100 text-primary px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+                    Começar Agora
+                </a>
             </div>
         </div>
     </section>
 
-    <footer class="bg-dark-light border-t border-white/10 py-16">
+    <footer class="bg-gray-50 border-t border-gray-200 py-16">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8 mb-12">
                 <div>
-                    <div class="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
-                        Izus Pay
+                    <div class="text-3xl font-bold text-primary mb-6">
+                        Wo Pago
                     </div>
-                    <p class="text-gray-400 mb-6">
+                    <p class="text-gray-600 mb-6">
                         O gateway de pagamentos mais avançado do Brasil. Seguro, rápido e confiável.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-twitter text-primary"></i>
+                        <a href="#" class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-linkedin text-primary"></i>
+                        <a href="#" class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+                            <i class="fab fa-linkedin"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-github text-primary"></i>
+                        <a href="#" class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+                            <i class="fab fa-github"></i>
                         </a>
                     </div>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-semibold mb-6">Produto</h4>
+                    <h4 class="text-lg font-semibold mb-6 text-gray-900">Produto</h4>
                     <ul class="space-y-3">
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Recursos</a></li>
-                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition-colors">Preços</a></li>
-                        <li><a href="#integrations" class="text-gray-400 hover:text-white transition-colors">Integrações</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Changelog</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Recursos</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Preços</a></li>
+                        <li><a href="{{ route('show.docs') }}"  class="text-gray-600 hover:text-primary transition-colors">Integrações</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Changelog</a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-semibold mb-6">Desenvolvedores</h4>
+                    <h4 class="text-lg font-semibold mb-6 text-gray-900">Empresa</h4>
                     <ul class="space-y-3">
-                        <li><a href="{{ route('show.docs') }}" class="text-gray-400 hover:text-white transition-colors">Documentação</a></li>
-                      
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-6">Empresa</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Sobre</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Carreiras</a></li>
-                        <li><a href="#support" class="text-gray-400 hover:text-white transition-colors">Contato</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Sobre</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary transition-colors">Carreiras</a></li>
+                        <li><a href="#support" class="text-gray-600 hover:text-primary transition-colors">Contato</a></li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <div class="text-gray-400 mb-4 md:mb-0">
-                    © 2025 Izus Pay. Todos os direitos reservados.
+            <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-600 mb-4 md:mb-0">
+                    © 2025 Wo Pago. Todos os direitos reservados.
                 </div>
                 <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacidade</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Termos</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Cookies</a>
+                    <a href="#" class="text-gray-600 hover:text-primary transition-colors">Privacidade</a>
+                    <a href="#" class="text-gray-600 hover:text-primary transition-colors">Termos</a>
+                    <a href="#" class="text-gray-600 hover:text-primary transition-colors">Cookies</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <div id="apiModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-dark-light border border-white/20 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 class="text-2xl font-bold">Documentação da API</h2>
-                    <button onclick="closeApiModal()" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="flex h-[calc(90vh-80px)]">
-                    <div class="w-1/3 border-r border-white/10 p-6 overflow-y-auto">
-                        <nav class="space-y-2">
-                            <button onclick="showApiSection('quickstart')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-rocket mr-2"></i>Quick Start
-                            </button>
-                            {{-- <button onclick="showApiSection('authentication')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-key mr-2"></i>Autenticação
-                            </button>
-                            <button onclick="showApiSection('pix')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-bolt mr-2"></i>PIX
-                            </button>
-                            <button onclick="showApiSection('cards')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-credit-card mr-2"></i>Cartões
-                            </button>
-                            <button onclick="showApiSection('webhooks')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-webhook mr-2"></i>Webhooks
-                            </button>
-                            <button onclick="showApiSection('sdks')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-code mr-2"></i>SDKs
-                            </button> --}}
-                        </nav>
-                    </div>
-                    
-                    <div class="flex-1 p-6 overflow-y-auto">
-                        <div id="quickstart" class="api-section">
-                            <h3 class="text-xl font-bold mb-4">Quick Start</h3>
-                            <p class="text-gray-400 mb-6">Comece a aceitar pagamentos em minutos com nossa API RESTful.</p>
-                            
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Base URL</span>
-                                    <button onclick="copyToClipboard('https://api.izuspay.com/v1')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-primary font-mono">https://api.izuspay.com/v1</code>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Instalação</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">npm</span>
-                                    <button onclick="copyToClipboard('npm install izuspay-sdk')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-green-400 font-mono">npm install izuspay-sdk</code>
-                            </div>
-                        </div>
-                        
-                        <div id="authentication" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Autenticação</h3>
-                            <p class="text-gray-400 mb-6">Use sua API Key no header Authorization de todas as requisições.</p>
-                            
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Header</span>
-                                    <button onclick="copyToClipboard('Authorization: Bearer sk_live_...')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-yellow-400 font-mono">Authorization: Bearer sk_live_...</code>
-                            </div>
-                            
-                            <div class="bg-dark rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Exemplo cURL</span>
-                                    <button onclick="copyToClipboard(`curl -X GET https://api.izuspay.com/v1/payments \\
-  -H 'Authorization: Bearer sk_live_...' \\
-  -H 'Content-Type: application/json'`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>curl -X GET https://api.izuspay.com/v1/payments \
-  -H 'Authorization: Bearer sk_live_...' \
-  -H 'Content-Type: application/json'</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="pix" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">PIX</h3>
-                            <p class="text-gray-400 mb-6">Crie cobranças PIX instantâneas com QR Code automático.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Criar Cobrança PIX</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /payments/pix</span>
-                                    <button onclick="copyToClipboard(`{
-  \"amount\": 10000,
-  \"description\": \"Pagamento do pedido #123\",
-  \"customer\": {
-    \"name\": \"João Silva\",
-    \"email\": \"joao@email.com\",
-    \"document\": \"12345678901\"
-  },
-  \"expires_in\": 3600
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "amount": 10000,
-  "description": "Pagamento do pedido #123",
-  "customer": {
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "document": "12345678901"
-  },
-  "expires_in": 3600
-}</code></pre>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Resposta</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "id": "pix_1234567890",
-  "status": "pending",
-  "amount": 10000,
-  "qr_code": "00020126580014br.gov.bcb.pix...",
-  "qr_code_url": "https://api.izuspay.com/qr/pix_1234567890.png",
-  "expires_at": "2024-01-01T12:00:00Z"
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="cards" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Cartões</h3>
-                            <p class="text-gray-400 mb-6">Processe pagamentos com cartão de crédito e débito.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Criar Pagamento</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /payments/card</span>
-                                    <button onclick="copyToClipboard(`{
-  \"amount\": 10000,
-  \"installments\": 1,
-  \"card\": {
-    \"number\": \"4111111111111111\",
-    \"exp_month\": \"12\",
-    \"exp_year\": \"2025\",
-    \"cvc\": \"123\",
-    \"holder_name\": \"JOAO SILVA\"
-  },
-  \"customer\": {
-    \"name\": \"João Silva\",
-    \"email\": \"joao@email.com\",
-    \"document\": \"12345678901\"
-  }
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "amount": 10000,
-  "installments": 1,
-  "card": {
-    "number": "4111111111111111",
-    "exp_month": "12",
-    "exp_year": "2025",
-    "cvc": "123",
-    "holder_name": "JOAO SILVA"
-  },
-  "customer": {
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "document": "12345678901"
-  }
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="webhooks" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Webhooks</h3>
-                            <p class="text-gray-400 mb-6">Receba notificações em tempo real sobre mudanças de status.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Configurar Webhook</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /webhooks</span>
-                                    <button onclick="copyToClipboard(`{
-  \"url\": \"https://meusite.com/webhook\",
-  \"events\": [\"payment.paid\", \"payment.failed\"]
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "url": "https://meusite.com/webhook",
-  "events": ["payment.paid", "payment.failed"]
-}</code></pre>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Payload do Webhook</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "event": "payment.paid",
-  "data": {
-    "id": "pay_1234567890",
-    "status": "paid",
-    "amount": 10000,
-    "paid_at": "2024-01-01T12:00:00Z"
-  }
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="sdks" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">SDKs</h3>
-                            <p class="text-gray-400 mb-6">Bibliotecas oficiais para as principais linguagens.</p>
-                            
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Node.js</h4>
-                                    <code class="text-green-400 font-mono text-sm">npm install izuspay-node</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">PHP</h4>
-                                    <code class="text-blue-400 font-mono text-sm">composer require izuspay/php</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Python</h4>
-                                    <code class="text-yellow-400 font-mono text-sm">pip install izuspay</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Ruby</h4>
-                                    <code class="text-red-400 font-mono text-sm">gem install izuspay</code>
-                                </div>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Exemplo Node.js</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">JavaScript</span>
-                                    <button onclick="copyToClipboard(`const IzusPay = require('izuspay-node');
-const client = new IzusPay('sk_live_...');
-
-const payment = await client.payments.create({
-  amount: 10000,
-  method: 'pix',
-  customer: {
-    name: 'João Silva',
-    email: 'joao@email.com'
-  }
-});`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>const IzusPay = require('izuspay-node');
-const client = new IzusPay('sk_live_...');
-
-const payment = await client.payments.create({
-  amount: 10000,
-  method: 'pix',
-  customer: {
-    name: 'João Silva',
-    email: 'joao@email.com'
-  }
-});</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calculatorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-dark-light border border-white/20 rounded-2xl max-w-2xl w-full">
-                <div class="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 class="text-2xl font-bold">Calculadora de Economia</h2>
-                    <button onclick="closeCalculator()" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="p-6">
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Volume Mensal (R$)</label>
-                            <input type="number" id="monthlyVolume" placeholder="100000" class="w-full bg-dark border border-white/20 rounded-lg px-4 py-3 focus:border-primary focus:outline-none" oninput="calculateSavings()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Taxa Atual (%)</label>
-                            <input type="number" id="currentRate" placeholder="3.5" step="0.1" class="w-full bg-dark border border-white/20 rounded-lg px-4 py-3 focus:border-primary focus:outline-none" oninput="calculateSavings()">
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-xl p-6 mb-6">
-                        <h3 class="text-xl font-bold mb-4">Economia com Izus Pay</h3>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <div class="text-2xl font-bold text-primary" id="monthlySavings">R$ 0</div>
-                                <div class="text-sm text-gray-400">Por mês</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-secondary" id="yearlySavings">R$ 0</div>
-                                <div class="text-sm text-gray-400">Por ano</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-accent" id="savingsPercentage">0%</div>
-                                <div class="text-sm text-gray-400">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <button onclick="openApiModal(); closeCalculator();" class="bg-primary hover:bg-primary-dark px-8 py-3 rounded-xl font-semibold transition-all duration-300">
-                            Começar Agora
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
+        // Live Transaction Feed
+        const transactions = [
+            { name: "João Silva", amount: "R$ 150,00", method: "PIX", status: "approved" },
+            { name: "Maria Santos", amount: "R$ 89,90", method: "Cartão", status: "approved" },
+            { name: "Pedro Costa", amount: "R$ 299,00", method: "PIX", status: "approved" },
+            { name: "Ana Oliveira", amount: "R$ 45,50", method: "Boleto", status: "pending" },
+            { name: "Carlos Lima", amount: "R$ 199,99", method: "Cartão", status: "approved" },
+        ];
+
+        function updateTransactionFeed() {
+            const feed = document.getElementById('transactionFeed');
+            const randomTransaction = transactions[Math.floor(Math.random() * transactions.length)];
+            
+            const transactionElement = document.createElement('div');
+            transactionElement.className = 'flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 animate-slide-up';
+            transactionElement.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-900">${randomTransaction.name}</div>
+                        <div class="text-sm text-gray-500">${randomTransaction.method}</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-semibold text-gray-900">${randomTransaction.amount}</div>
+                    <div class="text-sm ${randomTransaction.status === 'approved' ? 'text-green-600' : 'text-yellow-600'}">
+                        ${randomTransaction.status === 'approved' ? 'Aprovado' : 'Pendente'}
+                    </div>
+                </div>
+            `;
+            
+            feed.insertBefore(transactionElement, feed.firstChild);
+            
+            // Keep only 5 transactions
+            while (feed.children.length > 5) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Update transaction feed every 3 seconds
+        setInterval(updateTransactionFeed, 3000);
+        updateTransactionFeed(); // Initial load
+
         // Counter Animation
         function animateCounters() {
             const counters = document.querySelectorAll('[data-counter]');
@@ -672,50 +465,26 @@ const payment = await client.payments.create({
             }
         });
 
-        // API Modal Functions
-        function openApiModal() {
-            document.getElementById('apiModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            showApiSection('quickstart');
-        }
-
-        function closeApiModal() {
-            document.getElementById('apiModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function showApiSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.api-section').forEach(section => {
-                section.classList.add('hidden');
-            });
+        // API Simulation
+        function simulateApiCall() {
+            const responseDiv = document.getElementById('apiResponse');
+            const timeDiv = document.getElementById('responseTime');
             
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.api-nav-btn').forEach(btn => {
-                btn.classList.remove('bg-primary/20', 'text-primary');
-            });
+            responseDiv.innerHTML = '<div class="text-gray-500">Processando...</div>';
             
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-            
-            // Add active class to clicked button
-            event.target.classList.add('bg-primary/20', 'text-primary');
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Show feedback
-                const button = event.target;
-                const originalIcon = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                button.classList.add('text-green-400');
+            setTimeout(() => {
+                const response = {
+                    "id": "pix_" + Math.random().toString(36).substr(2, 9),
+                    "status": "pending",
+                    "amount": 10000,
+                    "qr_code": "00020126580014br.gov.bcb.pix...",
+                    "qr_code_url": "https://api.izuspay.com/qr/pix_123.png",
+                    "expires_at": new Date(Date.now() + 3600000).toISOString()
+                };
                 
-                setTimeout(() => {
-                    button.innerHTML = originalIcon;
-                    button.classList.remove('text-green-400');
-                    button.classList.add('text-primary');
-                }, 1000);
-            });
+                responseDiv.innerHTML = `<pre class="text-gray-700">${JSON.stringify(response, null, 2)}</pre>`;
+                timeDiv.textContent = `Tempo: ${Math.floor(Math.random() * 200 + 50)}ms`;
+            }, 1000);
         }
 
         // Calculator Functions
@@ -732,7 +501,7 @@ const payment = await client.payments.create({
         function calculateSavings() {
             const volume = parseFloat(document.getElementById('monthlyVolume').value) || 0;
             const currentRate = parseFloat(document.getElementById('currentRate').value) || 0;
-            const izusRate = 2.4; // Izus Pay rate
+            const izusRate = 2.4; // Wo Pago rate
             
             const currentCost = volume * (currentRate / 100);
             const izusCost = volume * (izusRate / 100);
@@ -745,19 +514,32 @@ const payment = await client.payments.create({
             document.getElementById('savingsPercentage').textContent = `${savingsPercentage.toFixed(1)}%`;
         }
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+        // API Modal Functions
+        function openApiModal() {
+            document.getElementById('apiModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeApiModal() {
+            document.getElementById('apiModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const button = event.target;
+                const originalIcon = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.classList.add('text-green-600');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalIcon;
+                    button.classList.remove('text-green-600');
+                    button.classList.add('text-primary');
+                }, 1000);
             });
-        });
+        }
 
         // Close modals on escape key
         document.addEventListener('keydown', (e) => {
@@ -778,6 +560,20 @@ const payment = await client.payments.create({
             if (e.target === e.currentTarget) {
                 closeCalculator();
             }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 </body>
