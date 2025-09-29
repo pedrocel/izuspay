@@ -3,782 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Izus Pay - Gateway de Pagamentos Premium</title>
+    <title>Izus Pay - Gateway de Pagamentos e Api pix</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         'inter': ['Inter', 'sans-serif'],
-                        'mono': ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        'primary': '#0066FF',
-                        'primary-dark': '#0052CC',
-                        'secondary': '#00D4FF',
-                        'accent': '#FF6B35',
-                        'dark': '#0A0A0A',
-                        'dark-light': '#1A1A1A',
-                        'dark-lighter': '#2A2A2A',
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-up': 'slideUp 0.5s ease-out',
-                        'fade-in': 'fadeIn 0.6s ease-out',
-                        'scale-in': 'scaleIn 0.4s ease-out',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(100px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        scaleIn: {
-                            '0%': { transform: 'scale(0.9)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' },
-                        },
+                        'primary': '#2563eb',
+                        'primary-light': '#3b82f6',
+                        'primary-dark': '#1d4ed8',
+                        'gray-50': '#f9fafb',
+                        'gray-100': '#f3f4f6',
+                        'gray-200': '#e5e7eb',
+                        'gray-300': '#d1d5db',
+                        'gray-400': '#9ca3af',
+                        'gray-500': '#6b7280',
+                        'gray-600': '#4b5563',
+                        'gray-700': '#374151',
+                        'gray-800': '#1f2937',
+                        'gray-900': '#111827',
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-dark text-white font-inter overflow-x-hidden">
-    <nav class="fixed top-0 w-full z-50 bg-dark/80 backdrop-blur-xl border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+<body class="bg-white text-gray-900 font-inter antialiased">
+     Navigation 
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-6">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-8">
-                    <div class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <div class="text-xl font-semibold text-gray-900">
                         Izus Pay
                     </div>
-                    <div class="hidden md:flex space-x-8">
-                        <a href="{{ route('show.docs') }}" class="text-gray-300 hover:text-white transition-colors">Documentação</a>
-                        <a href="#support" class="text-gray-300 hover:text-white transition-colors">Suporte</a>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Documentação</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Suporte</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition-colors">Login</a>
-                    <a href="{{ route('show.docs') }}" class="bg-primary hover:bg-primary-dark px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105">
-                        Integrar API
+                    <a href="#" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">Login</a>
+                    <a href="#" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Começar
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-{{--  --}}
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,102,255,0.1),transparent_50%)]"></div>
-        
-        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-            <div class="animate-fade-in">
-                <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight">
-                    <span class="bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent">
-                        Simplificando o faturamento do 
-                    <br>
-                    <span class="text-white">seu negócio</span>
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                    A plataforma de pagamentos mais avançada do Brasil. PIX instantâneo, cartões globais, 
-                    APIs robustas e segurança bancária.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
-                        Começar Agora
-                    </a>
-                </div>
-            </div>
-        </div>
 
-        <div class="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full animate-float"></div>
-        <div class="absolute bottom-20 right-10 w-32 h-32 bg-secondary/20 rounded-full animate-float" style="animation-delay: -2s;"></div>
-        <div class="absolute top-1/2 left-20 w-16 h-16 bg-accent/20 rounded-full animate-float" style="animation-delay: -4s;"></div>
-    </section>
-
-    {{-- <section class="py-20 bg-dark-light">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="text-center animate-scale-in">
-                    <div class="text-4xl md:text-5xl font-black text-primary mb-2" data-counter="50000">0</div>
-                    <div class="text-gray-400">Transações/dia</div>
-                </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.1s;">
-                    <div class="text-4xl md:text-5xl font-black text-secondary mb-2" data-counter="99.9">0</div>
-                    <div class="text-gray-400">% Uptime</div>
-                </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.2s;">
-                    <div class="text-4xl md:text-5xl font-black text-accent mb-2" data-counter="2000">0</div>
-                    <div class="text-gray-400">Empresas</div>
-                </div>
-                <div class="text-center animate-scale-in" style="animation-delay: 0.3s;">
-                    <div class="text-4xl md:text-5xl font-black text-primary mb-2" data-counter="24">0</div>
-                    <div class="text-gray-400">Países</div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
-
-    <section class="py-32 bg-dark">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                        Para Todos os Negócios
-                    </span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Soluções personalizadas para cada segmento
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
-                    <i class="fas fa-shopping-cart text-4xl text-primary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">E-commerce</h3>
-                    <p class="text-gray-400">Checkout otimizado, recuperação de carrinho abandonado e análise de conversão.</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-secondary/10 to-accent/10 border border-secondary/20 rounded-2xl p-8 hover:border-secondary/50 transition-all duration-500">
-                    <i class="fas fa-utensils text-4xl text-secondary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Food & Delivery</h3>
-                    <p class="text-gray-400">Pagamentos rápidos, split de comissões e integração com apps de delivery.</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-accent/10 to-primary/10 border border-accent/20 rounded-2xl p-8 hover:border-accent/50 transition-all duration-500">
-                    <i class="fas fa-graduation-cap text-4xl text-accent mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Educação</h3>
-                    <p class="text-gray-400">Assinaturas recorrentes, parcelamento sem juros e gestão de inadimplência.</p>
-                </div>
-
-                <div class="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500">
-                    <i class="fas fa-heartbeat text-4xl text-primary mb-6"></i>
-                    <h3 class="text-2xl font-bold mb-4">Saúde</h3>
-                    <p class="text-gray-400">Conformidade LGPD, pagamentos seguros e integração com sistemas médicos.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-   
-
-    <section id="support" class="py-32 bg-dark">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-black mb-6">
-                    <span class="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                        Suporte Excepcional
-                    </span>
-                </h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                    Nossa equipe está sempre pronta para ajudar você
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-1 gap-8 mb-16">
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-headset text-3xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Agente de contas </h3>
-                    <p class="text-gray-400">Agente personalizado para seu negócio.</p>
-                </div>
-
-
-            </div>
-
-            <div class="text-center">
-                <div class="inline-flex space-x-4">
-                    <button class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-comments mr-2"></i>
-                        Iniciar Chat
-                    </button>
-                    <a href="{{ route('show.docs') }}" class="border border-white/20 hover:border-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-book mr-2"></i>
-                        Ver Documentação
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-32 bg-gradient-to-br from-primary/20 via-dark to-secondary/20">
-        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <h2 class="text-4xl md:text-6xl font-black mb-8">
-                <span class="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Pronto para Revolucionar
+     Hero Section 
+    <section class="pt-24 pb-16">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="mb-6">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                    ✨ Nova API v2 disponível
                 </span>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                Receba seus pagamentos
                 <br>
-                <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Seus Pagamentos?
-                </span>
-            </h2>
-            <p class="text-xl text-gray-300 mb-12 leading-relaxed">
-                Junte-se a milhares de empresas que já escolheram o Izus Pay. 
-                Comece gratuitamente e veja a diferença em minutos.
+                <span class="text-primary">em segundos</span>
+            </h1>
+            
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                A plataforma de pagamentos mais simples do Brasil. PIX instantâneo, cartões sem complicação e APIs que funcionam.
             </p>
-            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="{{ route('association.register') }}" class="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-primary/25">
-                        Começar Agora
-                    </a>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <a href="#" class="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Criar conta grátis
+                </a>
+                <a href="#" class="text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors flex items-center">
+                    Ver demonstração
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-10V7a3 3 0 00-3-3H6a3 3 0 00-3 3v1"></path>
+                    </svg>
+                </a>
+            </div>
+            
+             Trust indicators 
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-gray-500">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Integração em 5 minutos
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Sem taxa de setup
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Suporte 24/7
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="bg-dark-light border-t border-white/10 py-16">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8 mb-12">
+     Stats Section 
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div>
-                    <div class="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
-                        Izus Pay
+                    <div class="text-3xl font-bold text-gray-900 mb-2">50k+</div>
+                    <div class="text-gray-600 text-sm">Transações/dia</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2">99.9%</div>
+                    <div class="text-gray-600 text-sm">Uptime</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2">2k+</div>
+                    <div class="text-gray-600 text-sm">Empresas</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2">R$ 2bi</div>
+                    <div class="text-gray-600 text-sm">Processados</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Features Section 
+    <section class="py-20">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Tudo que você precisa para receber pagamentos
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    APIs simples, documentação clara e suporte excepcional
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
-                    <p class="text-gray-400 mb-6">
-                        O gateway de pagamentos mais avançado do Brasil. Seguro, rápido e confiável.
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">PIX Instantâneo</h3>
+                    <p class="text-gray-600">Receba pagamentos PIX em tempo real com QR Code automático e notificações instantâneas.</p>
+                </div>
+
+                <div class="text-center p-6">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cartões Globais</h3>
+                    <p class="text-gray-600">Aceite cartões de crédito e débito de qualquer lugar do mundo com as menores taxas.</p>
+                </div>
+
+                <div class="text-center p-6">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">APIs Robustas</h3>
+                    <p class="text-gray-600">Documentação completa, SDKs oficiais e webhooks confiáveis para sua integração.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Code Example Section 
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">
+                        Integração em minutos, não em dias
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-6">
+                        Nossa API foi projetada para ser simples e intuitiva. Comece a receber pagamentos com apenas algumas linhas de código.
                     </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-twitter text-primary"></i>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-gray-700">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Documentação completa e exemplos práticos
+                        </li>
+                        <li class="flex items-center text-gray-700">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            SDKs oficiais para todas as linguagens
+                        </li>
+                        <li class="flex items-center text-gray-700">
+                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Ambiente de testes gratuito
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm text-gray-500">Criar pagamento PIX</span>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre class="text-sm text-gray-800 overflow-x-auto"><code>const payment = await izuspay.payments.create({
+  amount: 10000, // R$ 100,00
+  method: 'pix',
+  customer: {
+    name: 'João Silva',
+    email: 'joao@email.com'
+  }
+});
+
+console.log(payment.qr_code_url);</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Testimonials 
+    <section class="py-20">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    Empresas que confiam no Izus Pay
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-100 rounded-full mr-3"></div>
+                        <div>
+                            <div class="font-medium text-gray-900">Carlos Silva</div>
+                            <div class="text-sm text-gray-500">CEO, TechStart</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "Migrar para o Izus Pay foi a melhor decisão. Reduzimos custos em 40% e a integração foi super simples."
+                    </p>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-100 rounded-full mr-3"></div>
+                        <div>
+                            <div class="font-medium text-gray-900">Ana Costa</div>
+                            <div class="text-sm text-gray-500">CTO, E-commerce Plus</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "A documentação é excelente e o suporte responde em minutos. Nossa conversão aumentou 25%."
+                    </p>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-100 rounded-full mr-3"></div>
+                        <div>
+                            <div class="font-medium text-gray-900">Pedro Santos</div>
+                            <div class="text-sm text-gray-500">Founder, FoodApp</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">
+                        "PIX instantâneo mudou nosso negócio. Recebemos pagamentos em segundos, não em dias."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     CTA Section 
+    <section class="py-20 bg-primary">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Pronto para começar?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                Junte-se a milhares de empresas que já escolheram o Izus Pay. Comece gratuitamente hoje mesmo.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="#" class="bg-white text-primary hover:bg-gray-50 px-8 py-3 rounded-lg font-medium transition-colors">
+                    Criar conta grátis
+                </a>
+                <a href="#" class="text-white hover:text-blue-100 px-8 py-3 font-medium transition-colors flex items-center">
+                    Falar com especialista
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+     Footer 
+    <footer class="bg-white border-t border-gray-200 py-12">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="text-xl font-semibold text-gray-900 mb-4">Izus Pay</div>
+                    <p class="text-gray-600 text-sm mb-4">
+                        O gateway de pagamentos mais simples do Brasil.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
                         </a>
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-linkedin text-primary"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center hover:bg-primary/30 transition-colors">
-                            <i class="fab fa-github text-primary"></i>
+                        <a href="#" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
                         </a>
                     </div>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-semibold mb-6">Produto</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Recursos</a></li>
-                        <li><a href="#pricing" class="text-gray-400 hover:text-white transition-colors">Preços</a></li>
-                        <li><a href="#integrations" class="text-gray-400 hover:text-white transition-colors">Integrações</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Changelog</a></li>
+                    <h4 class="font-medium text-gray-900 mb-4">Produto</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Recursos</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Preços</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Integrações</a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-semibold mb-6">Desenvolvedores</h4>
-                    <ul class="space-y-3">
-                        <li><a href="{{ route('show.docs') }}" class="text-gray-400 hover:text-white transition-colors">Documentação</a></li>
-                      
+                    <h4 class="font-medium text-gray-900 mb-4">Desenvolvedores</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Documentação</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">API Reference</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">SDKs</a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-semibold mb-6">Empresa</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Sobre</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Carreiras</a></li>
-                        <li><a href="#support" class="text-gray-400 hover:text-white transition-colors">Contato</a></li>
+                    <h4 class="font-medium text-gray-900 mb-4">Empresa</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Sobre</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900 transition-colors">Contato</a></li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <div class="text-gray-400 mb-4 md:mb-0">
+            <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-500 text-sm mb-4 md:mb-0">
                     © 2025 Izus Pay. Todos os direitos reservados.
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacidade</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Termos</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Cookies</a>
+                <div class="flex space-x-6 text-sm">
+                    <a href="#" class="text-gray-500 hover:text-gray-900 transition-colors">Privacidade</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 transition-colors">Termos</a>
                 </div>
             </div>
         </div>
     </footer>
-
-    <div id="apiModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-dark-light border border-white/20 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-                <div class="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 class="text-2xl font-bold">Documentação da API</h2>
-                    <button onclick="closeApiModal()" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="flex h-[calc(90vh-80px)]">
-                    <div class="w-1/3 border-r border-white/10 p-6 overflow-y-auto">
-                        <nav class="space-y-2">
-                            <button onclick="showApiSection('quickstart')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-rocket mr-2"></i>Quick Start
-                            </button>
-                            {{-- <button onclick="showApiSection('authentication')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-key mr-2"></i>Autenticação
-                            </button>
-                            <button onclick="showApiSection('pix')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-bolt mr-2"></i>PIX
-                            </button>
-                            <button onclick="showApiSection('cards')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-credit-card mr-2"></i>Cartões
-                            </button>
-                            <button onclick="showApiSection('webhooks')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-webhook mr-2"></i>Webhooks
-                            </button>
-                            <button onclick="showApiSection('sdks')" class="api-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <i class="fas fa-code mr-2"></i>SDKs
-                            </button> --}}
-                        </nav>
-                    </div>
-                    
-                    <div class="flex-1 p-6 overflow-y-auto">
-                        <div id="quickstart" class="api-section">
-                            <h3 class="text-xl font-bold mb-4">Quick Start</h3>
-                            <p class="text-gray-400 mb-6">Comece a aceitar pagamentos em minutos com nossa API RESTful.</p>
-                            
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Base URL</span>
-                                    <button onclick="copyToClipboard('https://api.izuspay.com/v1')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-primary font-mono">https://api.izuspay.com/v1</code>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Instalação</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">npm</span>
-                                    <button onclick="copyToClipboard('npm install izuspay-sdk')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-green-400 font-mono">npm install izuspay-sdk</code>
-                            </div>
-                        </div>
-                        
-                        <div id="authentication" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Autenticação</h3>
-                            <p class="text-gray-400 mb-6">Use sua API Key no header Authorization de todas as requisições.</p>
-                            
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Header</span>
-                                    <button onclick="copyToClipboard('Authorization: Bearer sk_live_...')" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <code class="text-yellow-400 font-mono">Authorization: Bearer sk_live_...</code>
-                            </div>
-                            
-                            <div class="bg-dark rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">Exemplo cURL</span>
-                                    <button onclick="copyToClipboard(`curl -X GET https://api.izuspay.com/v1/payments \\
-  -H 'Authorization: Bearer sk_live_...' \\
-  -H 'Content-Type: application/json'`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>curl -X GET https://api.izuspay.com/v1/payments \
-  -H 'Authorization: Bearer sk_live_...' \
-  -H 'Content-Type: application/json'</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="pix" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">PIX</h3>
-                            <p class="text-gray-400 mb-6">Crie cobranças PIX instantâneas com QR Code automático.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Criar Cobrança PIX</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /payments/pix</span>
-                                    <button onclick="copyToClipboard(`{
-  \"amount\": 10000,
-  \"description\": \"Pagamento do pedido #123\",
-  \"customer\": {
-    \"name\": \"João Silva\",
-    \"email\": \"joao@email.com\",
-    \"document\": \"12345678901\"
-  },
-  \"expires_in\": 3600
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "amount": 10000,
-  "description": "Pagamento do pedido #123",
-  "customer": {
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "document": "12345678901"
-  },
-  "expires_in": 3600
-}</code></pre>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Resposta</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "id": "pix_1234567890",
-  "status": "pending",
-  "amount": 10000,
-  "qr_code": "00020126580014br.gov.bcb.pix...",
-  "qr_code_url": "https://api.izuspay.com/qr/pix_1234567890.png",
-  "expires_at": "2024-01-01T12:00:00Z"
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="cards" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Cartões</h3>
-                            <p class="text-gray-400 mb-6">Processe pagamentos com cartão de crédito e débito.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Criar Pagamento</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /payments/card</span>
-                                    <button onclick="copyToClipboard(`{
-  \"amount\": 10000,
-  \"installments\": 1,
-  \"card\": {
-    \"number\": \"4111111111111111\",
-    \"exp_month\": \"12\",
-    \"exp_year\": \"2025\",
-    \"cvc\": \"123\",
-    \"holder_name\": \"JOAO SILVA\"
-  },
-  \"customer\": {
-    \"name\": \"João Silva\",
-    \"email\": \"joao@email.com\",
-    \"document\": \"12345678901\"
-  }
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "amount": 10000,
-  "installments": 1,
-  "card": {
-    "number": "4111111111111111",
-    "exp_month": "12",
-    "exp_year": "2025",
-    "cvc": "123",
-    "holder_name": "JOAO SILVA"
-  },
-  "customer": {
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "document": "12345678901"
-  }
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="webhooks" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">Webhooks</h3>
-                            <p class="text-gray-400 mb-6">Receba notificações em tempo real sobre mudanças de status.</p>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Configurar Webhook</h4>
-                            <div class="bg-dark rounded-xl p-4 mb-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">POST /webhooks</span>
-                                    <button onclick="copyToClipboard(`{
-  \"url\": \"https://meusite.com/webhook\",
-  \"events\": [\"payment.paid\", \"payment.failed\"]
-}`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "url": "https://meusite.com/webhook",
-  "events": ["payment.paid", "payment.failed"]
-}</code></pre>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Payload do Webhook</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <pre class="text-gray-300 font-mono text-sm"><code>{
-  "event": "payment.paid",
-  "data": {
-    "id": "pay_1234567890",
-    "status": "paid",
-    "amount": 10000,
-    "paid_at": "2024-01-01T12:00:00Z"
-  }
-}</code></pre>
-                            </div>
-                        </div>
-                        
-                        <div id="sdks" class="api-section hidden">
-                            <h3 class="text-xl font-bold mb-4">SDKs</h3>
-                            <p class="text-gray-400 mb-6">Bibliotecas oficiais para as principais linguagens.</p>
-                            
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Node.js</h4>
-                                    <code class="text-green-400 font-mono text-sm">npm install izuspay-node</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">PHP</h4>
-                                    <code class="text-blue-400 font-mono text-sm">composer require izuspay/php</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Python</h4>
-                                    <code class="text-yellow-400 font-mono text-sm">pip install izuspay</code>
-                                </div>
-                                <div class="bg-dark rounded-xl p-4">
-                                    <h4 class="font-semibold mb-2">Ruby</h4>
-                                    <code class="text-red-400 font-mono text-sm">gem install izuspay</code>
-                                </div>
-                            </div>
-                            
-                            <h4 class="text-lg font-semibold mb-3">Exemplo Node.js</h4>
-                            <div class="bg-dark rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-400">JavaScript</span>
-                                    <button onclick="copyToClipboard(`const IzusPay = require('izuspay-node');
-const client = new IzusPay('sk_live_...');
-
-const payment = await client.payments.create({
-  amount: 10000,
-  method: 'pix',
-  customer: {
-    name: 'João Silva',
-    email: 'joao@email.com'
-  }
-});`)" class="text-primary hover:text-primary-dark transition-colors">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                                <pre class="text-gray-300 font-mono text-sm"><code>const IzusPay = require('izuspay-node');
-const client = new IzusPay('sk_live_...');
-
-const payment = await client.payments.create({
-  amount: 10000,
-  method: 'pix',
-  customer: {
-    name: 'João Silva',
-    email: 'joao@email.com'
-  }
-});</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calculatorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-dark-light border border-white/20 rounded-2xl max-w-2xl w-full">
-                <div class="flex items-center justify-between p-6 border-b border-white/10">
-                    <h2 class="text-2xl font-bold">Calculadora de Economia</h2>
-                    <button onclick="closeCalculator()" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="p-6">
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Volume Mensal (R$)</label>
-                            <input type="number" id="monthlyVolume" placeholder="100000" class="w-full bg-dark border border-white/20 rounded-lg px-4 py-3 focus:border-primary focus:outline-none" oninput="calculateSavings()">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Taxa Atual (%)</label>
-                            <input type="number" id="currentRate" placeholder="3.5" step="0.1" class="w-full bg-dark border border-white/20 rounded-lg px-4 py-3 focus:border-primary focus:outline-none" oninput="calculateSavings()">
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-xl p-6 mb-6">
-                        <h3 class="text-xl font-bold mb-4">Economia com Izus Pay</h3>
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <div class="text-2xl font-bold text-primary" id="monthlySavings">R$ 0</div>
-                                <div class="text-sm text-gray-400">Por mês</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-secondary" id="yearlySavings">R$ 0</div>
-                                <div class="text-sm text-gray-400">Por ano</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-accent" id="savingsPercentage">0%</div>
-                                <div class="text-sm text-gray-400">Economia</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <button onclick="openApiModal(); closeCalculator();" class="bg-primary hover:bg-primary-dark px-8 py-3 rounded-xl font-semibold transition-all duration-300">
-                            Começar Agora
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Counter Animation
-        function animateCounters() {
-            const counters = document.querySelectorAll('[data-counter]');
-            counters.forEach(counter => {
-                const target = parseFloat(counter.getAttribute('data-counter'));
-                const increment = target / 100;
-                let current = 0;
-                
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-                    
-                    if (target === 99.9) {
-                        counter.textContent = current.toFixed(1);
-                    } else {
-                        counter.textContent = Math.floor(current).toLocaleString();
-                    }
-                }, 20);
-            });
-        }
-
-        // Intersection Observer for animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (entry.target.querySelector('[data-counter]')) {
-                        animateCounters();
-                    }
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const statsSection = document.querySelector('[data-counter]')?.closest('section');
-            if (statsSection) {
-                observer.observe(statsSection);
-            }
-        });
-
-        // API Modal Functions
-        function openApiModal() {
-            document.getElementById('apiModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            showApiSection('quickstart');
-        }
-
-        function closeApiModal() {
-            document.getElementById('apiModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function showApiSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.api-section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.api-nav-btn').forEach(btn => {
-                btn.classList.remove('bg-primary/20', 'text-primary');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-            
-            // Add active class to clicked button
-            event.target.classList.add('bg-primary/20', 'text-primary');
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Show feedback
-                const button = event.target;
-                const originalIcon = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                button.classList.add('text-green-400');
-                
-                setTimeout(() => {
-                    button.innerHTML = originalIcon;
-                    button.classList.remove('text-green-400');
-                    button.classList.add('text-primary');
-                }, 1000);
-            });
-        }
-
-        // Calculator Functions
-        function openCalculator() {
-            document.getElementById('calculatorModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCalculator() {
-            document.getElementById('calculatorModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function calculateSavings() {
-            const volume = parseFloat(document.getElementById('monthlyVolume').value) || 0;
-            const currentRate = parseFloat(document.getElementById('currentRate').value) || 0;
-            const izusRate = 2.4; // Izus Pay rate
-            
-            const currentCost = volume * (currentRate / 100);
-            const izusCost = volume * (izusRate / 100);
-            const monthlySavings = currentCost - izusCost;
-            const yearlySavings = monthlySavings * 12;
-            const savingsPercentage = currentRate > 0 ? ((monthlySavings / currentCost) * 100) : 0;
-            
-            document.getElementById('monthlySavings').textContent = `R$ ${monthlySavings.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
-            document.getElementById('yearlySavings').textContent = `R$ ${yearlySavings.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
-            document.getElementById('savingsPercentage').textContent = `${savingsPercentage.toFixed(1)}%`;
-        }
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Close modals on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeApiModal();
-                closeCalculator();
-            }
-        });
-
-        // Close modals on backdrop click
-        document.getElementById('apiModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                closeApiModal();
-            }
-        });
-
-        document.getElementById('calculatorModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) {
-                closeCalculator();
-            }
-        });
-    </script>
 </body>
 </html>
