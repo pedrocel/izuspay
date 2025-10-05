@@ -65,6 +65,7 @@ Route::get('/', function () {
     $views = [
         'izuspay' => 'lp01',
         'wopago'  => 'lp02',
+        'vipsgateway'  => 'vipsgateway',
     ];
 
     $view = $views[$appName] ?? 'default';
