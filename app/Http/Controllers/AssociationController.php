@@ -91,7 +91,7 @@ class AssociationController extends Controller
             Wallet::create([
                 'association_id' => $association->id,
                 'balance' => 0,
-                'gateway_id' => 2
+                'gateway_id' => 1
             ]);
 
             $defaultFees = [
