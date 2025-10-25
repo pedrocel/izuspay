@@ -160,9 +160,16 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('associacao')->gro
             })->name('new');
         });
 
-
-
-
+    Route::get('associacao/rifas/', [App\Http\Controllers\Associacao\RaffleController::class, 'index'])->name('associacao.raffles.index');
+    Route::get('associacao/rifas/criar', [App\Http\Controllers\Associacao\RaffleController::class, 'create'])->name('associacao.raffles.create');
+    Route::post('associacao/rifas/', [App\Http\Controllers\Associacao\RaffleController::class, 'store'])->name('associacao.raffles.store');
+    Route::get('associacao/rifas/{raffle}/editar', [App\Http\Controllers\Associacao\RaffleController::class, 'edit'])->name('associacao.raffles.edit');
+    Route::put('associacao/rifas/{raffle}', [App\Http\Controllers\Associacao\RaffleController::class, 'update'])->name('associacao.raffles.update');
+    Route::delete('associacao/rifas/{raffle}', [App\Http\Controllers\Associacao\RaffleController::class, 'destroy'])->name('associacao.raffles.destroy');
+    Route::post('associacao/rifas/{raffle}/criar-tickets', [App\Http\Controllers\Associacao\RaffleController::class, 'createTickets'])->name('associacao.raffles.create-tickets');
+    Route::get('associacao/rifas/{raffle}/tickets', [App\Http\Controllers\Associacao\RaffleController::class, 'viewTickets'])->name('associacao.raffles.tickets');
+    Route::post('associacao/rifas/{raffle}/sortear', [App\Http\Controllers\Associacao\RaffleController::class, 'drawWinner'])->name('associacao.raffles.draw');
+    Route::get('associacao/rifas/vendas', [App\Http\Controllers\Associacao\RaffleController::class, 'sales'])->name('associacao.raffles.sales');
 
     Route::get('/noticias', [NewsController::class, 'index'])->name('associacao.news.index');
     Route::get('/noticias/create', [NewsController::class, 'create'])->name('associacao.news.create');
@@ -288,10 +295,6 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('admin')->group(fu
     Route::get('/gateways/editar/{gateway}', [GatewayController::class, 'edit'])->name('admin.gateways.edit');
     Route::put('/gateways/editar/{gateway}', [GatewayController::class, 'update'])->name('admin.gateways.update');
     Route::delete('/gateways/remover/{id}', [GatewayController::class, 'destroy'])->name('admin.gateways.destroy');
-
-
-
-
 
 
     Route::get('/perfis', [PerfilController::class, 'index'])->name('admin.perfis.index');

@@ -23,47 +23,6 @@ class AssociationController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            // Dados da Association
-            'tipo' => 'required|in:pf,cnpj',
-            'nome' => 'required|string|max:255',
-            'documento' => [
-                'required',
-                'string',
-                Rule::unique('users', 'documento'),
-                Rule::unique('associations', 'documento'),
-                function ($attribute, $value, $fail) use ($request) {
-                    $doc = preg_replace('/[^0-9]/', '', $value);
-                    if ($request->tipo === 'pf' && strlen($doc) !== 11) {
-                        $fail('O CPF informado é inválido.');
-                    } elseif ($request->tipo === 'cnpj' && strlen($doc) !== 14) {
-                        $fail('O CNPJ informado é inválido.');
-                    }
-                },
-            ],
-            'email' => 'required|email|unique:users,email|unique:associations,email',
-            'telefone' => 'required|string|max:20',
-            'cep' => 'required|string|max:9',
-            'endereco' => 'required|string|max:255',
-            'numero' => 'required|string|max:10',
-            'bairro' => 'required|string|max:100',
-            'cidade' => 'required|string|max:100',
-            'estado' => 'required|string|size:2',
-            'password' => 'required|string|min:8|confirmed',
-            
-            // <CHANGE> Adicionando validação para campos do CreatorProfile
-            'username' => [
-                'required',
-                'string',
-                'max:50',
-                'regex:/^[a-zA-Z0-9_]+$/',
-                Rule::unique('creator_profiles', 'username')
-            ],
-            'display_name' => 'required|string|max:100',
-            'bio' => 'nullable|string|max:500',
-            'category' => 'required|string|max:100',
-            'website' => 'nullable|url|max:255',
-        ]);
 
         try {
             DB::beginTransaction();
