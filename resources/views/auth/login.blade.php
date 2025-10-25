@@ -1,69 +1,19 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Login - Izus Payment</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary-blue': '#1e40af',
-                        'secondary-blue': '#3b82f6',
-                        'accent-blue': '#60a5fa',
-                        'dark-blue': '#1e3a8a',
-                        'light-blue': '#dbeafe'
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-up': 'slideUp 0.8s ease-out',
-                        'fade-in': 'fadeIn 1s ease-out',
-                        'secure-pulse': 'securePulse 2s infinite',
-                        'connection-pulse': 'connectionPulse 1.5s infinite'
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(100px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        securePulse: {
-                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-                            '50%': { transform: 'scale(1.1)', opacity: '0.8' }
-                        },
-                        connectionPulse: {
-                            '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
-                            '50%': { opacity: '1', transform: 'scale(1.2)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login - Rifas Online</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
         .gradient-bg {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #60a5fa 50%, #3b82f6 75%, #1e40af 100%);
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 25%, #f97316 50%, #ec4899 75%, #9333ea 100%);
             background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
+            animation: gradientShift 15s ease infinite;
         }
         
         @keyframes gradientShift {
@@ -72,14 +22,13 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Tela de conexão segura */
         .connection-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -95,9 +44,14 @@
 
         .secure-icon {
             font-size: 4rem;
-            color: #60a5fa;
+            color: #f472b6;
             animation: secure-pulse 2s infinite;
             margin-bottom: 2rem;
+        }
+
+        @keyframes secure-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
 
         .connection-dots {
@@ -110,19 +64,24 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #60a5fa;
+            background: #f472b6;
             animation: connection-pulse 1.5s infinite;
         }
 
         .connection-dot:nth-child(2) { animation-delay: 0.3s; }
         .connection-dot:nth-child(3) { animation-delay: 0.6s; }
 
+        @keyframes connection-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
         .security-badge {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(96, 165, 250, 0.1);
-            border: 1px solid #60a5fa;
+            background: rgba(244, 114, 182, 0.1);
+            border: 1px solid #f472b6;
             padding: 0.5rem 1rem;
             border-radius: 2rem;
             margin-top: 1rem;
@@ -130,11 +89,10 @@
         }
 
         @keyframes glow {
-            from { box-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
-            to { box-shadow: 0 0 20px rgba(96, 165, 250, 0.6); }
+            from { box-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
+            to { box-shadow: 0 0 20px rgba(244, 114, 182, 0.6); }
         }
 
-        /* Container do login */
         .login-container {
             opacity: 0;
             transform: translateY(30px);
@@ -149,29 +107,26 @@
         .glass-effect {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(30, 64, 175, 0.15);
-            border: 1px solid rgba(96, 165, 250, 0.2);
+            box-shadow: 0 25px 50px rgba(147, 51, 234, 0.15);
+            border: 1px solid rgba(236, 72, 153, 0.2);
         }
 
         .form-group input {
             background: rgba(248, 250, 252, 0.8);
-            border-color: #e2e8f0;
+            border: 2px solid #e2e8f0;
             color: #1e293b;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .form-group input::placeholder {
-            color: #64748b;
-        }
-
         .form-group input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
             background: rgba(255, 255, 255, 0.95);
+            outline: none;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -194,46 +149,7 @@
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .loading-spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .form-group.error input {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-
-        .form-group.success input {
-            border-color: #22c55e;
-            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
-        }
-        
-        .error-message {
-            color: #ef4444;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-
-        .error-message.show {
-            opacity: 1;
-            transform: translateY(0);
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.4);
         }
 
         .floating-elements {
@@ -245,9 +161,14 @@
 
         .floating-element {
             position: absolute;
-            background: rgba(96, 165, 250, 0.1);
+            background: rgba(236, 72, 153, 0.1);
             border-radius: 50%;
             animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
 
         .floating-element:nth-child(1) {
@@ -281,29 +202,9 @@
             right: 10%;
             animation-delay: 1s;
         }
-
-        .security-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .security-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            color: #059669;
-            font-weight: 500;
-        }
     </style>
 </head>
-<body class="min-h-screen gradient-bg relative overflow-hidden">
+<body class="min-h-screen gradient-bg relative ">
     
     <!-- Elementos flutuantes de fundo -->
     <div class="floating-elements">
@@ -318,7 +219,7 @@
         <div class="text-center">
             <i class="fas fa-shield-alt secure-icon"></i>
             <h2 class="text-2xl font-bold text-white mb-4">Conectando ao Servidor Seguro</h2>
-            <p class="text-blue-200 mb-6">Estabelecendo conexão criptografada com Izus Payment...</p>
+            <p class="text-pink-200 mb-6">Estabelecendo conexão criptografada...</p>
             
             <div class="connection-dots">
                 <div class="connection-dot"></div>
@@ -327,7 +228,7 @@
             </div>
             
             <div class="security-badge">
-                <i class="fas fa-lock text-accent-blue"></i>
+                <i class="fas fa-lock text-pink-400"></i>
                 <span class="text-white text-sm">SSL 256-bit Encryption</span>
             </div>
         </div>
@@ -339,20 +240,20 @@
             
             <!-- Logo e título -->
             <div class="text-center mb-10">
-                <div class="flex items-center justify-center mx-auto mb-6 ">
-                    <div class="flex-grow">
-                        <img class="rounded-lg" src="/img/izus.png" alt="Izus Payment Logo">
-                    </div>
+                <div class="flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-16 h-16 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                    </svg>
                 </div>
+                <h1 class="text-3xl font-black mb-2 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+                    RIFAS ONLINE
+                </h1>
                 <p class="text-gray-600 text-sm">Entre em sua conta para acessar</p>
             </div>
-
-            <!-- Indicadores de segurança -->
-           
             
-            <!-- Mensagens de erro (integrado do código antigo) -->
+            <!-- Mensagens de erro -->
             @if ($errors->any())
-            <div class="mb-8 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 fade-in">
+            <div class="mb-8 bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
                 <div class="flex items-center mb-2">
                     <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
                     <h3 class="text-red-800 font-semibold text-sm">Erro no login</h3>
@@ -383,13 +284,10 @@
                                value="{{ old('email') }}" 
                                required 
                                autocomplete="email"
-                               class="w-full px-4 py-4 pl-12 border-2 rounded-xl focus:outline-none transition-all text-base"
+                               class="w-full px-4 py-4 pl-12 rounded-xl focus:outline-none transition-all text-base"
                                placeholder="seu@email.com">
-                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-blue"></i>
+                        <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-600"></i>
                     </div>
-                    @error('email')
-                        <div class="error-message text-xs mt-1 show" id="email-error">{{ $message }}</div>
-                    @enderror
                 </div>
                 
                 <div class="form-group mb-6">
@@ -402,18 +300,15 @@
                                type="password" 
                                required 
                                autocomplete="current-password"
-                               class="w-full px-4 py-4 pl-12 pr-12 border-2 rounded-xl focus:outline-none transition-all text-base"
+                               class="w-full px-4 py-4 pl-12 pr-12 rounded-xl focus:outline-none transition-all text-base"
                                placeholder="••••••••">
-                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-secondary-blue"></i>
+                        <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-600"></i>
                         <button type="button" 
                                 onclick="togglePassword()" 
-                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary-blue transition-colors">
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-600 transition-colors">
                             <i class="fas fa-eye" id="password-icon"></i>
                         </button>
                     </div>
-                    @error('password')
-                        <div class="error-message text-xs mt-1 show" id="password-error">{{ $message }}</div>
-                    @enderror
                 </div>
                 
                 <div class="flex items-center justify-between mb-8">
@@ -422,7 +317,7 @@
                                name="remember" 
                                type="checkbox" 
                                {{ old('remember') ? 'checked' : '' }}
-                               class="h-4 w-4 text-secondary-blue focus:ring-secondary-blue border-gray-300 rounded">
+                               class="h-4 w-4 text-pink-600 focus:ring-pink-600 border-gray-300 rounded">
                         <label for="remember" class="ml-2 block text-sm text-gray-700 font-medium">
                             Lembrar de mim
                         </label>
@@ -430,14 +325,14 @@
                     
                     @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" 
-                       class="text-sm text-secondary-blue hover:text-primary-blue font-medium transition-colors">
+                       class="text-sm text-pink-600 hover:text-purple-600 font-medium transition-colors">
                         Esqueceu a senha?
                     </a>
                     @endif
                 </div>
                 
                 <button type="submit" 
-                        class="btn-primary w-full text-white font-semibold py-4 px-6 rounded-xl text-lg mb-6" 
+                        class="btn-primary w-full text-white font-bold py-4 px-6 rounded-xl text-lg mb-6" 
                         id="login-btn">
                     <span id="login-text">
                         <i class="fas fa-sign-in-alt mr-2"></i>
@@ -458,11 +353,19 @@
             <div class="text-center">
                 <p class="text-gray-600">
                     Não tem uma conta?
-                    <a href="{{ route('association.register.form') }}" 
-                       class="text-secondary-blue hover:text-primary-blue font-semibold transition-colors ml-1">
+                    <a href="{{ route('association.register') }}" 
+                       class="text-pink-600 hover:text-purple-600 font-bold transition-colors ml-1">
                         Criar agora
                     </a>
                 </p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="{{ route('public.raffles.index') }}" 
+                   class="text-sm text-gray-500 hover:text-purple-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Voltar para o site
+                </a>
             </div>
         </div>
     </div>
@@ -479,7 +382,7 @@
                     loginContainer.classList.add('show');
                     document.getElementById('email').focus();
                 }, 500);
-            }, 3000);
+            }, 2500);
             
             // Função para alternar visibilidade da senha
             window.togglePassword = function() {
@@ -496,56 +399,7 @@
                     passwordIcon.classList.add('fa-eye');
                 }
             };
-
-            // Adicionar validação de formulário básica (se necessário, ou confiar no Laravel)
-            const loginForm = document.getElementById('login-form');
-            loginForm.addEventListener('submit', function(event) {
-                // Esta validação é mais para feedback instantâneo no cliente.
-                // A validação principal deve ser feita no servidor Laravel.
-                let isValid = true;
-
-                // Validação de Email
-                const emailInput = document.getElementById('email');
-                const emailError = document.getElementById('email-error');
-                if (!emailInput.value || !emailInput.value.includes('@')) {
-                    emailInput.closest('.form-group').classList.add('error');
-                    emailError.textContent = 'Por favor, insira um e-mail válido.';
-                    emailError.classList.add('show');
-                    isValid = false;
-                } else {
-                    emailInput.closest('.form-group').classList.remove('error');
-                    emailError.classList.remove('show');
-                }
-
-                // Validação de Senha
-                const passwordInput = document.getElementById('password');
-                const passwordError = document.getElementById('password-error');
-                if (!passwordInput.value || passwordInput.value.length < 6) {
-                    passwordInput.closest('.form-group').classList.add('error');
-                    passwordError.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-                    passwordError.classList.add('show');
-                    isValid = false;
-                } else {
-                    passwordInput.closest('.form-group').classList.remove('error');
-                    passwordError.classList.remove('show');
-                }
-
-                if (!isValid) {
-                    event.preventDefault(); // Impede o envio do formulário se a validação falhar
-                }
-            });
-
-            // Remover classes de erro ao digitar
-            document.getElementById('email').addEventListener('input', function() {
-                this.closest('.form-group').classList.remove('error');
-                document.getElementById('email-error').classList.remove('show');
-            });
-            document.getElementById('password').addEventListener('input', function() {
-                this.closest('.form-group').classList.remove('error');
-                document.getElementById('password-error').classList.remove('show');
-            });
         });
     </script>
 </body>
 </html>
-

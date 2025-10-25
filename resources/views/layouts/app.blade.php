@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class=""> <!-- A classe 'dark' será adicionada aqui pelo JS -->
+<html lang="pt-BR" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Izus Payment')</title>
+    <title>@yield('title', 'Rifas Online')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -15,25 +15,21 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    {{-- Alpine.js para interatividade --}}
-    <script src="//unpkg.com/alpinejs" defer></script>
-
     <script>
-        // CONFIGURAÇÃO COMPLETA DO TAILWIND PARA O TEMA AZUL
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        'primary-blue': '#1e40af',      // Azul primário (escuro )
-                        'secondary-blue': '#3b82f6',    // Azul secundário (médio)
-                        'accent-blue': '#60a5fa',       // Azul de destaque (claro)
-                        'dark-blue': '#1e3a8a',         // Variação escura
-                        'light-blue': '#dbeafe',        // Variação clara
-                        'sidebar-bg-dark': '#111827',   // Fundo da sidebar no modo escuro
-                        'sidebar-item-hover': '#1f2937',// Hover do item da sidebar
-                        'text-light-gray': '#e5e7eb',   // Texto claro
-                        'text-dark-gray': '#9ca3af',    // Texto cinza escuro
+                        'primary-purple': '#9333ea',      // Roxo primário
+                        'secondary-pink': '#ec4899',      // Rosa secundário
+                        'accent-orange': '#f97316',       // Laranja de destaque
+                        'dark-purple': '#7e22ce',         // Variação escura
+                        'light-purple': '#f3e8ff',        // Variação clara
+                        'sidebar-bg-dark': '#111827',     // Fundo da sidebar no modo escuro
+                        'sidebar-item-hover': '#1f2937',  // Hover do item da sidebar
+                        'text-light-gray': '#e5e7eb',     // Texto claro
+                        'text-dark-gray': '#9ca3af',      // Texto cinza escuro
                     },
                 }
             }
@@ -42,10 +38,20 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Efeitos da sidebar com tema roxo/rosa */
         .sidebar-item { transition: all 0.2s ease-in-out; }
-        .sidebar-item:hover { background-color: rgba(59, 130, 246, 0.1); transform: translateX(4px); }
-        .sidebar-item.active { background-color: rgba(59, 130, 246, 0.2); border-right: 3px solid #3b82f6; }
-        .dark .sidebar-item.active { background-color: rgba(59, 130, 246, 0.3); }
+        .sidebar-item:hover { 
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            transform: translateX(4px); 
+        }
+        .sidebar-item.active { 
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+            border-right: 3px solid #ec4899; 
+        }
+        .dark .sidebar-item.active { 
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+        }
         .sidebar-overlay { backdrop-filter: blur(4px); }
         @media (max-width: 1024px) { .sidebar-item:hover { transform: none; } }
 
@@ -55,12 +61,28 @@
         .notification.removing { animation: slideOut 0.3s ease-in forwards; }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        /* Scrollbar customizada com o tema azul */
+        /* Scrollbar customizada com tema roxo/rosa */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #e5e7eb; }
         .dark ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #1e40af; }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border-radius: 4px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #7e22ce; }
+
+        /* Gradiente animado de fundo */
+        .gradient-bg {
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 25%, #f97316 50%, #ec4899 75%, #9333ea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
     </style>
     @stack('styles')
 </head>
@@ -149,8 +171,8 @@
         }
 
         // --- FUNCIONALIDADE DO MENU MOBILE ---
-        const openSidebarBtn = document.getElementById('open-sidebar'); // Botão no header para abrir
-        const closeSidebarBtn = document.getElementById('close-sidebar'); // Botão 'X' dentro da sidebar
+        const openSidebarBtn = document.getElementById('open-sidebar');
+        const closeSidebarBtn = document.getElementById('close-sidebar');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
 
@@ -186,11 +208,11 @@
                     icon = 'x-circle';
                     break;
                 case 'info':
-                    bgColor = 'bg-blue-500';
+                    bgColor = 'bg-gradient-to-r from-primary-purple to-secondary-pink';
                     icon = 'info';
                     break;
                 default: // success
-                    bgColor = 'bg-green-500';
+                    bgColor = 'bg-gradient-to-r from-primary-purple to-secondary-pink';
                     icon = 'check-circle';
             }
 

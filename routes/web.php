@@ -45,6 +45,7 @@ use App\Http\Controllers\Cliente\PagamentoController;
 use App\Http\Controllers\CreatorProfileController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\ResolveSubdomain;
+use App\Models\Raffle;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PerfilController;
@@ -70,17 +71,12 @@ Route::get('/rifas/{hash_id}/checkout', [App\Http\Controllers\RaffleCheckoutCont
 Route::get('/page/{slug}', [PublicPageController::class, 'showAssociationLp'])->name('lp.show');
 
 Route::get('/', function () {
-    $appName = strtolower(config('app.name'));
+    $raffles = Raffle::where('status', 'active')
+            ->where('created_tickets', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    $views = [
-        'izuspay' => 'lp01',
-        'wopago'  => 'lp02',
-        'vipsgateway'  => 'vipsgateway',
-    ];
-
-    $view = $views[$appName] ?? 'default';
-
-    return view($view);
+        return view('public.raffles.index', compact('raffles'));
 });
 
 Route::get('/termos', function () {
