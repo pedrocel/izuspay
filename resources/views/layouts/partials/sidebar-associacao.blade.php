@@ -54,9 +54,7 @@
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-thin">
         @php
             $navItems = [
-                ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
                 ['route' => 'associacao.raffles.index', 'label' => 'Rifas', 'icon' => 'layout-barcode'],
-                ['route' => 'associacao.products.index', 'label' => 'Produtos', 'icon' => 'package'],
                 ['route' => 'associacao.vendas.index', 'label' => 'Vendas', 'icon' => 'shopping-cart'],
                 ['route' => 'associacao.financeiro.index', 'label' => 'Financeiro', 'icon' => 'dollar-sign'],
                 ['route' => 'associacao.configuracoes.edit', 'label' => 'Configurações', 'icon' => 'settings'],

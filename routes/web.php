@@ -57,6 +57,16 @@ use App\Models\PlanModel;
 Route::get('/criador/{username}', [PublicCreatorController::class, 'show'])->name('public.creator.profile');
 Route::post('/criador/{username}/assinar/{planId}', [PublicCreatorController::class, 'subscribe'])->name('public.creator.subscribe');
 
+Route::get('/rifas/', [App\Http\Controllers\PublicRaffleController::class, 'index'])->name('public.raffles.index');
+Route::get('/rifas/{id}', [App\Http\Controllers\PublicRaffleController::class, 'show'])->name('public.raffles.show');
+Route::get('/rifas-ganhadores', [App\Http\Controllers\PublicRaffleController::class, 'winners'])->name('public.raffles.winners');
+Route::get('/rifas-meus-numeros', [App\Http\Controllers\PublicRaffleController::class, 'myNumbers'])->name('public.raffles.my-numbers');
+
+Route::get('/rifas/{hash_id}/checkout', [App\Http\Controllers\RaffleCheckoutController::class, 'show'])->name('public.raffles.checkout');
+    Route::post('/rifas/{hash_id}/checkout', [App\Http\Controllers\RaffleCheckoutController::class, 'store'])->name('public.raffles.checkout.store');
+    Route::post('/rifas/checkout/check-status', [App\Http\Controllers\RaffleCheckoutController::class, 'checkStatus'])->name('public.raffles.checkout.check-status');
+    Route::get('/rifas/sucesso/{saleId}', [App\Http\Controllers\RaffleCheckoutController::class, 'success'])->name('public.raffles.success');
+
 Route::get('/page/{slug}', [PublicPageController::class, 'showAssociationLp'])->name('lp.show');
 
 Route::get('/', function () {
@@ -170,6 +180,8 @@ Route::middleware(['auth', RedirectByProfile::class])->prefix('associacao')->gro
     Route::get('associacao/rifas/{raffle}/tickets', [App\Http\Controllers\Associacao\RaffleController::class, 'viewTickets'])->name('associacao.raffles.tickets');
     Route::post('associacao/rifas/{raffle}/sortear', [App\Http\Controllers\Associacao\RaffleController::class, 'drawWinner'])->name('associacao.raffles.draw');
     Route::get('associacao/rifas/vendas', [App\Http\Controllers\Associacao\RaffleController::class, 'sales'])->name('associacao.raffles.sales');
+
+
 
     Route::get('/noticias', [NewsController::class, 'index'])->name('associacao.news.index');
     Route::get('/noticias/create', [NewsController::class, 'create'])->name('associacao.news.create');
