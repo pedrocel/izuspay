@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\AssociationController as AdminAssociationControll
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\FinancialController;
 use App\Http\Controllers\Admin\GatewayController;
-use App\Http\Controllers\Associacao\DashboardController; // <-- Ensure this line is present and correct
+use App\Http\Controllers\Associacao\DashboardController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SaleController as AdminSaleController;
@@ -103,20 +103,15 @@ Route::get('/checkout/{hash_id}', [CheckoutController::class, 'show'])->name('ch
     Route::get('/checkout/product/{hash_id}', [CheckoutController::class, 'showCheckout'])->name('checkout.product.show');
 Route::post('/checkout/product/{hash_id}', [CheckoutController::class, 'store'])->name('checkout.product.store');
 
-// Rotas de cadastro de associação (públicas)
 Route::get('/cadastro-associacao', [AssociationController::class, 'showRegistrationForm'])->name('association.register.form');
 Route::post('/cadastro-associacao', [AssociationController::class, 'register'])->name('association.register');
 
-// Rota para área do membro
 Route::get('/membro/login', function () {
     return view('auth.member-login');
 })->name('member.login');
 
-// Rotas protegidas
 Route::middleware('auth')->group(function () {
     
-    
-    // Rotas de associações (admin)
     Route::middleware('admin')->group(function () {
         Route::get('/admin/associacoes', [AssociationController::class, 'index'])->name('admin.associations.index');
         Route::get('/admin/associacoes/{association}', [AssociationController::class, 'show'])->name('admin.associations.show');

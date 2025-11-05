@@ -12,7 +12,9 @@
             <div class="flex justify-between items-center mb-2">
                 {{-- Logo --}}
                 <div class="flex-grow">
-                    <img class="rounded-md " src="/img/izus.png" alt="Izus Payment Logo">
+                <h1 class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary-blue to-accent-blue">
+    {{ env('APP_NAME', 'Izus Payment') }}
+</h1>
                 </div>
                 {{-- Botão de Fechar no Mobile --}}
                 <button id="close-sidebar" class="lg:hidden p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md">

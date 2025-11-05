@@ -50,7 +50,7 @@
                         <i data-lucide="zap" class="w-8 h-8 text-blue-300 animate-pulse"></i>
                     </div>
                     <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">
-                        Izus Payment
+                    {{ env('APP_NAME', 'Izus Payment') }}
                     </h1>
                 </div>
                 <p class="text-blue-200/80 ml-20 md:ml-0">Sua plataforma de pagamentos, simples e poderosa.</p>

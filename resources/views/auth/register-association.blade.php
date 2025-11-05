@@ -110,14 +110,9 @@
         <div class="glass-effect rounded-2xl shadow-2xl p-8 lg:p-12">
             
             <div class="text-center mb-10">
-                <div class="flex items-center justify-center mx-auto mb-6">
-                    <div class="w-80 bg-gradient-to-br from-primary-blue to-secondary-blue rounded-xl flex items-center justify-center mr-4">
-                        <div class="flex-grow">
-                        <img class="rounded-lg" src="/img/izus.png" alt="Izus Payment Logo">
-                    </div>
-                    </div>
-                   
-                </div>
+            <h1 class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary-blue to-accent-blue">
+    {{ env('APP_NAME', 'Izus Payment') }}
+</h1>
             </div>
             
             @if ($errors->any())

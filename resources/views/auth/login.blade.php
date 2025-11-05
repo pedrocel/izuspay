@@ -72,68 +72,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Tela de conexão segura */
-        .connection-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .connection-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .secure-icon {
-            font-size: 4rem;
-            color: #60a5fa;
-            animation: secure-pulse 2s infinite;
-            margin-bottom: 2rem;
-        }
-
-        .connection-dots {
-            display: flex;
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .connection-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #60a5fa;
-            animation: connection-pulse 1.5s infinite;
-        }
-
-        .connection-dot:nth-child(2) { animation-delay: 0.3s; }
-        .connection-dot:nth-child(3) { animation-delay: 0.6s; }
-
-        .security-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(96, 165, 250, 0.1);
-            border: 1px solid #60a5fa;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            margin-top: 1rem;
-            animation: glow 2s infinite alternate;
-        }
-
-        @keyframes glow {
-            from { box-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
-            to { box-shadow: 0 0 20px rgba(96, 165, 250, 0.6); }
-        }
-
         /* Container do login */
         .login-container {
             opacity: 0;
@@ -313,26 +251,6 @@
         <div class="floating-element"></div>
     </div>
 
-    <!-- Tela de conexão segura -->
-    <div id="connection-screen" class="connection-screen">
-        <div class="text-center">
-            <i class="fas fa-shield-alt secure-icon"></i>
-            <h2 class="text-2xl font-bold text-white mb-4">Conectando ao Servidor Seguro</h2>
-            <p class="text-blue-200 mb-6">Estabelecendo conexão criptografada com Izus Payment...</p>
-            
-            <div class="connection-dots">
-                <div class="connection-dot"></div>
-                <div class="connection-dot"></div>
-                <div class="connection-dot"></div>
-            </div>
-            
-            <div class="security-badge">
-                <i class="fas fa-lock text-accent-blue"></i>
-                <span class="text-white text-sm">SSL 256-bit Encryption</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Container principal do login -->
     <div id="login-container" class="login-container flex items-center justify-center min-h-screen p-4 relative z-10">
         <div class="glass-effect rounded-2xl shadow-2xl p-8 lg:p-12 w-full max-w-md">
@@ -341,7 +259,9 @@
             <div class="text-center mb-10">
                 <div class="flex items-center justify-center mx-auto mb-6 ">
                     <div class="flex-grow">
-                        <img class="rounded-lg" src="/img/izus.png" alt="Izus Payment Logo">
+                    <h1 class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary-blue to-accent-blue">
+    {{ env('APP_NAME', 'Izus Payment') }}
+</h1>
                     </div>
                 </div>
                 <p class="text-gray-600 text-sm">Entre em sua conta para acessar</p>
@@ -469,18 +389,8 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const connectionScreen = document.getElementById('connection-screen');
             const loginContainer = document.getElementById('login-container');
-            
-            // Simular conexão segura
-            setTimeout(() => {
-                connectionScreen.classList.add('hidden');
-                setTimeout(() => {
-                    loginContainer.classList.add('show');
-                    document.getElementById('email').focus();
-                }, 500);
-            }, 3000);
-            
+            loginContainer.classList.add('show');
             // Função para alternar visibilidade da senha
             window.togglePassword = function() {
                 const passwordField = document.getElementById('password');
