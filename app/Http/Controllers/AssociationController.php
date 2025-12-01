@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Association;
+use App\Models\Documentation;
+use App\Models\DocumentType;
 use App\Models\User;
 use App\Models\CreatorProfile;
 use App\Models\PerfilModel;
@@ -103,15 +105,14 @@ class AssociationController extends Controller
                 'status' => 'ativo',
             ]);
 
-            // <CHANGE> 3. Criar o CreatorProfile vinculado ao usuário
             $creatorProfile = CreatorProfile::create([
                 'user_id' => $user->id,
                 'username' => $user->id,
                 'display_name' => $user->id,
-                'bio' => $request->bio,
+                'bio' => 'bio',
                 'category' => 'tecnologia',
                 'website' => 'https://www.google.com',
-                'location' => $request->cidade . ', ' . $request->estado, // <CHANGE> Usando cidade/estado como localização
+                'location' => $request->cidade . ', ' . $request->estado,
                 'is_verified' => false,
                 'is_active' => true,
                 'followers_count' => 0,
@@ -119,13 +120,32 @@ class AssociationController extends Controller
                 'posts_count' => 0,
             ]);
 
-            // 4. Criar o perfil do usuário
             UserPerfilModel::create([
                 'user_id' => $user->id,
                 'perfil_id' => 2,
                 'is_atual' => 1,
                 'status' => 1,
             ]);
+
+            $tipoConta = $request->tipo;
+
+            $requiredDocumentTypes = DocumentType::where('is_required', true)
+                                                ->where('is_active', true)
+                                                ->get();
+
+            foreach ($requiredDocumentTypes as $documentType) {
+                if ($tipoConta === 'pf' && Str::contains($documentType->name, 'CNPJ')) {
+                    continue;
+                }
+                
+                Documentation::create([
+                    'user_id' => $user->id,
+                    'document_type_id' => $documentType->id,
+                    'file_path' => null, 
+                    'status' => 'missing', // Define o status como 'Faltando'
+                    'rejection_reason' => 'Documento ainda não enviado durante o cadastro.',
+                ]);
+            }
 
             DB::commit();
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Associacao;
 
 use App\Http\Controllers\Controller;
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Documentation;
 use App\Models\User;
@@ -23,26 +24,63 @@ class DocumentationController extends Controller
     
     public function store(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user(); // Use Auth::user()
+        
         $request->validate([
             'document_type_id' => 'required|exists:document_types,id',
-            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'document_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Aumentei para 5MB conforme sua view
         ]);
         
         $file = $request->file('document_file');
-        $path = $file->store('public/documentos/' . $user->id);
-
-        $user->documentations()->create([
-            'document_type_id' => $request->document_type_id,
-            'file_path' => $path,
-            'status' => 'pending',
-        ]);
         
+        // 1. Salva o arquivo no storage
+        // Usa o disco 'public' (onde a view está buscando o Storage::url)
+        $path = $file->store('documents/' . $user->id, 'public'); 
+
+        $documentTypeId = $request->document_type_id;
+        $documentType = DocumentType::find($documentTypeId);
+
+        // 2. Busca e atualiza o registro existente ou cria um novo
+        $documentation = Documentation::where('user_id', $user->id)
+            ->where('document_type_id', $documentTypeId)
+            ->latest()
+            ->first();
+
+        if ($documentation) {
+            // Se existe, atualiza (e deleta o arquivo antigo, se necessário)
+            if ($documentation->file_path) {
+                // Remove o prefixo 'public/' se o store não usar
+                $oldPath = str_replace('public/', '', $documentation->file_path);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $documentation->update([
+                'file_path' => $path,
+                'status' => 'pending', // Volta para análise
+                'rejection_reason' => null, // Limpa o motivo de rejeição
+            ]);
+
+        } else {
+            // Cria um novo (deveria ter sido criado no cadastro, mas é um fallback)
+            Documentation::create([
+                'user_id' => $user->id,
+                'document_type_id' => $documentTypeId,
+                'file_path' => $path,
+                'status' => 'pending', 
+                'rejection_reason' => null,
+            ]);
+        }
+        
+        // Atualiza o status do usuário, se necessário
         $user->status = 'docs_under_review';
         $user->save();
         
-        return redirect()->route('associacao.documentos.index')->with('success', 'Documento enviado com sucesso! Aguarde a aprovação.');
+        // 3. Redireciona de volta para a aba 'business'
+        return redirect()
+            ->route('associacao.configuracoes.edit', ['#business'])
+            ->with('success', "O documento '{$documentType->name}' foi enviado para análise!");
     }
+
 
      public function showDocs(User $user)
     {

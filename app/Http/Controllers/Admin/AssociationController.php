@@ -49,6 +49,9 @@ class AssociationController extends Controller
             'products',
             'wallet',
             'bankAccounts',
+            'associationDocuments' => function ($query) {
+                    $query->with('documentType', 'user')->latest(); 
+                },
             'sales' => function ($query) {
                 $query->with(['user', 'product', 'plan'])->latest()->take(10); // Pega as 10 últimas vendas
             },

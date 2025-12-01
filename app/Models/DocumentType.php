@@ -10,7 +10,6 @@ class DocumentType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'association_id',
         'name',
         'is_required',
         'is_active',
@@ -21,11 +20,6 @@ class DocumentType extends Model
         'is_active' => 'boolean',
     ];
     
-    public function association()
-    {
-        return $this->belongsTo(Association::class);
-    }
-
     public function documentations()
     {
         return $this->hasMany(Documentation::class);

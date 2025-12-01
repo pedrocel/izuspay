@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Association;
 use App\Http\Requests\AssociationRequest;
 use App\Models\CreatorProfile;
+use App\Models\Documentation;
+use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,20 +20,50 @@ class ConfiguracoesController extends Controller
     /**
      * Exibe o formulário de configurações da associação.
      */
-    public function edit()
-    {
-        $user = Auth::user();
+    // No App\Http\Controllers\Associacao\ConfiguracoesController.php
 
-        $apiKey = $user->api_token;
-        $association = $user->association;
-        $creatorProfile = $user->creatorProfile;
+public function edit()
+{
+    $user = Auth::user();
 
-        if (!$association) {
-            return redirect()->route('dashboard')->with('error', 'Associação não encontrada.');
-        }
+    $apiKey = $user->api_token;
+    $association = $user->association;
+    $creatorProfile = $user->creatorProfile;
 
-        return view('associacao.configuracoes.edit', compact('association', 'creatorProfile', 'user', 'apiKey'));
+    if (!$association) {
+        return redirect()->route('dashboard')->with('error', 'Associação não encontrada.');
     }
+    
+    // 1. Carrega os tipos de documentos (os que o cliente TEM que enviar)
+    // Busca todos os tipos obrigatórios PENDENTES de envio.
+    // Usaremos os registros da tabela 'documentation' com status 'missing' ou 'rejected'.
+    $documentsRequired = Documentation::where('user_id', $user->id)
+        ->whereIn('status', ['missing', 'rejected', 'pending'])
+        ->with('documentType') // Carrega o tipo do documento para ter o nome
+        ->get();
+        
+    // 2. Carrega todos os documentos enviados (para visualização de status)
+    $allDocuments = Documentation::where('user_id', $user->id)
+        ->with('documentType')
+        ->latest()
+        ->get();
+    
+    // Se o cliente não tem nenhum registro em 'documentations', algo deu errado no cadastro.
+    // Você pode forçar a criação aqui para evitar o erro.
+    if ($allDocuments->isEmpty()) {
+         // Lógica para recriar os 'missing' se o seeder falhou no cadastro.
+         // Chame uma função que recria os 'missing' aqui.
+    }
+
+    return view('associacao.configuracoes.edit', compact(
+        'association', 
+        'creatorProfile', 
+        'user', 
+        'apiKey', 
+        'allDocuments', 
+        'documentsRequired' // Você pode usar uma ou as duas, dependendo de como montar o loop na view
+    ));
+}
 
     /**
      * Atualiza as configurações da associação.
@@ -190,5 +222,32 @@ class ConfiguracoesController extends Controller
         return redirect()->route('associacao.configuracoes.edit')
                          ->with('success', 'Nova chave de API gerada com sucesso!')
                          ->with('newApiKey', $newToken);
+    }
+
+    public function upload(Request $request, DocumentType $documentType)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'file_document' => 'required|file|mimes:pdf,jpeg,png,jpg|max:5120', // Máx 5MB
+        ]);
+
+        try {
+            // Salva o arquivo no storage (ex: storage/app/public/documents/1/meu-arquivo.pdf)
+            $path = $request->file('file_document')->store("documents/{$user->id}", 'public');
+
+            // Cria um novo registro na tabela 'documentation'
+            Documentation::create([
+                'user_id' => $user->id,
+                'document_type_id' => $documentType->id,
+                'file_path' => $path,
+                'status' => 'pending', // Sempre começa como pendente
+                'rejection_reason' => null,
+            ]);
+
+            return back()->with('success', "O documento '{$documentType->name}' foi enviado para análise!");
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao fazer upload do documento: ' . $e->getMessage()]);
+        }
     }
 }

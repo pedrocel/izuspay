@@ -20,11 +20,6 @@ class Documentation extends Model
         'rejection_reason',
     ];
 
-    public function documentTypes(): HasMany
-    {
-        return $this->hasMany(DocumentType::class, 'association_id', 'association_id');
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

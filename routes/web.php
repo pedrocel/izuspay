@@ -122,6 +122,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', RedirectByProfile::class])->prefix('associacao')->group(function () {
 
+    Route::post('/configuracoes/documentos/{documentType}/upload', [ConfiguracoesController::class, 'upload'])
+    ->name('associacao.documents.upload');
+
     Route::post('/dashboard/save-layout', [DashboardSettingsController::class, 'saveLayout'])->name('dashboard.saveLayout');
 
     Route::get('/inicio', [DashboardController::class, 'index'])->name('associacao.dashboard');

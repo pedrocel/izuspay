@@ -466,4 +466,14 @@ class Association extends Model
             }
         });
     }
+
+    public function associationDocuments()
+{
+    return $this->hasManyThrough(
+        Documentation::class,
+        User::class,
+        'association_id',
+        'user_id'
+    );
+}
 }

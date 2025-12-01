@@ -130,55 +130,112 @@
             </div>
 
             <!-- Aba: Empresa e Documentos -->
-            <div class="tab-content hidden" id="business">
-                <div class="bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
-                    <div class="p-6 border-b border-white/10">
-                        <h3 class="text-xl font-bold text-white flex items-center"><i data-lucide="building" class="w-6 h-6 mr-3 text-blue-400"></i>Empresa e Documentos</h3>
-                    </div>
-                    <div class="p-6 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2">
-                                <label for="association_name" class="block text-sm font-semibold text-gray-300 mb-1">Nome da Empresa/Associação *</label>
-                                <input type="text" id="association_name" name="association_name" disabled value="{{ old('association_name', $association->nome ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                            </div>
-                            <div>
-                                <label for="tipo" class="block text-sm font-semibold text-gray-300 mb-1">Tipo *</label>
-                                <select id="tipo" name="tipo" disabled required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                                    <option value="pf" @selected(old('tipo', $association->tipo ?? '') == 'pf')>Pessoa Física</option>
-                                    <option value="cnpj" @selected(old('tipo', $association->tipo ?? '') == 'cnpj')>Pessoa Jurídica</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="documento" class="block text-sm font-semibold text-gray-300 mb-1">Documento (CPF/CNPJ) *</label>
-                                <input type="text" id="documento" disabled name="documento" value="{{ old('documento', $association->documento ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                            </div>
-                        </div>
-                        <div class="border-t border-white/10 pt-6 space-y-4">
-                            <h4 class="text-lg font-semibold text-white">Envio de Documentos para Verificação</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                @php
-                                    $documents = [
-                                        ['name' => 'doc_identity', 'label' => 'Documento de Identidade (Frente e Verso)', 'icon' => 'user-square'],
-                                        ['name' => 'doc_selfie', 'label' => 'Selfie com o Documento', 'icon' => 'camera'],
-                                        ['name' => 'doc_address', 'label' => 'Comprovante de Residência', 'icon' => 'home'],
-                                        ['name' => 'doc_cnpj', 'label' => 'Comprovante de CNPJ (se aplicável)', 'icon' => 'file-text'],
-                                    ];
-                                @endphp
-                                @foreach ($documents as $doc)
-                                <div>
-                                    <label for="{{ $doc['name'] }}" class="block text-sm font-semibold text-gray-300 mb-1">{{ $doc['label'] }}</label>
-                                    <label class="w-full flex items-center text-sm px-4 py-2.5 border-2 border-dashed border-gray-600 hover:border-blue-500 rounded-lg bg-slate-900/50 text-gray-400 hover:text-white cursor-pointer transition-all">
-                                        <i data-lucide="{{ $doc['icon'] }}" class="w-5 h-5 inline-block mr-3"></i>
-                                        <span class="file-name-span truncate">Clique para enviar o arquivo</span>
-                                    </label>
-                                    <input type="file" id="{{ $doc['name'] }}" name="{{ $doc['name'] }}" class="hidden file-input">
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
+            <div class="tab-content" id="business">
+    <div class="bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden mb-8">
+        <div class="p-6 border-b border-white/10">
+            <h3 class="text-xl font-bold text-white flex items-center"><i data-lucide="building" class="w-6 h-6 mr-3 text-blue-400"></i>Dados da Empresa / Conta</h3>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="association_name" class="block text-sm font-semibold text-gray-300 mb-1">Nome da Empresa/Marca *</label>
+                    <input type="text" id="association_name" name="association_name" value="{{ old('association_name', $association->nome ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label for="documento" class="block text-sm font-semibold text-gray-300 mb-1">{{ $association->isPessoaFisica() ? 'CPF' : 'CNPJ' }} *</label>
+                    <input type="text" id="documento" name="documento" value="{{ old('documento', $association->documento ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <input type="hidden" name="tipo" value="{{ $association->tipo }}">
                 </div>
             </div>
+            </div>
+    </div>
+
+    <div class="bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white flex items-center"><i data-lucide="file-check-2" class="w-6 h-6 mr-3 text-blue-400"></i>Verificação de Documentos</h3>
+            <p class="text-sm text-gray-400">Status Geral: 
+                @php
+                    $allApproved = $association->associationDocuments->isNotEmpty() && $association->associationDocuments->every(fn($doc) => $doc->status === 'approved');
+                @endphp
+                <span class="font-bold {{ $allApproved ? 'text-green-400' : 'text-yellow-400' }}">
+                    {{ $allApproved ? 'Aprovado' : 'Pendente' }}
+                </span>
+            </p>
+        </div>
+        
+        <div class="p-6">
+            <p class="text-gray-400 mb-6">Para garantir a segurança e ativar todos os recursos da sua conta, por favor, envie os documentos listados abaixo. Arquivos aceitos: PDF ou Imagem (Máx: 5MB).</p>
+
+            <div class="space-y-4">
+            @foreach ($allDocuments as $document)
+            @php
+                $status = $document->status ?? 'missing';
+                $statusText = match($status) {
+                    'approved' => 'Aprovado',
+                    'pending' => 'Em Análise',
+                    'rejected' => 'Rejeitado',
+                    default => 'Faltando'
+                };
+
+                        $status = $currentDocument->status ?? 'missing';
+                        $statusText = match($status) {
+                            'approved' => 'Aprovado',
+                            'pending' => 'Em Análise',
+                            'rejected' => 'Rejeitado',
+                            default => 'Faltando'
+                        };
+                        $statusColor = match($status) {
+                            'approved' => 'border-green-500 text-green-400 bg-green-900/30',
+                            'pending' => 'border-yellow-500 text-yellow-400 bg-yellow-900/30',
+                            'rejected' => 'border-red-500 text-red-400 bg-red-900/30',
+                            default => 'border-gray-600 text-gray-400 bg-gray-700/30'
+                        };
+                    @endphp
+
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-xl border {{ $statusColor }}">
+                <div class="flex-1 min-w-0">
+                    <p class="text-lg font-semibold text-white">{{ $document->documentType->name ?? 'Tipo Desconhecido' }}</p>
+                    <p class="text-sm text-gray-400 mt-1">{{ $document->documentType->description ?? 'Descrição não disponível.' }}</p>
+
+                    @if ($document->rejection_reason)
+                        @endif
+                </div>
+
+                <label for="upload_{{ $document->documentType->id }}" class="cursor-pointer inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm shadow-md">
+                    <input type="file" id="upload_{{ $document->documentType->id }}" name="document_{{ $document->documentType->id }}" class="sr-only" 
+                           onchange="document.getElementById('upload-form-{{ $document->documentType->id }}').submit()">
+                </label>
+
+                <form id="upload-form-{{ $document->documentType->id }}" action="{{ route('associacao.documents.upload', ['documentType' => $document->documentType->id]) }}" method="POST" enctype="multipart/form-data" style="display:none;">
+                    @csrf
+                </form>
+            </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Este script deve estar no final do seu arquivo de visualização ou em um arquivo JS dedicado
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="file"][id^="upload_"]').forEach(input => {
+            input.addEventListener('change', function() {
+                // Encontra o ID do tipo de documento
+                const typeId = this.id.split('_')[1];
+                const form = document.getElementById(`upload-form-${typeId}`);
+                
+                // Cria um clone do input file e anexa ao formulário oculto
+                const fileInputClone = this.cloneNode(true);
+                fileInputClone.name = 'file_document'; // Renomeia o input para um nome padrão para o controller
+                
+                // Adiciona o clone e submete o formulário
+                form.appendChild(fileInputClone);
+                form.submit();
+            });
+        });
+    });
+</script>
 
 <!-- Aba: API -->
 <div class="tab-content hidden" id="api">
