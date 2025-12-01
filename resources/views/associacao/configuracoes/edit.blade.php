@@ -101,11 +101,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="name" class="block text-sm font-semibold text-gray-300 mb-1">Nome Completo *</label>
-                                <input type="text" id="name" name="name" value="{{ old('name', $user->name ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="text" id="name" name="name" disabled value="{{ old('name', $user->name ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-semibold text-gray-300 mb-1">Email *</label>
-                                <input type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="email" id="email" name="email" disabled value="{{ old('email', $user->email ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             </div>
                         </div>
                         <div class="border-t border-white/10 pt-6 space-y-4">
@@ -139,18 +139,18 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2">
                                 <label for="association_name" class="block text-sm font-semibold text-gray-300 mb-1">Nome da Empresa/Associação *</label>
-                                <input type="text" id="association_name" name="association_name" value="{{ old('association_name', $association->nome ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="text" id="association_name" name="association_name" disabled value="{{ old('association_name', $association->nome ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             </div>
                             <div>
                                 <label for="tipo" class="block text-sm font-semibold text-gray-300 mb-1">Tipo *</label>
-                                <select id="tipo" name="tipo" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <select id="tipo" name="tipo" disabled required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                                     <option value="pf" @selected(old('tipo', $association->tipo ?? '') == 'pf')>Pessoa Física</option>
                                     <option value="cnpj" @selected(old('tipo', $association->tipo ?? '') == 'cnpj')>Pessoa Jurídica</option>
                                 </select>
                             </div>
                             <div>
                                 <label for="documento" class="block text-sm font-semibold text-gray-300 mb-1">Documento (CPF/CNPJ) *</label>
-                                <input type="text" id="documento" name="documento" value="{{ old('documento', $association->documento ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="text" id="documento" disabled name="documento" value="{{ old('documento', $association->documento ?? '') }}" required class="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             </div>
                         </div>
                         <div class="border-t border-white/10 pt-6 space-y-4">

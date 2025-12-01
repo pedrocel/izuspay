@@ -58,23 +58,7 @@
             box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
         }
 
-        .tipo-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid #e2e8f0;
-            background: rgba(248, 250, 252, 0.8);
-        }
-
-        .tipo-card:hover {
-            border-color: #3b82f6;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .tipo-card.selected {
-            border-color: #1e40af;
-            background: linear-gradient(135deg, rgba(30, 64, 175, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
+        /* Classes tipo-card removidas */
 
         .input-field {
             display: block;
@@ -130,32 +114,25 @@
                 @csrf
                 
                 <fieldset>
-                    <legend class="text-lg font-semibold section-header mb-4">1. Tipo de Perfil</legend>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label class="tipo-card rounded-lg p-4 flex items-center space-x-3 {{ old('tipo', 'pf') == 'pf' ? 'selected' : '' }}">
-                            <input type="radio" name="tipo" value="pf" class="sr-only" {{ old('tipo', 'pf') == 'pf' ? 'checked' : '' }}>
-                            <i class="fas fa-user text-secondary-blue text-xl fa-fw"></i>
-                            <span class="font-medium text-gray-800">Pessoa Física (CPF)</span>
-                        </label>
-                        <label class="tipo-card rounded-lg p-4 flex items-center space-x-3 {{ old('tipo') == 'cnpj' ? 'selected' : '' }}">
-                            <input type="radio" name="tipo" value="cnpj" class="sr-only" {{ old('tipo') == 'cnpj' ? 'checked' : '' }}>
-                            <i class="fas fa-building text-secondary-blue text-xl fa-fw"></i>
-                            <span class="font-medium text-gray-800">Pessoa Jurídica (CNPJ)</span>
-                        </label>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend class="text-lg font-semibold section-header mb-4">2. Dados Gerais</legend>
+                    <legend class="text-lg font-semibold section-header mb-4">1. Dados Gerais</legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="sm:col-span-2">
                             <label for="nome" class="block text-sm font-medium text-gray-700">Nome Completo ou Marca *</label>
                             <input type="text" id="nome" name="nome" required class="input-field" value="{{ old('nome') }}">
                         </div>
+                        
+                        <div>
+                            <label for="tipo-conta" class="block text-sm font-medium text-gray-700">Tipo de Conta *</label>
+                            <select id="tipo-conta" name="tipo" required class="input-field">
+                                <option value="pf" {{ old('tipo', 'pf') == 'pf' ? 'selected' : '' }}>Pessoa Física</option>
+                                <option value="cnpj" {{ old('tipo') == 'cnpj' ? 'selected' : '' }}>Pessoa Jurídica</option>
+                            </select>
+                        </div>
                         <div>
                             <label for="documento" class="block text-sm font-medium text-gray-700" id="documento-label">CPF *</label>
                             <input type="text" id="documento" name="documento" required class="input-field" value="{{ old('documento') }}">
                         </div>
+                        
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">E-mail Principal *</label>
                             <input type="email" id="email" name="email" required class="input-field" value="{{ old('email') }}">
@@ -166,57 +143,9 @@
                         </div>
                     </div>
                 </fieldset>
-
+                
                 <fieldset>
-                    <legend class="text-lg font-semibold section-header mb-4">3. Perfil de Criador</legend>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label for="username" class="block text-sm font-medium text-gray-700">Nome de Usuário *</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
-                                <input type="text" id="username" name="username" required class="input-field pl-8" 
-                                       value="{{ old('username') }}" placeholder="seuusername">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Apenas letras, números e underscore. Será seu identificador único.</p>
-                        </div>
-                        <div>
-                            <label for="display_name" class="block text-sm font-medium text-gray-700">Nome de Exibição *</label>
-                            <input type="text" id="display_name" name="display_name" required class="input-field" 
-                                   value="{{ old('display_name') }}" placeholder="Como você quer aparecer">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="bio" class="block text-sm font-medium text-gray-700">Biografia</label>
-                            <textarea id="bio" name="bio" rows="3" class="input-field resize-none" 
-                                      placeholder="Conte um pouco sobre você e seu trabalho...">{{ old('bio') }}</textarea>
-                            <p class="text-xs text-gray-500 mt-1">Máximo 500 caracteres</p>
-                        </div>
-                        <div>
-                            <label for="category" class="block text-sm font-medium text-gray-700">Categoria *</label>
-                            <select id="category" name="category" required class="input-field">
-                                <option value="">Selecione uma categoria</option>
-                                <option value="tecnologia" {{ old('category') == 'tecnologia' ? 'selected' : '' }}>Tecnologia</option>
-                                <option value="educacao" {{ old('category') == 'educacao' ? 'selected' : '' }}>Educação</option>
-                                <option value="entretenimento" {{ old('category') == 'entretenimento' ? 'selected' : '' }}>Entretenimento</option>
-                                <option value="esportes" {{ old('category') == 'esportes' ? 'selected' : '' }}>Esportes</option>
-                                <option value="lifestyle" {{ old('category') == 'lifestyle' ? 'selected' : '' }}>Lifestyle</option>
-                                <option value="negocios" {{ old('category') == 'negocios' ? 'selected' : '' }}>Negócios</option>
-                                <option value="saude" {{ old('category') == 'saude' ? 'selected' : '' }}>Saúde</option>
-                                <option value="arte" {{ old('category') == 'arte' ? 'selected' : '' }}>Arte e Design</option>
-                                <option value="culinaria" {{ old('category') == 'culinaria' ? 'selected' : '' }}>Culinária</option>
-                                <option value="viagem" {{ old('category') == 'viagem' ? 'selected' : '' }}>Viagem</option>
-                                <option value="outros" {{ old('category') == 'outros' ? 'selected' : '' }}>Outros</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-                            <input type="url" id="website" name="website" class="input-field" 
-                                   value="{{ old('website') }}" placeholder="https://seusite.com">
-                        </div>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend class="text-lg font-semibold section-header mb-4">4. Endereço</legend>
+                    <legend class="text-lg font-semibold section-header mb-4">2. Endereço</legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <label for="cep" class="block text-sm font-medium text-gray-700">CEP *</label>
@@ -248,7 +177,7 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend class="text-lg font-semibold section-header mb-4">5. Senha de Acesso</legend>
+                    <legend class="text-lg font-semibold section-header mb-4">3. Senha de Acesso</legend>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Senha *</label>
@@ -278,22 +207,35 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const radios = document.querySelectorAll('input[name="tipo"]');
-            radios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
-                    e.target.closest('.tipo-card').classList.add('selected');
-                    
-                    const label = document.getElementById('documento-label');
-                    if (e.target.value === 'pf') {
-                        label.textContent = 'CPF *';
-                    } else {
-                        label.textContent = 'CNPJ *';
-                    }
+            const tipoContaSelect = document.getElementById('tipo-conta');
+            const documentoLabel = document.getElementById('documento-label');
+            const documentoInput = document.getElementById('documento');
+
+            // Função para atualizar o label
+            const updateDocumentoLabel = (value) => {
+                if (value === 'pf') {
+                    documentoLabel.textContent = 'CPF *';
+                    documentoInput.placeholder = '000.000.000-00';
+                } else {
+                    documentoLabel.textContent = 'CNPJ *';
+                    documentoInput.placeholder = '00.000.000/0000-00';
+                }
+                // Limpa o campo ao trocar para evitar problemas de validação
+                documentoInput.value = ''; 
+            };
+            
+            // 1. Ouve a mudança no campo de seleção
+            if (tipoContaSelect) {
+                tipoContaSelect.addEventListener('change', (e) => {
+                    updateDocumentoLabel(e.target.value);
                 });
-            });
+            }
+
+            // 2. Garante que o label esteja correto no carregamento inicial (se old('tipo') estiver setado)
+            if (tipoContaSelect) {
+                updateDocumentoLabel(tipoContaSelect.value);
+            }
         });
     </script>
 </body>
 </html>
-

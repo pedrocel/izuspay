@@ -50,19 +50,6 @@ class AssociationController extends Controller
             'cidade' => 'required|string|max:100',
             'estado' => 'required|string|size:2',
             'password' => 'required|string|min:8|confirmed',
-            
-            // <CHANGE> Adicionando validação para campos do CreatorProfile
-            'username' => [
-                'required',
-                'string',
-                'max:50',
-                'regex:/^[a-zA-Z0-9_]+$/',
-                Rule::unique('creator_profiles', 'username')
-            ],
-            'display_name' => 'required|string|max:100',
-            'bio' => 'nullable|string|max:500',
-            'category' => 'required|string|max:100',
-            'website' => 'nullable|url|max:255',
         ]);
 
         try {
@@ -95,7 +82,7 @@ class AssociationController extends Controller
             ]);
 
             $defaultFees = [
-                ['payment_method' => 'pix',         'percentage_fee' => 0.99, 'fixed_fee' => 0.00],
+                ['payment_method' => 'pix',         'percentage_fee' => 4.99, 'fixed_fee' => 1.49],
                 ['payment_method' => 'credit_card', 'percentage_fee' => 4.99, 'fixed_fee' => 0.40],
                 ['payment_method' => 'boleto',      'percentage_fee' => 0.00, 'fixed_fee' => 3.49],
             ];
@@ -119,11 +106,11 @@ class AssociationController extends Controller
             // <CHANGE> 3. Criar o CreatorProfile vinculado ao usuário
             $creatorProfile = CreatorProfile::create([
                 'user_id' => $user->id,
-                'username' => $request->username,
-                'display_name' => $request->display_name,
+                'username' => $user->id,
+                'display_name' => $user->id,
                 'bio' => $request->bio,
-                'category' => $request->category,
-                'website' => $request->website,
+                'category' => 'tecnologia',
+                'website' => 'https://www.google.com',
                 'location' => $request->cidade . ', ' . $request->estado, // <CHANGE> Usando cidade/estado como localização
                 'is_verified' => false,
                 'is_active' => true,
